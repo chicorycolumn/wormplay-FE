@@ -12,7 +12,7 @@ class playGame extends Phaser.Scene {
 
   preload() {}
   create() {
-    this.gameState.circle = this.add.circle(390, 290, 10, 0x0000ff);
+    this.gameState.circle = this.add.circle(390, 290, 50, 0x0000ff);
     // the Count variables control distance to go
     this.gameState.circle.xCount = 0;
     this.gameState.circle.yCount = 0;

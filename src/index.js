@@ -9,8 +9,8 @@ import playGame from "./phaser/scene";
 export const config = {
   type: Phaser.AUTO,
   parent: "phaser",
-  width: 800,
-  height: 600,
+  width: 500,
+  height: 400,
   backgroundColor: "#32CD32",
   scene: playGame,
 };
@@ -18,5 +18,7 @@ export const config = {
 const game = new Phaser.Game(config);
 
 ReactDOM.render(
-  document.getElementById("root") || document.createElement("div")
+  <App />,
+
+  document.getElementById("gene") || document.createElement("div")
 );
