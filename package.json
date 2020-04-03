@@ -1,6 +1,6 @@
 {
   "name": "Wormplay",
-  "version": "0.000000001",
+  "version": "1.0.0",
   "description": "Wormplay, a worm based word game",
   "main": "src/index.js",
   "scripts": {

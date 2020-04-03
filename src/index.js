@@ -12,12 +12,11 @@ export const config = {
   width: 800,
   height: 600,
   backgroundColor: "#32CD32",
-  scene: playGame
+  scene: playGame,
 };
 
 const game = new Phaser.Game(config);
 
 ReactDOM.render(
-  <App />,
   document.getElementById("root") || document.createElement("div")
 );
