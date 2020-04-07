@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import logoImg from "../assets/logo.png";
 import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
+import body from "../assets/body-resized.png";
 
 class playGame extends Phaser.Scene {
   constructor() {
@@ -13,17 +13,17 @@ class playGame extends Phaser.Scene {
   //These functions create the circle and make it move randomly
 
   preload() {
-    // this.load.image("head", img);
     this.load.image("head", head);
+    this.load.image("body", body);
   }
 
   create() {
-    this.gameState.head7 = this.physics.add.image(400, 150, "head");
-    this.gameState.head6 = this.physics.add.image(400, 125, "head");
-    this.gameState.head5 = this.physics.add.image(400, 125, "head");
-    this.gameState.head4 = this.physics.add.image(400, 125, "head");
-    this.gameState.head3 = this.physics.add.image(400, 125, "head");
-    this.gameState.head2 = this.physics.add.image(400, 125, "head");
+    this.gameState.body6 = this.physics.add.image(400, 150, "body");
+    this.gameState.body5 = this.physics.add.image(400, 125, "body");
+    this.gameState.body4 = this.physics.add.image(400, 125, "body");
+    this.gameState.body3 = this.physics.add.image(400, 125, "body");
+    this.gameState.body2 = this.physics.add.image(400, 125, "body");
+    this.gameState.body1 = this.physics.add.image(400, 125, "body");
     this.gameState.head = this.physics.add.image(400, 125, "head");
 
     //variables for destination
@@ -33,7 +33,7 @@ class playGame extends Phaser.Scene {
     this.gameState.head.body.collideWorldBounds = true;
   }
   update() {
-    const { head, head2, head3, head4, head5, head6, head7 } = this.gameState;
+    const { head, body1, body2, body3, body4, body5, body6 } = this.gameState;
 
     if (head.count === 0) {
       head.xDest = Math.floor(Math.random() * 800);
@@ -50,12 +50,12 @@ class playGame extends Phaser.Scene {
       60,
       60
     );
-    this.physics.moveTo(head2, head.x, head.y, 60, 750, 750);
-    this.physics.moveTo(head3, head2.x, head2.y, 60, 750, 750);
-    this.physics.moveTo(head4, head3.x, head3.y, 60, 750, 750);
-    this.physics.moveTo(head5, head4.x, head4.y, 60, 750, 750);
-    this.physics.moveTo(head6, head5.x, head5.y, 60, 750, 750);
-    this.physics.moveTo(head7, head6.x, head6.y, 60, 750, 750);
+    this.physics.moveTo(body1, head.x, head.y, 60, 750, 750);
+    this.physics.moveTo(body2, body1.x, body1.y, 60, 750, 750);
+    this.physics.moveTo(body3, body2.x, body2.y, 60, 750, 750);
+    this.physics.moveTo(body4, body3.x, body3.y, 60, 750, 750);
+    this.physics.moveTo(body5, body4.x, body4.y, 60, 750, 750);
+    this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
     if (head.count > 0) {
       head.count--;
     }
