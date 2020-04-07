@@ -31,7 +31,49 @@ class playGame extends Phaser.Scene {
     this.gameState.head.yDest = 150;
     this.gameState.head.count = 0;
     this.gameState.head.body.collideWorldBounds = true;
+
+    //Create letters
+    const textStyle = {
+      font: "35px Arial",
+      fill: "#74ba00",
+      align: "center",
+      backgroundColor: "#2e0093",
+      padding: 10,
+    };
+
+    this.gameState.text = {};
+    this.gameState.text.letter1 = this.add.text(300, 25, "W", textStyle);
+    this.gameState.text.letter2 = this.add.text(350, 25, "I", textStyle);
+    this.gameState.text.letter3 = this.add.text(400, 25, "G", textStyle);
+    this.gameState.text.letter4 = this.add.text(450, 25, "G", textStyle);
+    this.gameState.text.letter5 = this.add.text(500, 25, "L", textStyle);
+    this.gameState.text.letter6 = this.add.text(550, 25, "E", textStyle);
+
+    for (const letter in this.gameState.text) {
+      const startX = this.gameState.text[letter].x;
+      const startY = this.gameState.text[letter].y;
+
+      this.gameState.text[letter].setInteractive();
+
+      this.input.setDraggable(this.gameState.text[letter]);
+
+      this.gameState.text[letter].on("dragstart", function (pointer) {
+        this.setTint(0xff0000);
+      });
+
+      this.gameState.text[letter].on("drag", function (pointer, dragX, dragY) {
+        this.x = dragX;
+        this.y = dragY;
+      });
+
+      this.gameState.text[letter].on("dragend", function (pointer) {
+        this.clearTint();
+        this.x = startX;
+        this.y = startY;
+      });
+    }
   }
+
   update() {
     const { head, body1, body2, body3, body4, body5, body6 } = this.gameState;
 
