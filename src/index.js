@@ -9,9 +9,12 @@ import playGame from "./phaser/scene";
 export const config = {
   type: Phaser.AUTO,
   parent: "phaser",
-  width: 500,
-  height: 400,
-  backgroundColor: "#32CD32",
+  width: 800,
+  height: 600,
+  physics: {
+    default: "arcade",
+    arcade: { debug: true },
+  },
   scene: playGame,
 };
 
