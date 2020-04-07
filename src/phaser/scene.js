@@ -32,15 +32,16 @@ class playGame extends Phaser.Scene {
     this.gameState.head.count = 0;
     this.gameState.head.body.collideWorldBounds = true;
 
-    //Create letters
+    //Create letter styling
     const textStyle = {
       font: "35px Arial",
-      fill: "#74ba00",
+      fill: "#007300",
       align: "center",
-      backgroundColor: "#2e0093",
-      padding: 10,
+      backgroundColor: "#FAFFE8",
+      padding: { top: 4 },
     };
 
+    // Create a text object and put 6 letters within it (with styling)
     this.gameState.text = {};
     this.gameState.text.letter1 = this.add.text(300, 25, "W", textStyle);
     this.gameState.text.letter2 = this.add.text(350, 25, "I", textStyle);
@@ -49,9 +50,43 @@ class playGame extends Phaser.Scene {
     this.gameState.text.letter5 = this.add.text(500, 25, "L", textStyle);
     this.gameState.text.letter6 = this.add.text(550, 25, "E", textStyle);
 
+    // Loop through text object and make each letter draggable
     for (const letter in this.gameState.text) {
+      this.gameState.text[letter].setFixedSize(48, 48);
+
+      this.physics.add.existing(this.gameState.text[letter]);
+
+      this.gameState.text[letter].onSegment = null;
+
       const startX = this.gameState.text[letter].x;
       const startY = this.gameState.text[letter].y;
+
+      for (const bodyPart in this.gameState) {
+        // this.gameState[bodyPart].droppedLetter = "";
+        if (/body\d/g.test(bodyPart)) {
+          this.gameState[bodyPart].segment = bodyPart;
+          this.physics.add.overlap(
+            this.gameState.text[letter],
+            this.gameState[bodyPart],
+            function (letter, bodyPart) {
+              // bodyPart.droppedLetter = letter.text;
+              letter.onSegment = bodyPart;
+              console.log(bodyPart);
+              // console.dir(bodyPart.droppedLetter);
+              // console.dir(letter.onSegment);
+            }
+          );
+          // if (
+          //   this.physics.overlap(
+          //     this.gameState.text[letter],
+          //     this.gameState[bodyPart]
+          //   ) === false
+          // ) {
+          //   console.log("FALSE NOW");
+          //   // onSegment = null
+          // }
+        }
+      }
 
       this.gameState.text[letter].setInteractive();
 
@@ -68,14 +103,34 @@ class playGame extends Phaser.Scene {
 
       this.gameState.text[letter].on("dragend", function (pointer) {
         this.clearTint();
-        this.x = startX;
-        this.y = startY;
+
+        if (this.onSegment === null) {
+          this.x = startX;
+          this.y = startY;
+        }
       });
     }
   }
 
   update() {
-    const { head, body1, body2, body3, body4, body5, body6 } = this.gameState;
+    const {
+      head,
+      body1,
+      body2,
+      body3,
+      body4,
+      body5,
+      body6,
+      text,
+    } = this.gameState;
+
+    for (const letter in text) {
+      // console.log(text[letter].onSegment);
+      if (text[letter].onSegment !== null) {
+        text[letter].x = text[letter].onSegment.x - 24;
+        text[letter].y = text[letter].onSegment.y - 24;
+      }
+    }
 
     if (head.count === 0) {
       head.xDest = Math.floor(Math.random() * 800);
