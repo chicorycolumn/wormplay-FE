@@ -2,10 +2,12 @@ import Phaser from "phaser";
 import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
 import body from "../assets/body-resized.png";
+//Access the state of ReactGameHolder.jsx with `this.game.react.state`.
+let socket;
 
-class playGame extends Phaser.Scene {
+export default class MainScene extends Phaser.Scene {
   constructor() {
-    super("PlayGame");
+    super("MainScene");
     this.gameState = {};
   }
 
@@ -13,6 +15,7 @@ class playGame extends Phaser.Scene {
   //These functions create the circle and make it move randomly
 
   preload() {
+    socket = this.game.react.state.socket;
     this.load.image("head", head);
     this.load.image("body", body);
   }
@@ -151,5 +154,3 @@ class playGame extends Phaser.Scene {
     }
   }
 }
-
-export default playGame;
