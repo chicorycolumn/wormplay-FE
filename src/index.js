@@ -1,8 +1,8 @@
-import Phaser from "phaser";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./components/App.jsx";
-import playGame from "./phaser/scene";
+import socketIOClient from "socket.io-client";
+const socket = socketIOClient("https://wormplayserver.herokuapp.com/");
 
 console.log(App);
 
@@ -25,3 +25,4 @@ ReactDOM.render(
 
   document.getElementById("gene") || document.createElement("div")
 );
+ReactDOM.render(<App socket={socket} />, document.getElementById("root"));
