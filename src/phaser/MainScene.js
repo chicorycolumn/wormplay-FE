@@ -116,6 +116,59 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     }
+
+    // Create Array of worm letters
+    this.gameState.wormWord = ["", "", "", "", "", ""];
+
+    // Create submit button
+    const btnStyle = {
+      font: "35px Arial",
+      fill: "#000000",
+      align: "center",
+      backgroundColor: "#FFBF00",
+      padding: { top: 4, left: 8, right: 8 },
+    };
+
+    this.gameState.submitBtn = this.add
+      .text(650, 25, "Submit", btnStyle)
+      .setInteractive();
+
+    const originalBtnY = this.gameState.submitBtn.y;
+
+    this.gameState.submitBtn.on("pointerover", function (event) {
+      this.setTint(0xff0000);
+    });
+
+    this.gameState.submitBtn.on("pointerout", function (event) {
+      this.setTint(0xffbf00);
+      this.y = originalBtnY;
+    });
+
+    this.gameState.submitBtn.on("pointerdown", function (event) {
+      this.setTint(0xdf0101);
+      this.y = this.y + 2;
+    });
+
+    this.gameState.submitBtn.on(
+      "pointerup",
+      function (event) {
+        this.gameState.submitBtn.setTint(0xff0000);
+        this.gameState.submitBtn.y = originalBtnY;
+        this.gameState.submitWord(this.gameState.text, this.gameState.wormWord);
+      },
+      this
+    );
+
+    this.gameState.submitWord = function (textObj, wordArr) {
+      for (const letter in textObj) {
+        if (textObj[letter].onSegment !== null) {
+          const bodyIndex = Number(textObj[letter].onSegment.slice(4)) - 1;
+          wordArr[bodyIndex] = textObj[letter].text;
+        }
+      }
+      const submittedWord = wordArr.join("");
+      // Send submittedWord to the server with socket,io
+    };
   }
 
   update() {
