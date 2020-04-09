@@ -139,15 +139,20 @@ export default class MainScene extends Phaser.Scene {
       const startX = this.gameState.text[letter].x;
       const startY = this.gameState.text[letter].y;
 
-      // Loop through body part and set up interaction with letters
+      // Loop through body parts and set up interaction with letters
       for (const bodyPart in this.gameState) {
         if (/body\d/g.test(bodyPart)) {
+          this.gameState[bodyPart].hasLetter = false;
           this.physics.add.overlap(
             this.gameState.text[letter],
             this.gameState[bodyPart],
             function () {
-              if (this.gameState.text[letter].onSegment === null) {
+              if (
+                this.gameState.text[letter].onSegment === null &&
+                this.gameState[bodyPart].hasLetter === false
+              ) {
                 this.gameState.text[letter].onSegment = bodyPart;
+                this.gameState[bodyPart].hasLetter = true;
               }
             },
             null,
@@ -165,11 +170,24 @@ export default class MainScene extends Phaser.Scene {
         this.setTint(0xff0000);
       });
 
-      this.gameState.text[letter].on("drag", function (pointer, dragX, dragY) {
-        this.x = dragX;
-        this.y = dragY;
-        this.onSegment = null;
-      });
+      this.gameState.text[letter].on(
+        "drag",
+        function (pointer, dragX, dragY) {
+          this.gameState.text[letter].x = dragX;
+          this.gameState.text[letter].y = dragY;
+
+          const initialOnSegment = this.gameState.text[letter].onSegment;
+          this.gameState.text[letter].onSegment = null;
+
+          if (
+            initialOnSegment !== null &&
+            this.gameState.text[letter].onSegment === null
+          ) {
+            this.gameState[initialOnSegment].hasLetter = false;
+          }
+        },
+        this
+      );
 
       this.gameState.text[letter].on("dragend", function (pointer) {
         this.clearTint();
@@ -250,8 +268,9 @@ export default class MainScene extends Phaser.Scene {
     // Fix letters to body parts
     for (const letter in text) {
       if (text[letter].onSegment !== null) {
-        text[letter].x = this.gameState[text[letter].onSegment].x - 24;
-        text[letter].y = this.gameState[text[letter].onSegment].y - 24;
+        const attachedBodyPart = this.gameState[text[letter].onSegment];
+        text[letter].x = attachedBodyPart.x - 24;
+        text[letter].y = attachedBodyPart.y - 24;
       }
     }
 
