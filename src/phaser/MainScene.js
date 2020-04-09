@@ -129,60 +129,78 @@ export default class MainScene extends Phaser.Scene {
 
     // Loop through text object and set up drag and drop functionality
     for (const letter in this.gameState.text) {
-      this.gameState.text[letter].setFixedSize(48, 48);
+      const thisLetter = this.gameState.text[letter];
 
-      // Make letters interact with other objects
-      this.physics.add.existing(this.gameState.text[letter]);
+      thisLetter.setFixedSize(48, 48);
 
-      this.gameState.text[letter].onSegment = null;
+      // Make letters interact with other objects but initially disable that ability
+      this.physics.add.existing(thisLetter);
+      thisLetter.body.enable = false;
 
-      const startX = this.gameState.text[letter].x;
-      const startY = this.gameState.text[letter].y;
+      // Removes blue outline from letters and floating blue box when attaching letters
+      thisLetter.body.debugShowBody = false;
 
-      // Loop through body part and set up interaction with letters
-      for (const bodyPart in this.gameState) {
-        if (/body\d/g.test(bodyPart)) {
-          this.physics.add.overlap(
-            this.gameState.text[letter],
-            this.gameState[bodyPart],
-            function () {
-              if (this.gameState.text[letter].onSegment === null) {
-                this.gameState.text[letter].onSegment = bodyPart;
-              }
-            },
-            null,
-            this
-          );
+      thisLetter.onSegment = null;
+
+      const startX = thisLetter.x;
+      const startY = thisLetter.y;
+
+      // Loop through body parts and set up interaction with letters
+      for (const objectKey in this.gameState) {
+        if (/body\d/g.test(objectKey) === true) {
+          const bodyPart = this.gameState[objectKey];
+          bodyPart.hasLetter = false;
+
+          this.physics.add.overlap(thisLetter, bodyPart, function () {
+            if (thisLetter.onSegment === null && bodyPart.hasLetter === false) {
+              thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
+              bodyPart.hasLetter = true;
+            }
+          });
         }
       }
 
       // Make letters draggable
-      this.gameState.text[letter].setInteractive();
+      thisLetter.setInteractive();
 
-      this.input.setDraggable(this.gameState.text[letter]);
+      this.input.setDraggable(thisLetter);
 
-      this.gameState.text[letter].on("dragstart", function (pointer) {
+      thisLetter.on("dragstart", function (pointer) {
+        this.body.enable = true;
         this.setTint(0xff0000);
       });
 
-      this.gameState.text[letter].on("drag", function (pointer, dragX, dragY) {
+      thisLetter.on("drag", function (pointer, dragX, dragY) {
         this.x = dragX;
         this.y = dragY;
-        this.onSegment = null;
+
+        this.body.x = this.x;
+        this.body.y = this.y;
+
+        const initialOnSegment = this.onSegment;
+
+        this.onSegment = null; // Only applies if letter is not overlapping with the a body part
+
+        if (initialOnSegment !== null && this.onSegment === null) {
+          this.scene.gameState[initialOnSegment].hasLetter = false;
+        }
       });
 
-      this.gameState.text[letter].on("dragend", function (pointer) {
+      thisLetter.on("dragend", function (pointer) {
         this.clearTint();
 
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
+          this.body.enable = false;
+          this.body.x = startX;
+          this.body.y = startY;
         }
       });
     }
 
     // Create Array of worm letters
-    this.gameState.wormWord = ["", "", "", "", "", ""];
+    this.gameState.wormWordArr = [" ", " ", " ", " ", " ", " "];
 
     // Create submit button
     const btnStyle = {
@@ -213,23 +231,25 @@ export default class MainScene extends Phaser.Scene {
       this.y = this.y + 2;
     });
 
-    this.gameState.submitBtn.on(
-      "pointerup",
-      function (event) {
-        this.gameState.submitBtn.setTint(0xff0000);
-        this.gameState.submitBtn.y = originalBtnY;
-        this.gameState.submitWord(this.gameState.text, this.gameState.wormWord);
-      },
-      this
-    );
+    this.gameState.submitBtn.on("pointerup", function (event) {
+      this.setTint(0xff0000);
+      this.y = originalBtnY;
+      this.scene.gameState.submitWord(
+        this.scene.gameState.text,
+        this.scene.gameState.wormWordArr
+      );
+    });
 
-    this.gameState.submitWord = function (textObj, wordArr) {
+    this.gameState.submitWord = function (textObj, wormWordArr) {
+      const wordArr = wormWordArr.map((el) => (el = " "));
+
       for (const letter in textObj) {
         if (textObj[letter].onSegment !== null) {
           const bodyIndex = Number(textObj[letter].onSegment.slice(4)) - 1;
           wordArr[bodyIndex] = textObj[letter].text;
         }
       }
+
       const submittedWord = wordArr.join("");
       // Send submittedWord to the server with socket,io
     };
@@ -250,8 +270,10 @@ export default class MainScene extends Phaser.Scene {
     // Fix letters to body parts
     for (const letter in text) {
       if (text[letter].onSegment !== null) {
-        text[letter].x = this.gameState[text[letter].onSegment].x - 24;
-        text[letter].y = this.gameState[text[letter].onSegment].y - 24;
+        const attachedBodyPart = this.gameState[text[letter].onSegment];
+
+        text[letter].x = attachedBodyPart.x - 24;
+        text[letter].y = attachedBodyPart.y - 24;
       }
     }
 
