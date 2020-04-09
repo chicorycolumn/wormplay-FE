@@ -21,6 +21,9 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);
+
+    this.load.setPath("../assets/audio");
+    this.load.audio("jazz", "assets/audio/jazz.wav");
   }
 
   create() {
@@ -29,8 +32,6 @@ export default class MainScene extends Phaser.Scene {
     bg.displayHeight = this.sys.game.config.height;
     bg.displayWidth = this.sys.game.config.width;
 
-    // music = this.game.add.audio("trumpsad");
-    // music.play();
     this.gameState.body6 = this.physics.add.image(400, 150, "body");
     this.gameState.body5 = this.physics.add.image(400, 125, "body");
     this.gameState.body4 = this.physics.add.image(400, 125, "body");
@@ -54,14 +55,76 @@ export default class MainScene extends Phaser.Scene {
       padding: { top: 4 },
     };
 
-    // Create a text object and put 6 letters within it (with styling)
+    //letter array so the random letter generation can pick from it
+    const letterArray = [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K",
+      "L",
+      "M",
+      "N",
+      "O",
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T",
+      "U",
+      "V",
+      "W",
+      "X",
+      "Y",
+      "Z",
+    ];
+
+    // Create a text object and put 6 random letters within it (with styling)
     this.gameState.text = {};
-    this.gameState.text.letter1 = this.add.text(300, 25, "W", textStyle);
-    this.gameState.text.letter2 = this.add.text(350, 25, "I", textStyle);
-    this.gameState.text.letter3 = this.add.text(400, 25, "G", textStyle);
-    this.gameState.text.letter4 = this.add.text(450, 25, "G", textStyle);
-    this.gameState.text.letter5 = this.add.text(500, 25, "L", textStyle);
-    this.gameState.text.letter6 = this.add.text(550, 25, "E", textStyle);
+    this.gameState.text.letter1 = this.add.text(
+      300,
+      25,
+      Phaser.Math.RND.pick(letterArray),
+      textStyle
+    );
+    this.gameState.text.letter2 = this.add.text(
+      350,
+      25,
+      Phaser.Math.RND.pick(letterArray),
+      textStyle
+    );
+    this.gameState.text.letter3 = this.add.text(
+      400,
+      25,
+      Phaser.Math.RND.pick(letterArray),
+      textStyle
+    );
+    this.gameState.text.letter4 = this.add.text(
+      450,
+      25,
+      Phaser.Math.RND.pick(letterArray),
+      textStyle
+    );
+    this.gameState.text.letter5 = this.add.text(
+      500,
+      25,
+      Phaser.Math.RND.pick(letterArray),
+      textStyle
+    );
+
+    // this.gameState.text.letter6 = this.add.text(550, 25, "E", textStyle);
+    this.gameState.text.letter6 = this.add.text(
+      550,
+      25,
+      Phaser.Math.RND.pick(letterArray),
+      textStyle
+    );
 
     // Loop through text object and set up drag and drop functionality
     for (const letter in this.gameState.text) {
