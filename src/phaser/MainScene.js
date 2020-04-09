@@ -129,76 +129,64 @@ export default class MainScene extends Phaser.Scene {
 
     // Loop through text object and set up drag and drop functionality
     for (const letter in this.gameState.text) {
-      this.gameState.text[letter].setFixedSize(48, 48);
+      const thisLetter = this.gameState.text[letter];
+
+      thisLetter.setFixedSize(48, 48);
 
       // Make letters interact with other objects but initially disable that ability
-      this.physics.add.existing(this.gameState.text[letter]);
-      this.gameState.text[letter].body.enable = false;
+      this.physics.add.existing(thisLetter);
+      thisLetter.body.enable = false;
 
       // Removes blue outline from letters and floating blue box when attaching letters
-      this.gameState.text[letter].body.debugShowBody = false;
+      thisLetter.body.debugShowBody = false;
 
-      this.gameState.text[letter].onSegment = null;
+      thisLetter.onSegment = null;
 
-      const startX = this.gameState.text[letter].x;
-      const startY = this.gameState.text[letter].y;
+      const startX = thisLetter.x;
+      const startY = thisLetter.y;
 
       // Loop through body parts and set up interaction with letters
-      for (const bodyPart in this.gameState) {
-        if (/body\d/g.test(bodyPart)) {
-          this.gameState[bodyPart].hasLetter = false;
-          this.physics.add.overlap(
-            this.gameState.text[letter],
-            this.gameState[bodyPart],
-            function () {
-              if (
-                this.gameState.text[letter].onSegment === null &&
-                this.gameState[bodyPart].hasLetter === false
-              ) {
-                this.gameState.text[letter].onSegment = bodyPart;
-                this.gameState[bodyPart].hasLetter = true;
-                console.log(this.gameState.text[letter].body);
-              }
-            },
-            null,
-            this
-          );
+      for (const objectKey in this.gameState) {
+        if (/body\d/g.test(objectKey) === true) {
+          const bodyPart = this.gameState[objectKey];
+          bodyPart.hasLetter = false;
+
+          this.physics.add.overlap(thisLetter, bodyPart, function () {
+            if (thisLetter.onSegment === null && bodyPart.hasLetter === false) {
+              thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
+              bodyPart.hasLetter = true;
+            }
+          });
         }
       }
 
       // Make letters draggable
-      this.gameState.text[letter].setInteractive();
+      thisLetter.setInteractive();
 
-      this.input.setDraggable(this.gameState.text[letter]);
+      this.input.setDraggable(thisLetter);
 
-      this.gameState.text[letter].on("dragstart", function (pointer) {
+      thisLetter.on("dragstart", function (pointer) {
         this.body.enable = true;
         this.setTint(0xff0000);
       });
 
-      this.gameState.text[letter].on(
-        "drag",
-        function (pointer, dragX, dragY) {
-          this.gameState.text[letter].x = dragX;
-          this.gameState.text[letter].y = dragY;
+      thisLetter.on("drag", function (pointer, dragX, dragY) {
+        this.x = dragX;
+        this.y = dragY;
 
-          this.gameState.text[letter].body.x = this.gameState.text[letter].x;
-          this.gameState.text[letter].body.y = this.gameState.text[letter].y;
+        this.body.x = this.x;
+        this.body.y = this.y;
 
-          const initialOnSegment = this.gameState.text[letter].onSegment;
-          this.gameState.text[letter].onSegment = null;
+        const initialOnSegment = this.onSegment;
 
-          if (
-            initialOnSegment !== null &&
-            this.gameState.text[letter].onSegment === null
-          ) {
-            this.gameState[initialOnSegment].hasLetter = false;
-          }
-        },
-        this
-      );
+        this.onSegment = null; // Only applies if letter is not overlapping with the a body part
 
-      this.gameState.text[letter].on("dragend", function (pointer) {
+        if (initialOnSegment !== null && this.onSegment === null) {
+          this.scene.gameState[initialOnSegment].hasLetter = false;
+        }
+      });
+
+      thisLetter.on("dragend", function (pointer) {
         this.clearTint();
 
         if (this.onSegment === null) {
@@ -212,7 +200,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     // Create Array of worm letters
-    this.gameState.wormWord = ["", "", "", "", "", ""];
+    this.gameState.wormWordArr = [" ", " ", " ", " ", " ", " "];
 
     // Create submit button
     const btnStyle = {
@@ -243,23 +231,25 @@ export default class MainScene extends Phaser.Scene {
       this.y = this.y + 2;
     });
 
-    this.gameState.submitBtn.on(
-      "pointerup",
-      function (event) {
-        this.gameState.submitBtn.setTint(0xff0000);
-        this.gameState.submitBtn.y = originalBtnY;
-        this.gameState.submitWord(this.gameState.text, this.gameState.wormWord);
-      },
-      this
-    );
+    this.gameState.submitBtn.on("pointerup", function (event) {
+      this.setTint(0xff0000);
+      this.y = originalBtnY;
+      this.scene.gameState.submitWord(
+        this.scene.gameState.text,
+        this.scene.gameState.wormWordArr
+      );
+    });
 
-    this.gameState.submitWord = function (textObj, wordArr) {
+    this.gameState.submitWord = function (textObj, wormWordArr) {
+      const wordArr = wormWordArr.map((el) => (el = " "));
+
       for (const letter in textObj) {
         if (textObj[letter].onSegment !== null) {
           const bodyIndex = Number(textObj[letter].onSegment.slice(4)) - 1;
           wordArr[bodyIndex] = textObj[letter].text;
         }
       }
+
       const submittedWord = wordArr.join("");
       // Send submittedWord to the server with socket,io
     };
@@ -281,6 +271,7 @@ export default class MainScene extends Phaser.Scene {
     for (const letter in text) {
       if (text[letter].onSegment !== null) {
         const attachedBodyPart = this.gameState[text[letter].onSegment];
+
         text[letter].x = attachedBodyPart.x - 24;
         text[letter].y = attachedBodyPart.y - 24;
       }
