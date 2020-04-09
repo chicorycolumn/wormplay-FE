@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
 import body from "../assets/body-resized.png";
+import background from "../assets/whitehouse.png";
+
 //Access the state of ReactGameHolder.jsx with `this.game.react.state`.
 let socket;
 
@@ -18,9 +20,17 @@ export default class MainScene extends Phaser.Scene {
     socket = this.game.react.state.socket;
     this.load.image("head", head);
     this.load.image("body", body);
+    this.load.image("background", background);
   }
 
   create() {
+    //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
+    let bg = this.add.image(400, 300, "background");
+    bg.displayHeight = this.sys.game.config.height;
+    bg.displayWidth = this.sys.game.config.width;
+
+    // music = this.game.add.audio("trumpsad");
+    // music.play();
     this.gameState.body6 = this.physics.add.image(400, 150, "body");
     this.gameState.body5 = this.physics.add.image(400, 125, "body");
     this.gameState.body4 = this.physics.add.image(400, 125, "body");
