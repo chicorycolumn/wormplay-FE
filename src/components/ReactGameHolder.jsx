@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PhaserGame from "../phaser/PhaserGameCreator";
 
+//You can access the socket as `this.state.socket`. But you shouldn't need it in this component.
+
 export default class ReactGame extends Component {
   constructor() {
     super();

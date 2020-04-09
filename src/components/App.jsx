@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
 
+//You can access the socket as `this.state.socket`.
+//I (Chris) suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
+//and then in MainScene.js, that's where we use the socket for in-game stuff, movement kinda things.
+
 export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      socket: null,
+      socket: null, //This gets setStated as the socket from props from index.js.
       message: "",
       p1Chars: ["h", "i", "j", "k", "l", "m", "n"],
       p2Chars: ["a", "b", "c", "d", "e", "f", "g"],

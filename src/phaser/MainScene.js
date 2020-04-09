@@ -4,8 +4,12 @@ import head from "../assets/head-smaller.png";
 import body from "../assets/body-resized.png";
 import background from "../assets/whitehouse.png";
 
-//Access the state of ReactGameHolder.jsx with `this.game.react.state`.
-let socket;
+//You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
+
+//You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
+//I (Chris) suggest that in this file we use the socket for all the in-game stuff.
+
+let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -13,11 +17,8 @@ export default class MainScene extends Phaser.Scene {
     this.gameState = {};
   }
 
-  // The functions below should be broken down into seperate functions for optimisation
-  //These functions create the circle and make it move randomly
-
   preload() {
-    socket = this.game.react.state.socket;
+    socket = this.game.react.state.socket; // Here is where the socket gets made.
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);
