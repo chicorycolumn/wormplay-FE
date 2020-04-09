@@ -131,8 +131,12 @@ export default class MainScene extends Phaser.Scene {
     for (const letter in this.gameState.text) {
       this.gameState.text[letter].setFixedSize(48, 48);
 
-      // Make letters interact with other objects
+      // Make letters interact with other objects but initially disable that ability
       this.physics.add.existing(this.gameState.text[letter]);
+      this.gameState.text[letter].body.enable = false;
+
+      // Removes blue outline from letters and floating blue box when attaching letters
+      this.gameState.text[letter].body.debugShowBody = false;
 
       this.gameState.text[letter].onSegment = null;
 
@@ -153,6 +157,7 @@ export default class MainScene extends Phaser.Scene {
               ) {
                 this.gameState.text[letter].onSegment = bodyPart;
                 this.gameState[bodyPart].hasLetter = true;
+                console.log(this.gameState.text[letter].body);
               }
             },
             null,
@@ -167,6 +172,7 @@ export default class MainScene extends Phaser.Scene {
       this.input.setDraggable(this.gameState.text[letter]);
 
       this.gameState.text[letter].on("dragstart", function (pointer) {
+        this.body.enable = true;
         this.setTint(0xff0000);
       });
 
@@ -175,6 +181,9 @@ export default class MainScene extends Phaser.Scene {
         function (pointer, dragX, dragY) {
           this.gameState.text[letter].x = dragX;
           this.gameState.text[letter].y = dragY;
+
+          this.gameState.text[letter].body.x = this.gameState.text[letter].x;
+          this.gameState.text[letter].body.y = this.gameState.text[letter].y;
 
           const initialOnSegment = this.gameState.text[letter].onSegment;
           this.gameState.text[letter].onSegment = null;
@@ -195,6 +204,9 @@ export default class MainScene extends Phaser.Scene {
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
+          this.body.enable = false;
+          this.body.x = startX;
+          this.body.y = startY;
         }
       });
     }
