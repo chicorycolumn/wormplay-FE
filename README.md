@@ -1,31 +1,29 @@
 _April 9th_
 
-Chris here, just to point out that there is now just one socket created in this whole repo. It's created in src/index.js, and is made available in all the other components.
+Chris here, just to point out that there is now just **one socket** created for this whole repo. It's created in _src/index.js_, and is made available in all the other components.
 
 ### SEPARATION
 
-I suggest that we start to think about separating out all the socket functions, so we don't have a million in one file.
+I forgot to bring this up in today's standup - it might be nice to have some separation of all the _socket.on_ functions we'll be creating, so we don't have a million in one file.
 
-How about this separation:
+In this repo currently:
 
-**Pre-Game** socket functions - like socket.on("login"...), socket.on("player left the game"...)
-We can keep these in the react component **App.jsx**.
+**Pre-Game** socket functions - like _socket.on("login"...), socket.on("player left the game"...)_ are kept in the react component **App.jsx**.
 
-**In-Game** socket functions - like socket.on("movement"...), socket.on("drop letter on worm"...)
-We can keep these in the phaser component **MainScene.js**.
+**In-Game** socket functions - like _socket.on("movement"...), socket.on("drop letter on worm"...)_ are kept in the phaser component **MainScene.js**.
+
+I'm not wedded to this formation or anything! Just that it might be nice to keep in mind, so we know where to find which function. Maybe we'll even create more components in the future, to separate them out more.
 
 ### THE CHAIN
 
-To clarify -
+**index.js** (javascript) invokes **App.jsx** (react) which invokes **ReactGameHolder.jsx** (react) which invokes **PhaserGameCreator.js** (phaser) which finally invokes **MainScene.js** (phaser).
 
-**index.js** invokes **App.jsx** which invokes **ReactGameHolder.jsx** which invokes **PhaserGameCreator.js** which finally invokes **MainScene.js**.
-
-And this is how the socket is created just once, in index.js, and then passed all down the chain, so all componenents have access to the very same one socket object.
+And that's how the socket is created just once, in _index.js_, and then passed all down the chain, so all componenents have access to the very same one socket object.
 
 ### IF YOU WANT TO PASS DATA FROM REACT TO PHASER
 
-If you get some data in **App.jsx**, first you must pass it on props to **ReactGameHolder.jsx** - you'll find the invocation near the beginning of the render statement inside App.jsx.
+If you get some data in **App.jsx**, first you must pass it on props to **ReactGameHolder.jsx** - you'll find the invocation near the beginning of the render statement inside _App.jsx_.
 
 Then inside **ReactGameHolder.jsx** you need to set that data from props to state.
 
-And so now, inside the phaser component **MainScene.js**, you can access that data no problem! That's because I've given MainScene.js access to ReactGameHolder.jsx's state, as _this.game.react.state_.
+And so now, inside the phaser component **MainScene.js**, you can access that data no problem! That's because I've given the phaser component _MainScene.js_ access to the react component _ReactGameHolder.jsx_'s state, as _this.game.react.state_.
