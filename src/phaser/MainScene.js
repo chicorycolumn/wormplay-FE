@@ -137,9 +137,6 @@ export default class MainScene extends Phaser.Scene {
       this.physics.add.existing(thisLetter);
       thisLetter.body.enable = false;
 
-      // Removes blue outline from letters and floating blue box when attaching letters
-      thisLetter.body.debugShowBody = false;
-
       thisLetter.onSegment = null;
 
       const startX = thisLetter.x;
@@ -236,22 +233,21 @@ export default class MainScene extends Phaser.Scene {
       this.y = originalBtnY;
       this.scene.gameState.submitWord(
         this.scene.gameState.text,
-        this.scene.gameState.wormWordArr
+        this.scene.gameState.wormWordArr,
+        this.scene.game.react.state.socket
       );
     });
 
-    this.gameState.submitWord = function (textObj, wormWordArr) {
+    this.gameState.submitWord = function (textObj, wormWordArr, socket) {
       const wordArr = wormWordArr.map((el) => (el = " "));
-
       for (const letter in textObj) {
         if (textObj[letter].onSegment !== null) {
           const bodyIndex = Number(textObj[letter].onSegment.slice(4)) - 1;
           wordArr[bodyIndex] = textObj[letter].text;
         }
       }
-
       const submittedWord = wordArr.join("");
-      // Send submittedWord to the server with socket,io
+      socket.emit("send worm word", submittedWord);
     };
   }
 
