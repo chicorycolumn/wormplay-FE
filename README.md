@@ -1,6 +1,6 @@
 _April 9th_
 
-Chris here, just to point out that there is now just **one socket** created for this whole repo. It's created in _src/index.js_, and is made available in all the other components.
+Hey all, Chris here, just to point out that there is now just **one socket** created for this whole repo. It's created in _src/index.js_, and is made available in all the other components.
 
 ### SEPARATION
 
@@ -27,3 +27,10 @@ If you get some data in **App.jsx**, first you must pass it on props to **ReactG
 Then inside **ReactGameHolder.jsx** you need to set that data from props to state.
 
 And so now, inside the phaser component **MainScene.js**, you can access that data no problem! That's because I've given the phaser component _MainScene.js_ access to the react component _ReactGameHolder.jsx_'s state, as _this.game.react.state_.
+
+### MFIR SOLUTION
+
+_April 10th_
+I found and solved a new problem called MFIR (Multiple Firing In React). This is different to the Socket-Doubling problem, which was solved as written above.
+
+The MFIR problem is that in React components, even though there's only one socket _object_, it's the case that upon receiving a socket _event_, eg socket.on("a player entered"...), the re-rendering of react component means that this event is triggered 4-8 times instead of 1. So eg the message saying "Sally entered the game" appears many times. I have now fixed this by assiduously ensuring that all socket.on fxns in the React component (App.jsx) are only triggered after a check comparing data and state, to ensure this is new information.
