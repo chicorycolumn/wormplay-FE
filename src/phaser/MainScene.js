@@ -231,23 +231,38 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.submitBtn.on("pointerup", function (event) {
       this.setTint(0xff0000);
       this.y = originalBtnY;
+      this.hasBeenPressed = true;
       this.scene.gameState.submitWord(
         this.scene.gameState.text,
         this.scene.gameState.wormWordArr,
-        this.scene.game.react.state.socket
+        this.scene.game.react.state.socket,
+        this.hasBeenPressed
       );
     });
 
-    this.gameState.submitWord = function (textObj, wormWordArr, socket) {
-      const wordArr = wormWordArr.map((el) => (el = " "));
-      for (const letter in textObj) {
-        if (textObj[letter].onSegment !== null) {
-          const bodyIndex = Number(textObj[letter].onSegment.slice(4)) - 1;
-          wordArr[bodyIndex] = textObj[letter].text;
+    this.gameState.submitWord = function (
+      allLettersObj,
+      wormWordArr,
+      socket,
+      submitBtnPressed
+    ) {
+      let wordArr = wormWordArr.map((el) => (el = " "));
+      for (const letter in allLettersObj) {
+        if (allLettersObj[letter].onSegment !== null) {
+          const bodyIndex =
+            Number(allLettersObj[letter].onSegment.slice(4)) - 1;
+
+          wordArr[bodyIndex] = allLettersObj[letter].text;
         }
       }
-      const submittedWord = wordArr.join("");
-      socket.emit("send worm word", submittedWord);
+      if (submitBtnPressed === true) {
+        const firstSpace = wordArr.indexOf(" ");
+        if (firstSpace !== -1) {
+          wordArr = wordArr.slice(0, firstSpace);
+        }
+        const submittedWord = wordArr.join("");
+        socket.emit("worm word submitted", submittedWord);
+      } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
     };
   }
 
