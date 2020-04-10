@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
+import styles from "./css/App.module.css";
 
 //You can access the socket as `this.state.socket`.
 //I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
@@ -184,58 +185,58 @@ export default class App extends React.Component {
         {this.state.amILoggedIn ? (
           <div>
             <ReactGameHolder socket={socket} />
-            <div id="infoDisplay" style={{ color: "blue" }}></div>
+            <div id="infoDisplay" className={styles.infoDisplay}></div>
 
             <p
               id="playersDisplay"
-              style={{ color: "blue" }}
-            >{`-------Player 1: ${
+              className={styles.playersDisplay}
+            >{`- - - - - Player 1: ${
               playersDetails.p1.username
                 ? playersDetails.p1.username
                 : "waiting..."
-            }-------Player 2: ${
+            } - - - - - Player 2: ${
               playersDetails.p2.username
                 ? playersDetails.p2.username
                 : "waiting..."
-            }-------`}</p>
+            } - - - - - `}</p>
             {/* //THIS WAS FROM MOCK GAME. */}
             {/* {whichPlayerAmI === "p1"
-              ? p2Chars.map((char) => {
-                  return <p key={"x"}>{char}</p>;
-                })
-              : null}
-            {whichPlayerAmI === "p2"
-              ? p1Chars.map((char) => {
-                  return <p key={"y"}>{char}</p>;
-                })
-              : null} */}
+            ? p2Chars.map((char) => {
+                return <p key={"x"}>{char}</p>;
+              })
+            : null}
+          {whichPlayerAmI === "p2"
+            ? p1Chars.map((char) => {
+                return <p key={"y"}>{char}</p>;
+              })
+            : null} */}
             {/* <form onSubmit={this.handleSubmitLetterChange}>
-              <input
-                type="number"
-                min="0"
-                max="6"
-                onChange={(event) => {
-                  this.setState({ index: event.target.value });
-                }}
-              ></input>
-              <input
-                type="text"
-                value={this.state.character}
-                onChange={(event) => {
-                  this.setState({ character: event.target.value });
-                }}
-              ></input>
-              <button>Submit</button>
-            </form> */}
+            <input
+              type="number"
+              min="0"
+              max="6"
+              onChange={(event) => {
+                this.setState({ index: event.target.value });
+              }}
+            ></input>
+            <input
+              type="text"
+              value={this.state.character}
+              onChange={(event) => {
+                this.setState({ character: event.target.value });
+              }}
+            ></input>
+            <button>Submit</button>
+          </form> */}
           </div>
         ) : isRoomFull ? (
           <p
-            style={{ color: "blue" }}
+            className={styles.lobbyInfoDisplay}
           >{`Fuck! I'm so sorry ${myUsername} but the room is full!`}</p>
         ) : (
           <form>
             <input
-              style={{ height: "45px", width: "250px" }}
+              className={styles.loginField}
               id="loginField"
               value={this.state.loginField}
               onChange={(e) => {
@@ -244,7 +245,7 @@ export default class App extends React.Component {
               placeholder="Welcome! Please enter your name."
             ></input>
             <button
-              style={{ height: "50px", width: "100px" }}
+              className={styles.loginSubmitButton}
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
