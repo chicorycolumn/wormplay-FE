@@ -1,0 +1,48 @@
+const vowelArray = ["A", "E", "E", "I", "O", "U"];
+
+//I modified the frequencies by adding multiples to the arrays. ~Chris
+
+const consonantArray = [
+  "B",
+  "B",
+  "C",
+  "C",
+  "D",
+  "D",
+  "F",
+  "F",
+  "G",
+  "G",
+  "H",
+  "H",
+  "J",
+  "K",
+  "L",
+  "L",
+  "M",
+  "M",
+  "N",
+  "N",
+  "P",
+  "P",
+  "Q",
+  "R",
+  "R",
+  "R",
+  "S",
+  "S",
+  "S",
+  "S",
+  "T",
+  "T",
+  "T",
+  "T",
+  "T",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+];
+
+module.exports = { vowelArray, consonantArray };

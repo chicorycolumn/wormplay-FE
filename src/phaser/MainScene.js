@@ -3,6 +3,7 @@ import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
 import body from "../assets/body-resized.png";
 import background from "../assets/whitehouse.png";
+import { vowelArray, consonantArray } from "../refObjs.js";
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 
@@ -54,94 +55,32 @@ export default class MainScene extends Phaser.Scene {
     };
 
     //letter array so the random letter generation can pick from it
-    const vowelArray = ["A", "E", "I", "O", "U"];
 
-    const consonantArray = [
-      "B",
-      "C",
-      "D",
-      "F",
-      "G",
-      "H",
-      "J",
-      "K",
-      "L",
-      "M",
-      "N",
-      "P",
-      "Q",
-      "R",
-      "S",
-      "T",
-      "V",
-      "W",
-      "X",
-      "Y",
-      "Z",
-    ];
     // Create a text object and put 6 random letters within it (with styling)
     this.gameState.text = {};
-    this.gameState.text.letter1 = this.add.text(
-      50,
-      25,
-      Phaser.Math.RND.pick(vowelArray),
-      textStyle
-    );
-    this.gameState.text.letter2 = this.add.text(
-      100,
-      25,
-      Phaser.Math.RND.pick(vowelArray),
-      textStyle
-    );
-    this.gameState.text.letter3 = this.add.text(
-      150,
-      25,
-      Phaser.Math.RND.pick(vowelArray),
-      textStyle
-    );
-    this.gameState.text.letter4 = this.add.text(
-      200,
-      25,
-      Phaser.Math.RND.pick(vowelArray),
-      textStyle
-    );
-    this.gameState.text.letter5 = this.add.text(
-      250,
-      25,
-      Phaser.Math.RND.pick(consonantArray),
-      textStyle
-    );
 
-    this.gameState.text.letter6 = this.add.text(
-      300,
-      25,
-      Phaser.Math.RND.pick(consonantArray),
-      textStyle
-    );
-    this.gameState.text.letter7 = this.add.text(
-      350,
-      25,
-      Phaser.Math.RND.pick(consonantArray),
-      textStyle
-    );
-    this.gameState.text.letter8 = this.add.text(
-      400,
-      25,
-      Phaser.Math.RND.pick(consonantArray),
-      textStyle
-    );
-    this.gameState.text.letter9 = this.add.text(
-      450,
-      25,
-      Phaser.Math.RND.pick(consonantArray),
-      textStyle
-    );
-    this.gameState.text.letter10 = this.add.text(
-      500,
-      25,
-      Phaser.Math.RND.pick(consonantArray),
-      textStyle
-    );
+    const letterTileSpecifications = {
+      1: { x: 50, y: 25 },
+      2: { x: 100, y: 25 },
+      3: { x: 150, y: 25 },
+      4: { x: 200, y: 25 },
+      5: { x: 250, y: 25 },
+      6: { x: 300, y: 25 },
+      7: { x: 350, y: 25 },
+      8: { x: 400, y: 25 },
+      9: { x: 450, y: 25 },
+      10: { x: 500, y: 25 },
+    };
+
+    Object.keys(letterTileSpecifications).forEach((n) => {
+      let num = parseInt(n);
+      this.gameState.text[`letter${num}`] = this.add.text(
+        letterTileSpecifications[num].x,
+        letterTileSpecifications[num].y,
+        Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray),
+        textStyle
+      );
+    });
 
     // Loop through text object and set up drag and drop functionality
     for (const letter in this.gameState.text) {
