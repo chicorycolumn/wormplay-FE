@@ -3,7 +3,11 @@ import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
 import body from "../assets/body-resized.png";
 import background from "../assets/whitehouse.png";
+
+import blueButton1 from "../assets/ui/blue_button02.png";
+
 import { vowelArray, consonantArray } from "../refObjs.js";
+
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 
@@ -23,6 +27,8 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);
+    this.load.image("blueButton1", blueButton1);
+    this.load.audio("bgMusic", ["../assets/wiggle.mp3"]);
   }
 
   create() {
@@ -167,14 +173,16 @@ export default class MainScene extends Phaser.Scene {
       .text(650, 25, "Submit", btnStyle)
       .setInteractive();
 
-    //this is the menu button
-    this.menuButton = this.add.sprite(40, 580, "blueButton1").setInteractive();
+    //adding a menu button & setting interactive
+    this.menuButton = this.add.sprite(50, 585, "blueButton1").setInteractive();
+    this.menuButton.setScale(0.5);
     this.menuText = this.add.text(0, 0, "Menu", {
-      fontSize: "32px",
+      fontSize: "20px",
       fill: "#fff",
     });
     Phaser.Display.Align.In.Center(this.menuText, this.menuButton);
 
+    //adding menu button functionality, on click will take you to title
     this.menuButton.on(
       "pointerdown",
       function (pointer) {
