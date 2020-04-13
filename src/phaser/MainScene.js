@@ -72,11 +72,12 @@ export default class MainScene extends Phaser.Scene {
       10: { x: 500, y: 25 },
     };
 
-    Object.keys(letterTileSpecifications).forEach((num) => {
+    Object.keys(letterTileSpecifications).forEach((n) => {
+      let num = parseInt(n);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
-        Phaser.Math.RND.pick(alphabetArray),
+        Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray),
         textStyle
       );
     });
