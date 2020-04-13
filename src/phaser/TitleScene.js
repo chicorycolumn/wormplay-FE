@@ -1,9 +1,16 @@
 import Phaser from "phaser";
 import config from "../Config/config";
+import blueButton1 from "../assets/ui/blue_button02.png";
+import blueButton2 from "../assets/ui/blue_button03.png";
 
 export default class TitleScene extends Phaser.Scene {
   constructor() {
     super("Title");
+  }
+
+  preload() {
+    this.load.image("blueButton1", blueButton1);
+    this.load.image("blueButton2", blueButton2);
   }
 
   create() {
