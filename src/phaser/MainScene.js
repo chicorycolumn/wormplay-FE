@@ -228,14 +228,8 @@ export default class MainScene extends Phaser.Scene {
       .text(650, 25, "Submit", btnStyle)
       .setInteractive();
 
-    // this.gameState.menuButton.on(
-    //   "pointerdown",
-    //   function (pointer) {
-    //     this.scene.start("Title");
-    //   }.bind(this)
-    // );
-
-    this.menuButton = this.add.sprite(400, 500, "blueButton1").setInteractive();
+    //this is the menu button
+    this.menuButton = this.add.sprite(40, 580, "blueButton1").setInteractive();
     this.menuText = this.add.text(0, 0, "Menu", {
       fontSize: "32px",
       fill: "#fff",
@@ -301,13 +295,6 @@ export default class MainScene extends Phaser.Scene {
         socket.emit("worm word submitted", submittedWord);
       } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
     };
-
-    // this.menuButton.on(
-    //   "pointerdown",
-    //   function (pointer) {
-    //     this.scene.start("Title");
-    //   }.bind(this)
-    // );
   }
 
   update() {
