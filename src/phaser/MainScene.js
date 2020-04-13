@@ -209,7 +209,7 @@ export default class MainScene extends Phaser.Scene {
       this.setTint(0xff0000);
       this.y = originalBtnY;
       this.hasBeenPressed = true;
-      this.scene.gameState.submitWord(
+      this.scene.gameState.sendWord(
         this.scene.gameState.text,
         this.scene.gameState.wormWordArr,
         this.scene.game.react.state.socket,
@@ -217,7 +217,7 @@ export default class MainScene extends Phaser.Scene {
       );
     });
 
-    this.gameState.submitWord = function (
+    this.gameState.sendWord = function (
       allLettersObj,
       wormWordArr,
       socket,
@@ -241,13 +241,27 @@ export default class MainScene extends Phaser.Scene {
         socket.emit("worm word submitted", submittedWord);
       } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
     };
+
     this.model = this.sys.game.globals.model;
+
     if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
       this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
       this.bgMusic.play();
       this.model.bgMusicPlaying = true;
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
+
+    this.game.react.state.socket.on("word checked", function (response) {
+      console.log(response);
+    });
+
+    this.game.react.state.socket.on("opponent score", function (response) {
+      console.log(response);
+    });
+
+    this.game.react.state.socket.on("api error", function (error) {
+      console.log("Error:", error.status, error.message);
+    });
   }
 
   update() {
