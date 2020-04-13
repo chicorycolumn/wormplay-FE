@@ -25,7 +25,7 @@ export default class PhaserGame extends Phaser.Game {
     super(config);
 
     const model = new Model();
-    this.globals = { model };
+    this.globals = { model, bgMusic: null };
     this.react = react;
     this.scene.add("Options", OptionsScene);
     this.scene.add("MainScene", MainScene);

@@ -3,8 +3,8 @@ import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
 import body from "../assets/body-resized.png";
 import background from "../assets/whitehouse.png";
-
 import blueButton1 from "../assets/ui/blue_button02.png";
+// import bgMusic from ["../assets/wiggle.mp3"];
 
 import { vowelArray, consonantArray } from "../refObjs.js";
 
@@ -27,7 +27,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("body", body);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
-    // this.load.audio("bgMusic", ["../assets/wiggle.mp3"]);
+    this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
   }
 
   create() {
@@ -241,6 +241,13 @@ export default class MainScene extends Phaser.Scene {
         socket.emit("worm word submitted", submittedWord);
       } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
     };
+    this.model = this.sys.game.globals.model;
+    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+      this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
+      this.bgMusic.play();
+      this.model.bgMusicPlaying = true;
+      this.sys.game.globals.bgMusic = this.bgMusic;
+    }
   }
 
   update() {
