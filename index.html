@@ -2,9 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <style>
+      body {
+        background-color: #d9ffcc;
+      }
+      #georgine {
+        border: green solid 2pt;
+        display: flex;
+        flex-direction: row;
+        width: 90%;
+        position: relative;
+        left: 5%;
+        top: 20px;
+      }
+      #phaserContainer {
+        background-color: #b3ff99;
+        width: 800px;
+        height: 600px;
+      }
+      #rightPanel {
+        background-color: aquamarine;
+        height: 600px;
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <!-- <div id="phaser"></div> -->
+    <div id="georgine">
+      <div id="phaserContainer"></div>
+      <div id="rightPanel">
+        <div id="root"></div>
+      </div>
+    </div>
   </body>
 </html>

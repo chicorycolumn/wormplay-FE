@@ -12,14 +12,11 @@ export default class App extends React.Component {
     this.state = {
       socket: null, //Just FYI, this gets setStated as the socket from props from index.js. ~Chris
       message: "",
-      //THIS WAS FROM MOCK GAME.
-      // p1Chars: ["h", "i", "j", "k", "l", "m", "n"],
-      // p2Chars: ["a", "b", "c", "d", "e", "f", "g"],
       whichPlayerAmI: null, //Remember to switch this back to null when I exit a room back into the lobby. To avoid the MFIR (Multiple Firing In React) problem. ~Chris
       index: undefined,
       character: "",
       needUpdate: false,
-      amILoggedIn: false,
+      amILoggedIn: true, // Change back to false after adding georgine css.
       loginField: "",
       myUsername: "",
       isRoomFull: false, //This should be setStated when a player exits a room back into the lobby, I think. ~Chris
@@ -83,14 +80,6 @@ export default class App extends React.Component {
         }
       });
 
-      //THIS WAS FROM MOCK GAME.
-      // this.state.socket.on("updatedP1Chars", (data) => {
-      //   this.setState({ p1Chars: data.p1Chars });
-      // });
-      // this.state.socket.on("updatedP2Chars", (data) => {
-      //   this.setState({ p2Chars: data.p2Chars });
-      // });
-
       this.state.socket.on("a player entered the game", (data) => {
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
@@ -147,34 +136,10 @@ export default class App extends React.Component {
     }
   }
 
-  //THIS WAS FROM MOCK GAME.
-  // handleSubmitLetterChange = (event) => {
-  //   event.preventDefault();
-
-  //   let labelArray = ["p1", "p2"];
-  //   labelArray.forEach((player) => {
-  //     if (this.state.whichPlayerAmI === player) {
-  //       this.setState((currentState) => {
-  //         const { index, character } = currentState;
-  //         currentState[`${player}Chars`].splice(index, 1, character);
-  //         const newState = {};
-  //         newState[`${player}Chars`] = currentState[`${player}Chars`];
-  //         this.setState(newState);
-  //         this.state.socket.emit(`${player}ArrayUpdate`, {
-  //           p1Chars: this.state[`${player}Chars`],
-  //         });
-  //       });
-  //     }
-  //   });
-  // };
-
   render() {
     const {
       isRoomFull,
       whichPlayerAmI,
-      //THIS WAS FROM MOCK GAME.
-      // p1Chars,
-      // p2Chars,
       playersDetails,
       socket,
       myUsername,
@@ -184,7 +149,11 @@ export default class App extends React.Component {
       <div>
         {this.state.amILoggedIn ? (
           <div>
+            {/* <div className={styles.georgine}> */}
             <ReactGameHolder socket={socket} />
+            {/* <div className={styles.rotisserie}></div>
+            </div> */}
+
             <div id="infoDisplay" className={styles.infoDisplay}></div>
 
             <p
@@ -199,35 +168,6 @@ export default class App extends React.Component {
                 ? playersDetails.p2.username
                 : "waiting..."
             } - - - - - `}</p>
-            {/* //THIS WAS FROM MOCK GAME. */}
-            {/* {whichPlayerAmI === "p1"
-            ? p2Chars.map((char) => {
-                return <p key={"x"}>{char}</p>;
-              })
-            : null}
-          {whichPlayerAmI === "p2"
-            ? p1Chars.map((char) => {
-                return <p key={"y"}>{char}</p>;
-              })
-            : null} */}
-            {/* <form onSubmit={this.handleSubmitLetterChange}>
-            <input
-              type="number"
-              min="0"
-              max="6"
-              onChange={(event) => {
-                this.setState({ index: event.target.value });
-              }}
-            ></input>
-            <input
-              type="text"
-              value={this.state.character}
-              onChange={(event) => {
-                this.setState({ character: event.target.value });
-              }}
-            ></input>
-            <button>Submit</button>
-          </form> */}
           </div>
         ) : isRoomFull ? (
           <p
