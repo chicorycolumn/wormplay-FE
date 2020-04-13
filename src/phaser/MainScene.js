@@ -21,9 +21,6 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);
-
-    this.load.setPath("../assets/audio");
-    this.load.audio("jazz", "assets/audio/jazz.wav");
   }
 
   create() {
@@ -56,73 +53,92 @@ export default class MainScene extends Phaser.Scene {
     };
 
     //letter array so the random letter generation can pick from it
-    const letterArray = [
-      "A",
+    const vowelArray = ["A", "E", "I", "O", "U"];
+
+    const consonantArray = [
       "B",
       "C",
       "D",
-      "E",
       "F",
       "G",
       "H",
-      "I",
       "J",
       "K",
       "L",
       "M",
       "N",
-      "O",
       "P",
       "Q",
       "R",
       "S",
       "T",
-      "U",
       "V",
       "W",
       "X",
       "Y",
       "Z",
     ];
-
     // Create a text object and put 6 random letters within it (with styling)
     this.gameState.text = {};
     this.gameState.text.letter1 = this.add.text(
-      300,
+      50,
       25,
-      Phaser.Math.RND.pick(letterArray),
+      Phaser.Math.RND.pick(vowelArray),
       textStyle
     );
     this.gameState.text.letter2 = this.add.text(
-      350,
+      100,
       25,
-      Phaser.Math.RND.pick(letterArray),
+      Phaser.Math.RND.pick(vowelArray),
       textStyle
     );
     this.gameState.text.letter3 = this.add.text(
-      400,
+      150,
       25,
-      Phaser.Math.RND.pick(letterArray),
+      Phaser.Math.RND.pick(vowelArray),
       textStyle
     );
     this.gameState.text.letter4 = this.add.text(
-      450,
+      200,
       25,
-      Phaser.Math.RND.pick(letterArray),
+      Phaser.Math.RND.pick(vowelArray),
       textStyle
     );
     this.gameState.text.letter5 = this.add.text(
-      500,
+      250,
       25,
-      Phaser.Math.RND.pick(letterArray),
+      Phaser.Math.RND.pick(consonantArray),
       textStyle
     );
 
-    // this.gameState.text.letter6 = this.add.text(550, 25, "E", textStyle);
     this.gameState.text.letter6 = this.add.text(
-      550,
+      300,
       25,
-      Phaser.Math.RND.pick(letterArray),
+      Phaser.Math.RND.pick(consonantArray),
+      textStyle
+    );
+    this.gameState.text.letter7 = this.add.text(
+      350,
+      25,
+      Phaser.Math.RND.pick(consonantArray),
+      textStyle
+    );
+    this.gameState.text.letter8 = this.add.text(
+      400,
+      25,
+      Phaser.Math.RND.pick(consonantArray),
+      textStyle
+    );
+    this.gameState.text.letter9 = this.add.text(
+      450,
+      25,
+      Phaser.Math.RND.pick(consonantArray),
+      textStyle
+    );
+    this.gameState.text.letter10 = this.add.text(
+      500,
+      25,
+      Phaser.Math.RND.pick(consonantArray),
       textStyle
     );
 
@@ -196,6 +212,27 @@ export default class MainScene extends Phaser.Scene {
       .text(650, 25, "Submit", btnStyle)
       .setInteractive();
 
+    // this.gameState.menuButton.on(
+    //   "pointerdown",
+    //   function (pointer) {
+    //     this.scene.start("Title");
+    //   }.bind(this)
+    // );
+
+    this.menuButton = this.add.sprite(400, 500, "blueButton1").setInteractive();
+    this.menuText = this.add.text(0, 0, "Menu", {
+      fontSize: "32px",
+      fill: "#fff",
+    });
+    Phaser.Display.Align.In.Center(this.menuText, this.menuButton);
+
+    this.menuButton.on(
+      "pointerdown",
+      function (pointer) {
+        this.scene.start("Title");
+      }.bind(this)
+    );
+
     const originalBtnY = this.gameState.submitBtn.y;
 
     this.gameState.submitBtn.on("pointerover", function (event) {
@@ -232,6 +269,13 @@ export default class MainScene extends Phaser.Scene {
       const submittedWord = wordArr.join("");
       // Send submittedWord to the server with socket,io
     };
+
+    // this.menuButton.on(
+    //   "pointerdown",
+    //   function (pointer) {
+    //     this.scene.start("Title");
+    //   }.bind(this)
+    // );
   }
 
   update() {

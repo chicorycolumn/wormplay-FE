@@ -2,6 +2,10 @@ import Phaser from "phaser";
 import React from "react";
 import ReactDOM from "react-dom";
 import MainScene from "./MainScene";
+import Model from "../Model";
+import OptionsScene from "../phaser/OptionsScene";
+import TitleScene from "../phaser/TitleScene";
+import CreditScene from "../phaser/CreditScene";
 
 export default class PhaserGame extends Phaser.Game {
   constructor(react) {
@@ -16,9 +20,18 @@ export default class PhaserGame extends Phaser.Game {
           debug: true,
         },
       },
-      scene: [MainScene],
+      // scene: [MainScene, OptionsScene, TitleScene],
     };
     super(config);
+
+    const model = new Model();
+    this.globals = { model };
     this.react = react;
+    this.scene.add("Options", OptionsScene);
+    this.scene.add("MainScene", MainScene);
+    this.scene.add("Title", TitleScene);
+
+    this.scene.add("Credits", CreditScene);
+    this.scene.start("MainScene");
   }
 }
