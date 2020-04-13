@@ -10,6 +10,7 @@ export default class ReactGame extends Component {
     this.state = {
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
+      faceValue: false,
     };
   }
 

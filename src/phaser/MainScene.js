@@ -8,7 +8,6 @@ import blueButton1 from "../assets/ui/blue_button02.png";
 
 import { vowelArray, consonantArray } from "../refObjs.js";
 
-
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
@@ -24,11 +23,12 @@ export default class MainScene extends Phaser.Scene {
 
   preload() {
     socket = this.game.react.state.socket; // Here is where the socket gets made.
+    console.log(this.game.react.state.faceValue);
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
-    this.load.audio("bgMusic", ["../assets/wiggle.mp3"]);
+    // this.load.audio("bgMusic", ["../assets/wiggle.mp3"]);
   }
 
   create() {
