@@ -1,0 +1,23 @@
+.infoDisplay {
+  color: blue;
+}
+
+.playersDisplay {
+  color: blue;
+}
+
+.lobbyInfoDisplay {
+  color: blue;
+}
+
+.loginField {
+  height: 45px;
+  width: 450px;
+  background-color: yellow;
+}
+
+.loginSubmitButton {
+  height: 50px;
+  width: 100px;
+  background-color: lime;
+}
