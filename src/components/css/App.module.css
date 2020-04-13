@@ -21,3 +21,20 @@
   width: 100px;
   background-color: lime;
 }
+
+.rotisserie {
+  height: 400px;
+  width: 400px;
+  background-color: aquamarine;
+}
+
+.georgine {
+  display: flex;
+  flex-direction: row;
+  background-color: chartreuse;
+  border: black solid 5pt;
+}
+
+.test {
+  border: blue solid 5pt;
+}

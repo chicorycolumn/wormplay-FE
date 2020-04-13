@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PhaserGame from "../phaser/PhaserGameCreator";
+import styles from "./css/App.module.css";
 
 //You can access the socket as `this.state.socket`. But you shouldn't need it in this component.
 
@@ -20,6 +21,6 @@ export default class ReactGame extends Component {
   //   shouldComponentUpdate() {return false}
 
   render() {
-    return <div id="inside-react-game-holder"></div>;
+    return <div className={styles.test}></div>;
   }
 }
