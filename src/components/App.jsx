@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
 import styles from "./css/App.module.css";
+import { emotionRecFullFunction } from "../../public/emotion-rec.js";
 
 //You can access the socket as `this.state.socket`.
 //I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
@@ -34,6 +35,7 @@ export default class App extends React.Component {
       }
     };
     this.state = {
+      iJustLoggedIn: false,
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       amILoggedIn: false, // HARDCODE AS TRUE TO SKIP LOGIN SCREEN.
       socket: null, //Just FYI, this gets setStated as the socket from props from index.js. ~Chris
@@ -141,6 +143,7 @@ export default class App extends React.Component {
               whichPlayerAmI,
               playersDetails: data.playersDetails,
               welcomeMessage,
+              iJustLoggedIn: true,
             });
           } else {
             this.setState({ isRoomFull: true });
@@ -230,7 +233,6 @@ export default class App extends React.Component {
 
     return (
       <div>
-        <script type="text/javascript" src="public/emotion-rec.js"></script>
         <p id="trythis">hello i am excited</p>
         {this.state.amILoggedIn ? (
           <div>
@@ -243,6 +245,17 @@ export default class App extends React.Component {
             )}
 
             <div className={styles.rightPanelDisplay}>
+              {/* ///////////////////////////// */}
+
+              {this.state.iJustLoggedIn &&
+                setTimeout(() => {
+                  // DEVELOPMENT: THIS IS ONLY A BODGE. CHANGE TO BETTER FXN, defer eg.
+                  this.setState({ iJustLoggedIn: false });
+                  emotionRecFullFunction();
+                }, 1000)}
+
+              {/* ///////////////////////////// */}
+
               <div className={styles.topbox}>
                 {/* // */}
 
