@@ -1,4 +1,7 @@
+console.log("#-#-#-#-#-# inside emotion rec js");
+
 const video = document.getElementById("video");
+console.log("video " + video);
 
 let currentEmotion = "";
 let happyToggle = false;
@@ -127,8 +130,8 @@ video.addEventListener("play", () => {
           currentEmotion !== emotion
         ) {
           //User has held this emotion for 2 seconds! Let's take a photo.
-          if (emotionDuration[emotion] === 5) {
-            //SHOULD BE 5
+          if (emotionDuration[emotion] === 1) {
+            //DEVELOPMENT ONLY, DURATION REQUIRED SHOULD BE 5
             currentEmotion = emotion;
 
             // takepicture(resizedDetections[0]);
@@ -195,6 +198,7 @@ video.addEventListener("play", () => {
 
         const id_canvasPhoto = document.getElementById("canvasPhoto");
         id_canvasPhoto.setAttribute("src", data);
+        id_canvasPhoto.setAttribute("label", currentEmotion);
       }
     }
     //************************* */

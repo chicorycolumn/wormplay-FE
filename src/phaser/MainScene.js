@@ -23,7 +23,7 @@ export default class MainScene extends Phaser.Scene {
 
   preload() {
     socket = this.game.react.state.socket; // Here is where the socket gets made.
-    console.log(this.game.react.state.faceValue);
+    console.log(this.game.react.state.currentEmotion);
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);

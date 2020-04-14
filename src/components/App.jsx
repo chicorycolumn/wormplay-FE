@@ -9,9 +9,33 @@ import styles from "./css/App.module.css";
 export default class App extends React.Component {
   constructor() {
     super();
+    const observesCallback = function (mutationsList, observer) {
+      // Use traditional 'for loops' for IE 11
+      for (let mutation of mutationsList) {
+        if (mutation.attributeName === "src") {
+          let src = mutation.target.attributes.src.value;
+          let name = mutation.target.attributes.label;
+          console.log(name);
+          // this.setState({ currentEmotion: { name, src } });
+
+          // console.log(name, src);
+          // setStateobservesCallback({ currentEmotion: { name, src } });
+          //             this.setState({currentEmotion: {
+          // name:
+          //             }});
+        }
+        // if (mutation.type === "childList") {
+        //   console.log("---A child node has been added or removed.");
+        // } else if (mutation.type === "attributes") {
+        //   console.log(
+        //     "---The " + mutation.attributeName + " attribute was modified."
+        //   );
+        // }
+      }
+    };
     this.state = {
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
-      amILoggedIn: true, // HARDCODE AS TRUE TO SKIP LOGIN SCREEN.
+      amILoggedIn: false, // HARDCODE AS TRUE TO SKIP LOGIN SCREEN.
       socket: null, //Just FYI, this gets setStated as the socket from props from index.js. ~Chris
       message: "",
       whichPlayerAmI: null, //Remember to switch this back to null when I exit a room back into the lobby. To avoid the MFIR (Multiple Firing In React) problem. ~Chris
@@ -32,23 +56,51 @@ export default class App extends React.Component {
         { name: "surprised", action: "drop" },
         { name: "sad", action: "time" },
       ],
-      faceValue: false,
+      currentEmotion: { name: null, src: null },
     };
-    // this.changeMyState = this.changeMyState.bind(this);
+    this.observePhotoChange = this.observePhotoChange.bind(this);
+    this.observesCallback = this.observesCallback.bind(this);
   }
 
   componentDidMount() {
+    this.observePhotoChange();
     this.setState({ socket: this.props.socket });
   }
 
+  observePhotoChange = () => {
+    const targetNode = document.getElementById("canvasPhoto");
+
+    if (!targetNode) {
+      //The node we need does not exist yet. Wait 500ms and try again
+      window.setTimeout(() => {
+        this.observePhotoChange();
+      }, 500);
+      return;
+    }
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // observesCallback function to execute when mutations are observed
+
+    const observer = new MutationObserver(this.observesCallback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
+  };
+
+  observesCallback = (mutationsList, observer) => {
+    // Use traditional 'for loops' for IE 11
+    for (let mutation of mutationsList) {
+      if (mutation.attributeName === "src") {
+        let src = mutation.target.attributes.src.value;
+        let name = mutation.target.attributes.label;
+        this.setState({ currentEmotion: { name, src } });
+      }
+    }
+  };
+
   componentDidUpdate(prevProps, prevState) {
-    console.log("in app.jsx CDU");
-
-    const canvasPho = document.getElementById("canvasPhoto");
-    console.log(111);
-    console.dir(canvasPho);
-    console.log(222);
-
     if (this.state.welcomeMessage) {
       let infoDisplay = document.getElementById("infoDisplay");
 
@@ -157,6 +209,7 @@ export default class App extends React.Component {
   }
 
   render() {
+    console.log("inside render");
     const {
       isRoomFull,
       whichPlayerAmI,
@@ -165,6 +218,7 @@ export default class App extends React.Component {
       myUsername,
       emoObj,
       faceValue,
+      currentEmotion,
     } = this.state;
 
     const ul = document.getElementById("infoDisplay");
@@ -176,10 +230,16 @@ export default class App extends React.Component {
 
     return (
       <div>
+        <script type="text/javascript" src="public/emotion-rec.js"></script>
+        <p id="trythis">hello i am excited</p>
         {this.state.amILoggedIn ? (
           <div>
             {this.state.shallIBotherLoadingTheGame && (
-              <ReactGameHolder socket={socket} faceValue={faceValue} />
+              <ReactGameHolder
+                socket={socket}
+                faceValue={faceValue}
+                currentEmotion={currentEmotion}
+              />
             )}
 
             <div className={styles.rightPanelDisplay}>
@@ -205,12 +265,6 @@ export default class App extends React.Component {
                     className={styles.canvasPhoto}
                   ></canvas>
                 </div>
-                {/* <div className={styles.webcamHolder}>
-                  <img
-                    src="src/assets/webcamExample.png"
-                    className={styles.webcamImage}
-                  />
-                </div> */}
                 <div className={styles.emojiHolder}>
                   {emoObj.map((emoObj) => {
                     return (
