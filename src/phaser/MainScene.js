@@ -31,6 +31,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    const scene = this; // scene variable makes 'this' available anywhere within the create function
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
@@ -51,7 +52,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.head.body.collideWorldBounds = true;
 
     //Create letter styling
-    const textStyle = {
+    const wordTileStyle = {
       font: "35px Arial",
       fill: "#007300",
       align: "center",
@@ -83,7 +84,7 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
         Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray),
-        textStyle
+        wordTileStyle
       );
     });
 
@@ -251,12 +252,41 @@ export default class MainScene extends Phaser.Scene {
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
 
-    this.game.react.state.socket.on("word checked", function (response) {
-      console.log(response);
+    this.gameState.scores = {};
+
+    const scoreStyle = {
+      font: "35px Arial",
+      color: "#000000",
+    };
+
+    this.gameState.displayScore = function (scoreObj, isThisPlayer) {
+      if (isThisPlayer === true) {
+        this.scores.p1 = scoreObj;
+
+        if (scoreObj.points === 0) {
+          this.scores.p1Text = scene.add.text(
+            50,
+            500,
+            `Oh no! ${scoreObj.word} isn't a word! You get no points :(`,
+            scoreStyle
+          );
+        } else {
+          this.scores.p1Text = scene.add.text(
+            100,
+            500,
+            `You said ${scoreObj.word}! That's ${scoreObj.points} points!`,
+            scoreStyle
+          );
+        }
+      }
+    };
+
+    this.game.react.state.socket.on("word checked", function (scoreObj) {
+      scene.gameState.displayScore(scoreObj, true);
     });
 
-    this.game.react.state.socket.on("opponent score", function (response) {
-      console.log(response);
+    this.game.react.state.socket.on("opponent score", function (scoreObj) {
+      console.log("OPPONENT", scoreObj);
     });
 
     this.game.react.state.socket.on("api error", function (error) {
@@ -309,6 +339,24 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
     if (head.count > 0) {
       head.count--;
+    }
+
+    // Fades out player score after 3 seconds
+    if (this.gameState.scores.p1Text !== undefined) {
+      this.time.delayedCall(
+        2500,
+        function () {
+          // Refactor into 1 function for both players?
+          this.tweens.add({
+            targets: this.gameState.scores.p1Text,
+            alpha: 0,
+            duration: 500,
+            ease: "Power 2",
+          });
+        },
+        null,
+        this
+      );
     }
   }
 }
