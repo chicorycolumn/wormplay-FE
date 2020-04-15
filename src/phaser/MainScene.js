@@ -28,7 +28,7 @@ export default class MainScene extends Phaser.Scene {
 
   preload() {
     console.log("in phaser PRELOAD");
-    socket = this.game.react.state.socket; // Here is where the socket gets made.
+    socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
     this.load.image("head", head);
@@ -72,6 +72,14 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Head.yDest = 150;
     this.gameState.p2Head.count = 0;
     this.gameState.p2Head.body.collideWorldBounds = true;
+
+    // adding player variables
+    // this.gameState.p2Body6
+    // this.gameState.p2Body5
+    // this.gameState.p2Body4
+    // this.gameState.p2Body3
+    // this.gameState.p2Body2
+    // this.gameState.p2Body1
 
     //Create letter styling
     const textStyle = {
@@ -125,17 +133,39 @@ export default class MainScene extends Phaser.Scene {
       const startY = thisLetter.y;
 
       // Loop through body parts and set up interaction with letters
-      for (const objectKey in this.gameState) {
-        if (/body\d/g.test(objectKey) === true) {
-          const bodyPart = this.gameState[objectKey];
-          bodyPart.hasLetter = false;
+      if (isP1 === true) {
+        for (const objectKey in this.gameState) {
+          if (/body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.hasLetter = false;
 
-          this.physics.add.overlap(thisLetter, bodyPart, function () {
-            if (thisLetter.onSegment === null && bodyPart.hasLetter === false) {
-              thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
-              bodyPart.hasLetter = true;
-            }
-          });
+            this.physics.add.overlap(thisLetter, bodyPart, function () {
+              if (
+                thisLetter.onSegment === null &&
+                bodyPart.hasLetter === false
+              ) {
+                thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
+                bodyPart.hasLetter = true;
+              }
+            });
+          }
+        }
+      } else if (isP2 === true) {
+        for (const objectKey in this.gameState) {
+          if (/p2Body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.hasLetter = false;
+
+            this.physics.add.overlap(thisLetter, bodyPart, function () {
+              if (
+                thisLetter.onSegment === null &&
+                bodyPart.hasLetter === false
+              ) {
+                thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
+                bodyPart.hasLetter = true;
+              }
+            });
+          }
         }
       }
 
