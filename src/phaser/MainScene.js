@@ -37,7 +37,6 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
     this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
-
   }
 
   create() {
@@ -267,7 +266,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+    if (this.model.musicOn === false && this.model.bgMusicPlaying === false) {
       this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
       this.bgMusic.play();
       this.model.bgMusicPlaying = true;
@@ -305,8 +304,8 @@ export default class MainScene extends Phaser.Scene {
       p2Body5,
       p2Body6,
     } = this.gameState;
-    
-        console.log("in phaser UPDATE");
+
+    console.log("in phaser UPDATE");
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
       //to show that the head can be changed on cue. No luck yet.
@@ -327,7 +326,6 @@ export default class MainScene extends Phaser.Scene {
       // this.load.image("headCartoon", headCartoon);
       // this.gameState.head.add.image("headCartoon");
     }
-
 
     // Fix letters to body parts
     for (const letter in text) {
