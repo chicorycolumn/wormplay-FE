@@ -16,7 +16,7 @@ export default class App extends React.Component {
       index: undefined,
       character: "",
       needUpdate: false,
-      amILoggedIn: true, // Change back to false after adding georgine css.
+      amILoggedIn: false, // Change back to false after adding georgine css.
       loginField: "",
       myUsername: "",
       isRoomFull: false, //This should be setStated when a player exits a room back into the lobby, I think. ~Chris
@@ -150,7 +150,10 @@ export default class App extends React.Component {
         {this.state.amILoggedIn ? (
           <div>
             {/* <div className={styles.georgine}> */}
-            <ReactGameHolder socket={socket} />
+            <ReactGameHolder
+              socket={socket}
+              playersDetails={this.state.playersDetails}
+            />
             {/* <div className={styles.rotisserie}></div>
             </div> */}
 
