@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import ReactGameHolder from "./ReactGameHolder.jsx";
+import Lobby from "./Lobby.jsx";
 import styles from "./css/App.module.css";
-import { emotionRecFullFunction } from "../../public/emotion-rec.js";
 
 //You can access the socket as `this.state.socket`.
 //I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
@@ -12,7 +11,6 @@ export default class App extends React.Component {
     super();
     this.state = {
       iJustLoggedIn: false,
-      shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       amILoggedIn: false, // HARDCODE AS TRUE TO SKIP LOGIN SCREEN.
       socket: null, //Just FYI, this gets setStated as the socket from props from index.js. ~Chris
       message: "",
@@ -184,8 +182,8 @@ export default class App extends React.Component {
       socket,
       myUsername,
       emoObj,
-      faceValue,
       currentEmotion,
+      iJustLoggedIn,
     } = this.state;
 
     const ul = document.getElementById("infoDisplay");
@@ -195,111 +193,18 @@ export default class App extends React.Component {
       }
     }
 
-    console.log(this.state.currentEmotion);
     return (
       <div>
         {this.state.amILoggedIn ? (
           <div>
-            {this.state.shallIBotherLoadingTheGame && (
-              <ReactGameHolder
-                socket={socket}
-                faceValue={faceValue}
-                currentEmotion={currentEmotion}
-                playersDetails={this.state.playersDetails}
-              />
-            )}
-
-            <div className={styles.rightPanelDisplay}>
-              {/* /////////////////THIS IS WHERE WE CALL THE FACE RECOGNITION. */}
-              {this.state.iJustLoggedIn &&
-                setTimeout(() => {
-                  this.setState({ iJustLoggedIn: false });
-                  emotionRecFullFunction(this.setStateCallback);
-                }, 0)}
-              {/* /////////////////*/}
-              <div className={styles.topbox}>
-                <div id="videoContainer" className={styles.videoContainer}>
-                  {/* <div id="videoObscurer" className={styles.videoObscurer}>
-                    video obscured for you
-                  </div> */}
-                  <video
-                    id="video"
-                    className={styles.video}
-                    autoPlay
-                    muted
-                  ></video>
-
-                  {/* <canvas
-                    id="canvasDetections"
-                    className={styles.canvasDetections}
-                  ></canvas> */}
-                  <canvas
-                    id="canvasPhoto"
-                    className={styles.canvasPhoto}
-                  ></canvas>
-                </div>
-                <div className={styles.emojiHolder}>
-                  {emoObj.map((emoObj) => {
-                    return (
-                      <div
-                        className={styles.emoHolder}
-                        id={`${emoObj.name}Holder`}
-                      >
-                        <p className={styles.emoBars} id={`${emoObj.name}Bars`}>
-                          □□□□
-                        </p>
-                        <img
-                          src={`src/assets/${emoObj.name}Emoji.png`}
-                          className={styles.emoEmoji}
-                          id={`${emoObj.name}Image`}
-                        />
-                        <p
-                          className={styles.emoLabel}
-                          id={`${emoObj.name}Action`}
-                        >
-                          {emoObj.action.toUpperCase()}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className={styles.midbox}>
-                <p id="youAre"></p>
-                <p
-                  id="playersDisplay"
-                  className={styles.playersDisplay}
-                >{`Player 1: ${
-                  playersDetails.p1.username
-                    ? playersDetails.p1.username
-                    : "waiting..."
-                } - - - - - Player 2: ${
-                  playersDetails.p2.username
-                    ? playersDetails.p2.username
-                    : "waiting..."
-                }`}</p>
-                <ul id="infoDisplay" className={styles.infoDisplay}></ul>
-              </div>
-              <div className={styles.bottombox}>
-                {playersDetails.p1.username !== null &&
-                playersDetails.p2.username !== null ? (
-                  <div>
-                    <p>
-                      {playersDetails.p1.username +
-                        ": " +
-                        playersDetails.p1.score}
-                    </p>
-                    <p>
-                      {playersDetails.p2.username +
-                        ": " +
-                        playersDetails.p2.score}
-                    </p>
-                  </div>
-                ) : (
-                  "waiting..."
-                )}
-              </div>
-            </div>
+            <Lobby
+              socket={socket}
+              currentEmotion={currentEmotion}
+              playersDetails={playersDetails}
+              myUsername={myUsername}
+              emoObj={emoObj}
+              iJustLoggedIn={iJustLoggedIn}
+            />
           </div>
         ) : isRoomFull ? (
           <p

@@ -304,11 +304,11 @@ export default class MainScene extends Phaser.Scene {
     }
 
     this.game.react.state.socket.on("word checked", function (response) {
-      console.log(response);
+      // console.log(response);
     });
 
     this.game.react.state.socket.on("opponent score", function (response) {
-      console.log(response);
+      // console.log(response);
     });
 
     this.game.react.state.socket.on("api error", function (error) {
@@ -344,7 +344,7 @@ export default class MainScene extends Phaser.Scene {
       // console.log(this.gameState.head.x, this.gameState.head.y);
       let { x, y } = this.gameState.head;
       this.load.image("obama", obama);
-      console.log(this.textures.list.head.source[0].source.src);
+      // console.log(this.textures.list.head.source[0].source.src);
       // this.gameState.head.loadTexture("obama");
       // this.textures.list.head.source[0].source.src =
       //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
