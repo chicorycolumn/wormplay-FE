@@ -23,7 +23,10 @@ let currentEmotion = null;
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
-    this.gameState = {};
+    this.gameState = {
+      wormWordArr: [" ", " ", " ", " ", " ", " "],
+      opponentsArr: ["a", " ", " ", " ", " ", " "],
+    };
   }
 
   preload() {
@@ -73,14 +76,6 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Head.count = 0;
     this.gameState.p2Head.body.collideWorldBounds = true;
 
-    // adding player variables
-    // this.gameState.p2Body6
-    // this.gameState.p2Body5
-    // this.gameState.p2Body4
-    // this.gameState.p2Body3
-    // this.gameState.p2Body2
-    // this.gameState.p2Body1
-
     //Create letter styling
     const textStyle = {
       font: "35px Arial",
@@ -88,6 +83,12 @@ export default class MainScene extends Phaser.Scene {
       align: "center",
       padding: { top: 4 },
     };
+
+    // create a text block for each part of the array
+    this.gameState.opponentsArr.forEach((char, i) => {
+      const n = i + 1;
+      this.gameState[`opponent${n}`] = this.add.text(-50, -50, char, textStyle);
+    });
 
     //letter array so the random letter generation can pick from it
 
@@ -109,12 +110,14 @@ export default class MainScene extends Phaser.Scene {
 
     Object.keys(letterTileSpecifications).forEach((n) => {
       let num = parseInt(n);
+      const char = Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
-        Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray),
+        char,
         textStyle
       );
+      this.gameState.text[`letter${num}`].value = char;
     });
 
     // Loop through text object and set up drag and drop functionality
@@ -146,6 +149,7 @@ export default class MainScene extends Phaser.Scene {
               ) {
                 thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
                 bodyPart.hasLetter = true;
+                console.log("firing");
               }
             });
           }
@@ -207,9 +211,6 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     }
-
-    // Create Array of worm letters
-    this.gameState.wormWordArr = [" ", " ", " ", " ", " ", " "];
 
     // Create submit button
     const btnStyle = {
@@ -333,9 +334,9 @@ export default class MainScene extends Phaser.Scene {
       p2Body4,
       p2Body5,
       p2Body6,
+      opponent1,
     } = this.gameState;
 
-    console.log("in phaser UPDATE");
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
       //to show that the head can be changed on cue. No luck yet.
@@ -445,6 +446,14 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(p2Body6, p2Body5.x, p2Body5.y, 60, 750, 750);
     if (p2Head.count > 0) {
       p2Head.count--;
+    }
+
+    if (isP1 === true) {
+      opponent1.x = p2Body1.x;
+      opponent1.y = p2Body1.y;
+    } else if (isP2 === true) {
+      opponent1.x = body1.x;
+      opponent1.y = body1.y;
     }
   }
 }
