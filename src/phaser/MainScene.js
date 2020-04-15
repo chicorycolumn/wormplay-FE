@@ -280,11 +280,21 @@ export default class MainScene extends Phaser.Scene {
 
     const scoreStyle = {
       font: "35px Arial",
-      // color: "#ffff",
       align: "center",
+      stroke: "#000000",
+      strokeThickness: 5,
+    };
+
+    const finalScoreStyle = {
+      font: "45px Arial",
+      color: "#cc0000",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 10,
     };
 
     this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
+      const opponentName = isP1 === true ? p2Name : p1Name;
       if (isCurrentPlayer === true) {
         this.scores.currentPlayer = scoreObj;
 
@@ -304,13 +314,6 @@ export default class MainScene extends Phaser.Scene {
           );
         }
       } else {
-        console.log(scene.game.react.state.playersDetails.p1.username);
-        console.log(scene.game.react.state.playersDetails.p2.username);
-        const opponentName =
-          isP1 === true
-            ? scene.game.react.state.playersDetails.p2.username
-            : scene.game.react.state.playersDetails.p1.username;
-        console.log(opponentName);
         this.scores.opponent = scoreObj;
         if (scoreObj.isValid === false) {
           this.scores.opponentText = scene.add.text(
@@ -334,7 +337,50 @@ export default class MainScene extends Phaser.Scene {
           );
         }
       }
-      console.log(this.scores);
+      if (
+        this.scores.currentPlayer !== undefined &&
+        this.scores.opponent !== undefined
+      ) {
+        scene.time.delayedCall(
+          3000,
+          this.showFinalScores(this.scores, opponentName)
+        );
+      }
+    };
+
+    this.gameState.showFinalScores = function (scoresObj, opponentName) {
+      console.log("FINAL SCORES!!!", scoresObj);
+      if (scoresObj.currentPlayer.points > scoresObj.opponent.points) {
+        this.finalScoreText = scene.add.text(
+          200,
+          200,
+          [
+            `You win with ${scoresObj.currentPlayer.word}!`,
+            `What a great word!`,
+          ],
+          finalScoreStyle
+        );
+      } else if (scoresObj.currentPlayer.points < scoresObj.opponent.points) {
+        this.finalScoreText = scene.add.text(
+          150,
+          200,
+          [
+            `Oh no ${opponentName} won with ${scoresObj.opponent.word}!`,
+            `I hate that word!`,
+          ],
+          finalScoreStyle
+        );
+      } else {
+        this.finalScoreText = scene.add.text(
+          50,
+          200,
+          [
+            `A drawer?!?! Now no-ones happy!`,
+            `I think your word ${scoresObj.currentPlayer.word} was better`,
+          ],
+          finalScoreStyle
+        );
+      }
     };
 
     this.game.react.state.socket.on("word checked", function (scoreObj) {
@@ -384,12 +430,10 @@ export default class MainScene extends Phaser.Scene {
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.playersDetails.p1.username) {
       p1Name = this.game.react.state.playersDetails.p1.username;
-      console.log("P1:", p1Name, "P2:", p2Name);
     }
 
     if (p2Name !== this.game.react.state.playersDetails.p2.username) {
       p2Name = this.game.react.state.playersDetails.p2.username;
-      console.log("P1:", p1Name, "P2:", p2Name);
     }
 
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
@@ -460,7 +504,7 @@ export default class MainScene extends Phaser.Scene {
       head.count--;
     }
 
-    // Fades out player score after 3 seconds
+    // Fades out player scores after 3 seconds
     if (this.gameState.scores.currentPlayerText !== undefined) {
       this.time.delayedCall(
         2500,
