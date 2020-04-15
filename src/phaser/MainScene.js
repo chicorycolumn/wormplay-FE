@@ -341,15 +341,14 @@ export default class MainScene extends Phaser.Scene {
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
       ) {
-        scene.time.delayedCall(
-          3000,
-          this.showFinalScores(this.scores, opponentName)
-        );
+        scene.time.delayedCall(2000, this.showFinalScores, [
+          this.scores,
+          opponentName,
+        ]);
       }
     };
 
     this.gameState.showFinalScores = function (scoresObj, opponentName) {
-      console.log("FINAL SCORES!!!", scoresObj);
       if (scoresObj.currentPlayer.points > scoresObj.opponent.points) {
         this.finalScoreText = scene.add.text(
           200,
@@ -362,7 +361,7 @@ export default class MainScene extends Phaser.Scene {
         );
       } else if (scoresObj.currentPlayer.points < scoresObj.opponent.points) {
         this.finalScoreText = scene.add.text(
-          150,
+          100,
           200,
           [
             `Oh no ${opponentName} won with ${scoresObj.opponent.word}!`,
