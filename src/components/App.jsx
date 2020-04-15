@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
 import styles from "./css/App.module.css";
+import ReactGame from "./ReactGameHolder.jsx";
+// import ReactGameHolder from "./ReactGameHolder";
 
 //You can access the socket as `this.state.socket`.
 //I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
@@ -16,7 +18,7 @@ export default class App extends React.Component {
       index: undefined,
       character: "",
       needUpdate: false,
-      amILoggedIn: true, // Change back to false after adding georgine css.
+      amILoggedIn: false, // Change back to false after adding georgine css.
       loginField: "",
       myUsername: "",
       isRoomFull: false, //This should be setStated when a player exits a room back into the lobby, I think. ~Chris
@@ -25,6 +27,7 @@ export default class App extends React.Component {
         p2: { username: null, id: null },
       },
       welcomeMessage: "",
+      roomNumber: "",
     };
     // this.changeMyState = this.changeMyState.bind(this);
   }
@@ -133,6 +136,16 @@ export default class App extends React.Component {
           });
         }
       });
+
+      this.state.socket.on("connectToRoom", (data) => {
+        const info = data;
+
+        if (this.state.roomNumber === "") {
+          this.setState({ roomNumber: info });
+        }
+      });
+
+      this.resetState = () => {};
     }
   }
 
@@ -141,12 +154,19 @@ export default class App extends React.Component {
       isRoomFull,
       whichPlayerAmI,
       playersDetails,
+      p1,
+      username,
       socket,
       myUsername,
+      roomNumber,
+      resetState,
     } = this.state;
 
+    console.log(this.state, "state");
     return (
       <div>
+        <p>{roomNumber}</p>
+
         {this.state.amILoggedIn ? (
           <div>
             {/* <div className={styles.georgine}> */}
@@ -170,10 +190,11 @@ export default class App extends React.Component {
             } - - - - - `}</p>
           </div>
         ) : isRoomFull ? (
-          <p
-            className={styles.lobbyInfoDisplay}
-          >{`Fuck! I'm so sorry ${myUsername} but the room is full!`}</p>
+          <ReactGameHolder socket={socket} />
         ) : (
+          // <p
+          //   className={styles.lobbyInfoDisplay}
+          // >{`Fuck! I'm so sorry ${myUsername} but the room is full!`}</p>
           <form>
             <input
               className={styles.loginField}
