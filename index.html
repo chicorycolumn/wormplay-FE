@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="icon" href="src/assets/worm-favicon.png" />
     <style>
       body {
         background-color: #d9ffcc;
@@ -21,17 +22,27 @@
         height: 600px;
       }
       #rightPanel {
-        background-color: aquamarine;
+        /* background-color: aquamarine; */
         height: 600px;
-        width: 100%;
+        width: 400px;
       }
     </style>
   </head>
   <body>
+    <!-- <div id="root"></div> -->
     <div id="georgine">
       <div id="phaserContainer"></div>
       <div id="rightPanel">
-        <div id="root"></div>
+        <script
+          type="text/javascript"
+          defer
+          src="public/face-api.min.js"
+        ></script>
+        <!-- <script
+          type="text/javascript"
+          
+          src="public/emotion-rec.js"
+        ></script> -->
       </div>
     </div>
   </body>

@@ -10,12 +10,38 @@ export default class ReactGame extends Component {
     this.state = {
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
+
+      faceValue: false,
+      currentEmotion: { name: null, src: null },
+
+      isP1: false,
+      isP2: false,
     };
   }
 
   componentDidMount() {
     this.game = new PhaserGame(this);
-    this.setState({ socket: this.props.socket });
+
+    if (this.props.socket.id === this.props.playersDetails.p1.id) {
+      this.setState({
+        socket: this.props.socket,
+        isP1: true,
+        currentEmotion: this.props.currentEmotion,
+      });
+    } else if (this.props.socket.id === this.props.playersDetails.p2.id) {
+      this.setState({
+        socket: this.props.socket,
+        isP2: true,
+        currentEmotion: this.props.currentEmotion,
+      });
+    }
+        
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
+      this.setState({ currentEmotion: this.props.currentEmotion });
+    }
   }
 
   //   shouldComponentUpdate() {return false}

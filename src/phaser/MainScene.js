@@ -1,7 +1,8 @@
 import Phaser from "phaser";
-import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
+import obama from "../assets/obama.png";
 import body from "../assets/body-resized.png";
+import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
 import blueButton1 from "../assets/ui/blue_button02.png";
 // import bgMusic from ["../assets/wiggle.mp3"];
@@ -14,6 +15,10 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 //I (Chris) suggest that in this file we use the socket for all the in-game stuff.
 
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
+let isP1 = false;
+let isP2 = false;
+
+let currentEmotion = null;
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -22,9 +27,13 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
+    console.log("in phaser PRELOAD");
     socket = this.game.react.state.socket; // Here is where the socket gets made.
+    isP1 = this.game.react.state.isP1;
+    isP2 = this.game.react.state.isP2;
     this.load.image("head", head);
     this.load.image("body", body);
+    this.load.image("p2Head", p2Head);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
     this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
@@ -32,12 +41,13 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     const scene = this; // scene variable makes 'this' available anywhere within the create function
+    console.log("in phaser CREATE");
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
     bg.displayWidth = this.sys.game.config.width;
 
-    this.gameState.body6 = this.physics.add.image(400, 150, "body");
+    this.gameState.body6 = this.physics.add.image(400, 125, "body");
     this.gameState.body5 = this.physics.add.image(400, 125, "body");
     this.gameState.body4 = this.physics.add.image(400, 125, "body");
     this.gameState.body3 = this.physics.add.image(400, 125, "body");
@@ -45,18 +55,30 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.body1 = this.physics.add.image(400, 125, "body");
     this.gameState.head = this.physics.add.image(400, 125, "head");
 
+    this.gameState.p2Body6 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body5 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body4 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body3 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body2 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body1 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Head = this.physics.add.image(600, 300, "p2Head");
+
     //variables for destination
     this.gameState.head.xDest = 400;
     this.gameState.head.yDest = 150;
     this.gameState.head.count = 0;
     this.gameState.head.body.collideWorldBounds = true;
 
+    this.gameState.p2Head.xDest = 400;
+    this.gameState.p2Head.yDest = 150;
+    this.gameState.p2Head.count = 0;
+    this.gameState.p2Head.body.collideWorldBounds = true;
+
     //Create letter styling
     const wordTileStyle = {
       font: "35px Arial",
       fill: "#007300",
       align: "center",
-      backgroundColor: "#FAFFE8",
       padding: { top: 4 },
     };
 
@@ -304,7 +326,36 @@ export default class MainScene extends Phaser.Scene {
       body5,
       body6,
       text,
+      p2Head,
+      p2Body1,
+      p2Body2,
+      p2Body3,
+      p2Body4,
+      p2Body5,
+      p2Body6,
     } = this.gameState;
+
+    console.log("in phaser UPDATE");
+    if (this.game.react.state.currentEmotion.name !== currentEmotion) {
+      //In here is where I'm  t r y i n g  to change Trump head to Obama,
+      //to show that the head can be changed on cue. No luck yet.
+
+      currentEmotion = this.game.react.state.currentEmotion.name;
+      // console.log(this.gameState.head.x, this.gameState.head.y);
+      let { x, y } = this.gameState.head;
+      this.load.image("obama", obama);
+      console.log(this.textures.list.head.source[0].source.src);
+      // this.gameState.head.loadTexture("obama");
+      // this.textures.list.head.source[0].source.src =
+      //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
+      // console.log(this);
+      // this.gameState.head.texture = headCartoon;
+      // this.gameState.head = this.physics.add.image(x, y, "newHead");
+      // console.log(this.gameState.head.texture.source[0].source);
+      // console.log(headCartoon);
+      // this.load.image("headCartoon", headCartoon);
+      // this.gameState.head.add.image("headCartoon");
+    }
 
     // Fix letters to body parts
     for (const letter in text) {
@@ -319,6 +370,18 @@ export default class MainScene extends Phaser.Scene {
     if (head.count === 0) {
       head.xDest = Math.floor(Math.random() * 800);
       head.yDest = Math.floor(Math.random() * 600);
+      if (head.xDest - head.x > 0 && head.xDest - head.x < 50) {
+        head.xDest += Math.floor(Math.random() * 100 + 50);
+      } else if (head.xDest - head.x <= 0 && head.xDest - head.x > -50) {
+        head.xDest += Math.floor(Math.random() * 100 + 50);
+      }
+
+      if (head.yDest - head.y > 0 && head.yDest - head.y < 50) {
+        head.yDest += Math.floor(Math.random() * 100 + 50);
+      } else if (head.yDest - head.x <= 0 && head.yDest - head.x > -50) {
+        head.yDest += Math.floor(Math.random() * 100 + 50);
+      }
+
       this.physics.moveTo(head, head.xDest, head.yDest, 60, 60, 60);
 
       head.count = 300;
@@ -357,6 +420,49 @@ export default class MainScene extends Phaser.Scene {
         null,
         this
       );
+    }
+
+    if (p2Head.count === 0) {
+      p2Head.xDest = Math.floor(Math.random() * 800);
+      p2Head.yDest = Math.floor(Math.random() * 600);
+      if (p2Head.xDest - p2Head.x > 0 && p2Head.xDest - p2Head.x < 50) {
+        p2Head.xDest += Math.floor(Math.random() * 100 + 50);
+      } else if (
+        p2Head.xDest - p2Head.x <= 0 &&
+        p2Head.xDest - p2Head.x > -50
+      ) {
+        p2Head.xDest += Math.floor(Math.random() * 100 + 50);
+      }
+
+      if (p2Head.yDest - p2Head.y > 0 && p2Head.yDest - p2Head.y < 50) {
+        p2Head.yDest += Math.floor(Math.random() * 100 + 50);
+      } else if (
+        p2Head.yDest - p2Head.x <= 0 &&
+        p2Head.yDest - p2Head.x > -50
+      ) {
+        p2Head.yDest += Math.floor(Math.random() * 100 + 50);
+      }
+
+      this.physics.moveTo(p2Head, p2Head.xDest, p2Head.yDest, 60, 60, 60);
+
+      p2Head.count = 300;
+    }
+    p2Head.rotation = this.physics.accelerateTo(
+      p2Head,
+      p2Head.xDest,
+      p2Head.yDest,
+      60,
+      60,
+      60
+    );
+    this.physics.moveTo(p2Body1, p2Head.x, p2Head.y, 60, 750, 750);
+    this.physics.moveTo(p2Body2, p2Body1.x, p2Body1.y, 60, 750, 750);
+    this.physics.moveTo(p2Body3, p2Body2.x, p2Body2.y, 60, 750, 750);
+    this.physics.moveTo(p2Body4, p2Body3.x, p2Body3.y, 60, 750, 750);
+    this.physics.moveTo(p2Body5, p2Body4.x, p2Body4.y, 60, 750, 750);
+    this.physics.moveTo(p2Body6, p2Body5.x, p2Body5.y, 60, 750, 750);
+    if (p2Head.count > 0) {
+      p2Head.count--;
     }
   }
 }
