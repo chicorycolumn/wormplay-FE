@@ -200,7 +200,6 @@ export default class App extends React.Component {
       <div>
         {this.state.amILoggedIn ? (
           <div>
-
             {this.state.shallIBotherLoadingTheGame && (
               <ReactGameHolder
                 socket={socket}
