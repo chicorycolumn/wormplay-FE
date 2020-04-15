@@ -1,11 +1,11 @@
 import Phaser from "phaser";
-import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
 import obama from "../assets/obama.png";
 import body from "../assets/body-resized.png";
+import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
-
 import blueButton1 from "../assets/ui/blue_button02.png";
+// import bgMusic from ["../assets/wiggle.mp3"];
 
 import { vowelArray, consonantArray } from "../refObjs.js";
 
@@ -15,6 +15,8 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 //I (Chris) suggest that in this file we use the socket for all the in-game stuff.
 
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
+let isP1 = false;
+let isP2 = false;
 
 let currentEmotion = null;
 
@@ -27,11 +29,15 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     console.log("in phaser PRELOAD");
     socket = this.game.react.state.socket; // Here is where the socket gets made.
+    isP1 = this.game.react.state.isP1;
+    isP2 = this.game.react.state.isP2;
     this.load.image("head", head);
     this.load.image("body", body);
+    this.load.image("p2Head", p2Head);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
-    // this.load.audio("bgMusic", ["../assets/wiggle.mp3"]);
+    this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+
   }
 
   create() {
@@ -41,7 +47,7 @@ export default class MainScene extends Phaser.Scene {
     bg.displayHeight = this.sys.game.config.height;
     bg.displayWidth = this.sys.game.config.width;
 
-    this.gameState.body6 = this.physics.add.image(400, 150, "body");
+    this.gameState.body6 = this.physics.add.image(400, 125, "body");
     this.gameState.body5 = this.physics.add.image(400, 125, "body");
     this.gameState.body4 = this.physics.add.image(400, 125, "body");
     this.gameState.body3 = this.physics.add.image(400, 125, "body");
@@ -49,18 +55,30 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.body1 = this.physics.add.image(400, 125, "body");
     this.gameState.head = this.physics.add.image(400, 125, "head");
 
+    this.gameState.p2Body6 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body5 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body4 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body3 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body2 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body1 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Head = this.physics.add.image(600, 300, "p2Head");
+
     //variables for destination
     this.gameState.head.xDest = 400;
     this.gameState.head.yDest = 150;
     this.gameState.head.count = 0;
     this.gameState.head.body.collideWorldBounds = true;
 
+    this.gameState.p2Head.xDest = 400;
+    this.gameState.p2Head.yDest = 150;
+    this.gameState.p2Head.count = 0;
+    this.gameState.p2Head.body.collideWorldBounds = true;
+
     //Create letter styling
     const textStyle = {
       font: "35px Arial",
       fill: "#007300",
       align: "center",
-      backgroundColor: "#FAFFE8",
       padding: { top: 4 },
     };
 
@@ -214,7 +232,7 @@ export default class MainScene extends Phaser.Scene {
       this.setTint(0xff0000);
       this.y = originalBtnY;
       this.hasBeenPressed = true;
-      this.scene.gameState.submitWord(
+      this.scene.gameState.sendWord(
         this.scene.gameState.text,
         this.scene.gameState.wormWordArr,
         this.scene.game.react.state.socket,
@@ -222,7 +240,7 @@ export default class MainScene extends Phaser.Scene {
       );
     });
 
-    this.gameState.submitWord = function (
+    this.gameState.sendWord = function (
       allLettersObj,
       wormWordArr,
       socket,
@@ -246,10 +264,49 @@ export default class MainScene extends Phaser.Scene {
         socket.emit("worm word submitted", submittedWord);
       } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
     };
+
+    this.model = this.sys.game.globals.model;
+
+    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+      this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
+      this.bgMusic.play();
+      this.model.bgMusicPlaying = true;
+      this.sys.game.globals.bgMusic = this.bgMusic;
+    }
+
+    this.game.react.state.socket.on("word checked", function (response) {
+      console.log(response);
+    });
+
+    this.game.react.state.socket.on("opponent score", function (response) {
+      console.log(response);
+    });
+
+    this.game.react.state.socket.on("api error", function (error) {
+      console.log("Error:", error.status, error.message);
+    });
   }
 
   update() {
-    console.log("in phaser UPDATE");
+    const {
+      head,
+      body1,
+      body2,
+      body3,
+      body4,
+      body5,
+      body6,
+      text,
+      p2Head,
+      p2Body1,
+      p2Body2,
+      p2Body3,
+      p2Body4,
+      p2Body5,
+      p2Body6,
+    } = this.gameState;
+    
+        console.log("in phaser UPDATE");
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
       //to show that the head can be changed on cue. No luck yet.
@@ -271,16 +328,6 @@ export default class MainScene extends Phaser.Scene {
       // this.gameState.head.add.image("headCartoon");
     }
 
-    const {
-      head,
-      body1,
-      body2,
-      body3,
-      body4,
-      body5,
-      body6,
-      text,
-    } = this.gameState;
 
     // Fix letters to body parts
     for (const letter in text) {
@@ -295,6 +342,18 @@ export default class MainScene extends Phaser.Scene {
     if (head.count === 0) {
       head.xDest = Math.floor(Math.random() * 800);
       head.yDest = Math.floor(Math.random() * 600);
+      if (head.xDest - head.x > 0 && head.xDest - head.x < 50) {
+        head.xDest += Math.floor(Math.random() * 100 + 50);
+      } else if (head.xDest - head.x <= 0 && head.xDest - head.x > -50) {
+        head.xDest += Math.floor(Math.random() * 100 + 50);
+      }
+
+      if (head.yDest - head.y > 0 && head.yDest - head.y < 50) {
+        head.yDest += Math.floor(Math.random() * 100 + 50);
+      } else if (head.yDest - head.x <= 0 && head.yDest - head.x > -50) {
+        head.yDest += Math.floor(Math.random() * 100 + 50);
+      }
+
       this.physics.moveTo(head, head.xDest, head.yDest, 60, 60, 60);
 
       head.count = 300;
@@ -315,6 +374,49 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
     if (head.count > 0) {
       head.count--;
+    }
+
+    if (p2Head.count === 0) {
+      p2Head.xDest = Math.floor(Math.random() * 800);
+      p2Head.yDest = Math.floor(Math.random() * 600);
+      if (p2Head.xDest - p2Head.x > 0 && p2Head.xDest - p2Head.x < 50) {
+        p2Head.xDest += Math.floor(Math.random() * 100 + 50);
+      } else if (
+        p2Head.xDest - p2Head.x <= 0 &&
+        p2Head.xDest - p2Head.x > -50
+      ) {
+        p2Head.xDest += Math.floor(Math.random() * 100 + 50);
+      }
+
+      if (p2Head.yDest - p2Head.y > 0 && p2Head.yDest - p2Head.y < 50) {
+        p2Head.yDest += Math.floor(Math.random() * 100 + 50);
+      } else if (
+        p2Head.yDest - p2Head.x <= 0 &&
+        p2Head.yDest - p2Head.x > -50
+      ) {
+        p2Head.yDest += Math.floor(Math.random() * 100 + 50);
+      }
+
+      this.physics.moveTo(p2Head, p2Head.xDest, p2Head.yDest, 60, 60, 60);
+
+      p2Head.count = 300;
+    }
+    p2Head.rotation = this.physics.accelerateTo(
+      p2Head,
+      p2Head.xDest,
+      p2Head.yDest,
+      60,
+      60,
+      60
+    );
+    this.physics.moveTo(p2Body1, p2Head.x, p2Head.y, 60, 750, 750);
+    this.physics.moveTo(p2Body2, p2Body1.x, p2Body1.y, 60, 750, 750);
+    this.physics.moveTo(p2Body3, p2Body2.x, p2Body2.y, 60, 750, 750);
+    this.physics.moveTo(p2Body4, p2Body3.x, p2Body3.y, 60, 750, 750);
+    this.physics.moveTo(p2Body5, p2Body4.x, p2Body4.y, 60, 750, 750);
+    this.physics.moveTo(p2Body6, p2Body5.x, p2Body5.y, 60, 750, 750);
+    if (p2Head.count > 0) {
+      p2Head.count--;
     }
   }
 }

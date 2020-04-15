@@ -11,6 +11,7 @@ export default class TitleScene extends Phaser.Scene {
   preload() {
     this.load.image("blueButton1", blueButton1);
     this.load.image("blueButton2", blueButton2);
+    this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
   }
 
   create() {
