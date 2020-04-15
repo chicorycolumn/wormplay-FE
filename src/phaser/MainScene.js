@@ -5,6 +5,9 @@ import body from "../assets/body-resized.png";
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
 import blueButton1 from "../assets/ui/blue_button02.png";
+import blueButton2 from "../assets/ui/blue_button03.png";
+import checkedBox from "../assets/ui/blue_boxCheckmark.png";
+import box from "../assets/ui/grey_box.png";
 // import bgMusic from ["../assets/wiggle.mp3"];
 
 import { vowelArray, consonantArray } from "../refObjs.js";
@@ -36,6 +39,9 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("p2Head", p2Head);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
+    this.load.image("blueButton2", blueButton2);
+    this.load.image("checkedBox", checkedBox);
+    this.load.image("box", box);
     this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
   }
 
@@ -266,12 +272,30 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    if (this.model.musicOn === false && this.model.bgMusicPlaying === false) {
+    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
       this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
       this.bgMusic.play();
       this.model.bgMusicPlaying = true;
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
+
+    // this.model = this.sys.game.globals.model;
+
+    this.musicButton = this.add.image(130, 585, "checkedBox");
+    this.musicButton.setScale(0.5);
+    this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
+    this.musicText.setScale(0.75);
+    this.musicButton.setInteractive();
+
+    this.musicButton.on(
+      "pointerdown",
+      function () {
+        this.model.musicOn = !this.model.musicOn;
+        this.updateAudio();
+      }.bind(this)
+    );
+
+    this.updateAudio();
 
     this.game.react.state.socket.on("word checked", function (response) {
       console.log(response);
@@ -415,6 +439,20 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(p2Body6, p2Body5.x, p2Body5.y, 60, 750, 750);
     if (p2Head.count > 0) {
       p2Head.count--;
+    }
+  }
+
+  updateAudio() {
+    if (this.model.musicOn === false) {
+      this.musicButton.setTexture("box");
+      this.sys.game.globals.bgMusic.stop();
+      this.model.bgMusicPlaying = false;
+    } else {
+      this.musicButton.setTexture("checkedBox");
+      if (this.model.bgMusicPlaying === false) {
+        this.sys.game.globals.bgMusic.play();
+        this.model.bgMusicPlaying = true;
+      }
     }
   }
 }
