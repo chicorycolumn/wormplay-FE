@@ -282,9 +282,10 @@ export default class MainScene extends Phaser.Scene {
       let wordArr = wormWordArr.map((el) => (el = " "));
       for (const letter in allLettersObj) {
         if (allLettersObj[letter].onSegment !== null) {
-          const bodyIndex =
-            Number(allLettersObj[letter].onSegment.slice(4)) - 1;
-
+          const bodyIndex = isP1
+            ? Number(allLettersObj[letter].onSegment.slice(4)) - 1
+            : Number(allLettersObj[letter].onSegment.slice(6)) - 1;
+          console.log(bodyIndex);
           wordArr[bodyIndex] = allLettersObj[letter].text;
         }
       }
@@ -414,11 +415,13 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.game.react.state.socket.on("word checked", function (scoreObj) {
+      console.log("WORD CHECK");
       const isCurrentPlayer = true;
       scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
 
     this.game.react.state.socket.on("opponent score", function (scoreObj) {
+      console.log("OPPO CHECK");
       const isCurrentPlayer = false;
       scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
