@@ -17,6 +17,8 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 let isP1 = false;
 let isP2 = false;
+let p1Name = null;
+let p2Name = null;
 
 let currentEmotion = null;
 
@@ -27,10 +29,11 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    console.log("in phaser PRELOAD");
     socket = this.game.react.state.socket; // Here is where the socket gets made.
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
+    p1Name = this.game.react.state.playersDetails.p1.username;
+    p2Name = this.game.react.state.playersDetails.p2.username;
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("p2Head", p2Head);
@@ -41,7 +44,6 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     const scene = this; // scene variable makes 'this' available anywhere within the create function
-    console.log("in phaser CREATE");
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
@@ -278,41 +280,85 @@ export default class MainScene extends Phaser.Scene {
 
     const scoreStyle = {
       font: "35px Arial",
-      color: "#000000",
+      // color: "#ffff",
+      align: "center",
     };
 
-    this.gameState.displayScore = function (scoreObj, isThisPlayer) {
-      if (isThisPlayer === true) {
-        this.scores.p1 = scoreObj;
+    this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
+      if (isCurrentPlayer === true) {
+        this.scores.currentPlayer = scoreObj;
 
-        if (scoreObj.points === 0) {
-          this.scores.p1Text = scene.add.text(
-            50,
-            500,
-            `Oh no! ${scoreObj.word} isn't a word! You get no points :(`,
+        if (scoreObj.isValid === false) {
+          this.scores.currentPlayerText = scene.add.text(
+            250,
+            400,
+            [`Oh no! ${scoreObj.word} isn't a word!`, `You get no points!`],
             scoreStyle
           );
         } else {
-          this.scores.p1Text = scene.add.text(
-            100,
-            500,
-            `You said ${scoreObj.word}! That's ${scoreObj.points} points!`,
+          this.scores.currentPlayerText = scene.add.text(
+            300,
+            400,
+            [`You said ${scoreObj.word}!`, `That's ${scoreObj.points} points!`],
+            scoreStyle
+          );
+        }
+      } else {
+        console.log(scene.game.react.state.playersDetails.p1.username);
+        console.log(scene.game.react.state.playersDetails.p2.username);
+        const opponentName =
+          isP1 === true
+            ? scene.game.react.state.playersDetails.p2.username
+            : scene.game.react.state.playersDetails.p1.username;
+        console.log(opponentName);
+        this.scores.opponent = scoreObj;
+        if (scoreObj.isValid === false) {
+          this.scores.opponentText = scene.add.text(
+            200,
+            400,
+            [
+              `Ha ha! ${opponentName} said ${scoreObj.word}.`,
+              `That's not a word stupid!`,
+            ],
+            scoreStyle
+          );
+        } else {
+          this.scores.opponentText = scene.add.text(
+            250,
+            400,
+            [
+              `${opponentName} said ${scoreObj.word}!`,
+              `They scored ${scoreObj.points} points!`,
+            ],
             scoreStyle
           );
         }
       }
+      console.log(this.scores);
     };
 
     this.game.react.state.socket.on("word checked", function (scoreObj) {
-      scene.gameState.displayScore(scoreObj, true);
+      const isCurrentPlayer = true;
+      scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
 
     this.game.react.state.socket.on("opponent score", function (scoreObj) {
-      console.log("OPPONENT", scoreObj);
+      const isCurrentPlayer = false;
+      scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
 
     this.game.react.state.socket.on("api error", function (error) {
       console.log("Error:", error.status, error.message);
+      scene.gameState.errMessage = scene.add.text(
+        250,
+        250,
+        `OH NO! API ERROR: ${error.status} ${error.message}`,
+        {
+          font: "35px Arial",
+          color: "#f00000",
+          align: "center",
+        }
+      );
     });
   }
 
@@ -335,7 +381,17 @@ export default class MainScene extends Phaser.Scene {
       p2Body6,
     } = this.gameState;
 
-    console.log("in phaser UPDATE");
+    // Update Player Name(s)
+    if (p1Name !== this.game.react.state.playersDetails.p1.username) {
+      p1Name = this.game.react.state.playersDetails.p1.username;
+      console.log("P1:", p1Name, "P2:", p2Name);
+    }
+
+    if (p2Name !== this.game.react.state.playersDetails.p2.username) {
+      p2Name = this.game.react.state.playersDetails.p2.username;
+      console.log("P1:", p1Name, "P2:", p2Name);
+    }
+
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
       //to show that the head can be changed on cue. No luck yet.
@@ -405,13 +461,28 @@ export default class MainScene extends Phaser.Scene {
     }
 
     // Fades out player score after 3 seconds
-    if (this.gameState.scores.p1Text !== undefined) {
+    if (this.gameState.scores.currentPlayerText !== undefined) {
       this.time.delayedCall(
         2500,
         function () {
-          // Refactor into 1 function for both players?
           this.tweens.add({
-            targets: this.gameState.scores.p1Text,
+            targets: this.gameState.scores.currentPlayerText,
+            alpha: 0,
+            duration: 500,
+            ease: "Power 2",
+          });
+        },
+        null,
+        this
+      );
+    }
+
+    if (this.gameState.scores.opponentText !== undefined) {
+      this.time.delayedCall(
+        2500,
+        function () {
+          this.tweens.add({
+            targets: this.gameState.scores.opponentText,
             alpha: 0,
             duration: 500,
             ease: "Power 2",
