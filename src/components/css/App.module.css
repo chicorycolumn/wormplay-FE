@@ -123,24 +123,23 @@
 }
 
 .videoObscurer {
-  border: black solid 1pt;
-  background-color: lime;
-  width: 360px;
-  height: 280px;
+  /* border: black solid 1pt; */
+  background-color: coral;
+  width: 180px;
+  height: 140px;
   position: absolute;
   margin: 0px;
   padding: 0px;
   z-index: 2;
 }
 
-.canvasDetections {
-  /* width: 360px; */
-  /* border: yellow solid 10pt; */
+/* .canvasDetections {
+  border: yellow solid 10pt;
   width: 120px;
   height: 120px;
   position: absolute;
   z-index: 1;
-}
+} */
 
 .video {
   /* border: orange solid 5pt; */

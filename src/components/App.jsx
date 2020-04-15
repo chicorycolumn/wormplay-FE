@@ -10,30 +10,6 @@ import { emotionRecFullFunction } from "../../public/emotion-rec.js";
 export default class App extends React.Component {
   constructor() {
     super();
-    const observesCallback = function (mutationsList, observer) {
-      // Use traditional 'for loops' for IE 11
-      for (let mutation of mutationsList) {
-        if (mutation.attributeName === "src") {
-          let src = mutation.target.attributes.src.value;
-          let name = mutation.target.attributes.label;
-          console.log(name);
-          // this.setState({ currentEmotion: { name, src } });
-
-          // console.log(name, src);
-          // setStateobservesCallback({ currentEmotion: { name, src } });
-          //             this.setState({currentEmotion: {
-          // name:
-          //             }});
-        }
-        // if (mutation.type === "childList") {
-        //   console.log("---A child node has been added or removed.");
-        // } else if (mutation.type === "attributes") {
-        //   console.log(
-        //     "---The " + mutation.attributeName + " attribute was modified."
-        //   );
-        // }
-      }
-    };
     this.state = {
       iJustLoggedIn: false,
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
@@ -60,46 +36,17 @@ export default class App extends React.Component {
       ],
       currentEmotion: { name: null, src: null },
     };
-    this.observePhotoChange = this.observePhotoChange.bind(this);
-    this.observesCallback = this.observesCallback.bind(this);
+    this.setStateCallback = this.setStateCallback.bind(this);
   }
 
   componentDidMount() {
-    this.observePhotoChange();
     this.setState({ socket: this.props.socket });
   }
 
-  observePhotoChange = () => {
-    const targetNode = document.getElementById("canvasPhoto");
-
-    if (!targetNode) {
-      //The node we need does not exist yet. Wait 500ms and try again
-      window.setTimeout(() => {
-        this.observePhotoChange();
-      }, 500);
-      return;
-    }
-
-    // Options for the observer (which mutations to observe)
-    const config = { attributes: true, childList: true, subtree: true };
-
-    // observesCallback function to execute when mutations are observed
-
-    const observer = new MutationObserver(this.observesCallback);
-
-    // Start observing the target node for configured mutations
-    observer.observe(targetNode, config);
-  };
-
-  observesCallback = (mutationsList, observer) => {
-    // Use traditional 'for loops' for IE 11
-    for (let mutation of mutationsList) {
-      if (mutation.attributeName === "src") {
-        let src = mutation.target.attributes.src.value;
-        let name = mutation.target.attributes.label;
-        this.setState({ currentEmotion: { name, src } });
-      }
-    }
+  setStateCallback = (key, object) => {
+    let newState = {};
+    newState[key] = object;
+    this.setState(newState);
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -114,6 +61,23 @@ export default class App extends React.Component {
       }
 
       this.setState({ welcomeMessage: "" });
+    }
+
+    if (
+      prevState.currentEmotion.name !== this.state.currentEmotion.name &&
+      this.state.currentEmotion.name
+    ) {
+      let infoDisplay = document.getElementById("infoDisplay");
+
+      let newLi = document.createElement("li");
+      newLi.style.margin = "8px";
+      newLi.innerHTML =
+        "You are so " +
+        "<strong>" +
+        `${this.state.currentEmotion.name}` +
+        "</strong>" +
+        ", my friend!";
+      infoDisplay.appendChild(newLi);
     }
 
     if (this.state.socket) {
@@ -212,7 +176,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    console.log("inside render");
+    console.log("inside render in app.jsx");
     const {
       isRoomFull,
       whichPlayerAmI,
@@ -226,14 +190,14 @@ export default class App extends React.Component {
 
     const ul = document.getElementById("infoDisplay");
     if (ul) {
-      if (ul.childElementCount > 7) {
+      if (ul.childElementCount > 6) {
         ul.removeChild(ul.childNodes[0]);
       }
     }
 
+    console.log(this.state.currentEmotion);
     return (
       <div>
-        <p id="trythis">hello i am excited</p>
         {this.state.amILoggedIn ? (
           <div>
             {this.state.shallIBotherLoadingTheGame && (
@@ -245,34 +209,29 @@ export default class App extends React.Component {
             )}
 
             <div className={styles.rightPanelDisplay}>
-              {/* ///////////////////////////// */}
-
+              {/* /////////////////THIS IS WHERE WE CALL THE FACE RECOGNITION. */}
               {this.state.iJustLoggedIn &&
                 setTimeout(() => {
-                  // DEVELOPMENT: THIS IS ONLY A BODGE. CHANGE TO BETTER FXN, defer eg.
                   this.setState({ iJustLoggedIn: false });
-                  emotionRecFullFunction();
-                }, 1000)}
-
-              {/* ///////////////////////////// */}
-
+                  emotionRecFullFunction(this.setStateCallback);
+                }, 0)}
+              {/* /////////////////*/}
               <div className={styles.topbox}>
-                {/* // */}
-
                 <div id="videoContainer" className={styles.videoContainer}>
+                  {/* <div id="videoObscurer" className={styles.videoObscurer}>
+                    video obscured for you
+                  </div> */}
                   <video
                     id="video"
                     className={styles.video}
                     autoPlay
                     muted
                   ></video>
-                  {/* <div id="videoObscurer" className={styles.videoObscurer}>
-                      comment me out to see the video
-                    </div> */}
-                  <canvas
+
+                  {/* <canvas
                     id="canvasDetections"
                     className={styles.canvasDetections}
-                  ></canvas>
+                  ></canvas> */}
                   <canvas
                     id="canvasPhoto"
                     className={styles.canvasPhoto}
@@ -303,15 +262,10 @@ export default class App extends React.Component {
                     );
                   })}
                 </div>
-
-                {/* // */}
               </div>
               <div className={styles.midbox}>
-                {/* // */}
-
-                {/* // */}
-
-                {/* <p
+                <p id="youAre"></p>
+                <p
                   id="playersDisplay"
                   className={styles.playersDisplay}
                 >{`Player 1: ${
@@ -323,11 +277,10 @@ export default class App extends React.Component {
                     ? playersDetails.p2.username
                     : "waiting..."
                 }`}</p>
-                <ul id="infoDisplay" className={styles.infoDisplay}></ul> */}
+                <ul id="infoDisplay" className={styles.infoDisplay}></ul>
               </div>
               <div className={styles.bottombox}>
-                <p id="youAre"></p>
-                {/* {playersDetails.p1.username !== null &&
+                {playersDetails.p1.username !== null &&
                 playersDetails.p2.username !== null ? (
                   <div>
                     <p>
@@ -343,7 +296,7 @@ export default class App extends React.Component {
                   </div>
                 ) : (
                   "waiting..."
-                )} */}
+                )}
               </div>
             </div>
           </div>

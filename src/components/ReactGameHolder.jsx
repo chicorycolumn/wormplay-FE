@@ -11,7 +11,7 @@ export default class ReactGame extends Component {
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
       faceValue: false,
-      currentEmotion: null,
+      currentEmotion: { name: null, src: null },
     };
   }
 
@@ -21,6 +21,12 @@ export default class ReactGame extends Component {
       socket: this.props.socket,
       currentEmotion: this.props.currentEmotion,
     });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
+      this.setState({ currentEmotion: this.props.currentEmotion });
+    }
   }
 
   //   shouldComponentUpdate() {return false}

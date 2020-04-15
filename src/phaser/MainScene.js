@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import img from "../assets/circle.png";
 import head from "../assets/head-smaller.png";
+import obama from "../assets/obama.png";
 import body from "../assets/body-resized.png";
 import background from "../assets/whitehouse.png";
 
@@ -15,6 +16,8 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 
+let currentEmotion = null;
+
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
@@ -22,8 +25,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
+    console.log("in phaser PRELOAD");
     socket = this.game.react.state.socket; // Here is where the socket gets made.
-    console.log(this.game.react.state.currentEmotion);
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("background", background);
@@ -32,6 +35,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("in phaser CREATE");
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
@@ -245,6 +249,28 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
+    console.log("in phaser UPDATE");
+    if (this.game.react.state.currentEmotion.name !== currentEmotion) {
+      //In here is where I'm  t r y i n g  to change Trump head to Obama,
+      //to show that the head can be changed on cue. No luck yet.
+
+      currentEmotion = this.game.react.state.currentEmotion.name;
+      // console.log(this.gameState.head.x, this.gameState.head.y);
+      let { x, y } = this.gameState.head;
+      this.load.image("obama", obama);
+      console.log(this.textures.list.head.source[0].source.src);
+      // this.gameState.head.loadTexture("obama");
+      // this.textures.list.head.source[0].source.src =
+      //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
+      // console.log(this);
+      // this.gameState.head.texture = headCartoon;
+      // this.gameState.head = this.physics.add.image(x, y, "newHead");
+      // console.log(this.gameState.head.texture.source[0].source);
+      // console.log(headCartoon);
+      // this.load.image("headCartoon", headCartoon);
+      // this.gameState.head.add.image("headCartoon");
+    }
+
     const {
       head,
       body1,

@@ -1,14 +1,13 @@
-export const emotionRecFullFunction = () => {
+export const emotionRecFullFunction = (setStateCallback) => {
   require("regenerator-runtime/runtime");
-  console.log("#-#-#-#-#-# inside emotion rec js");
+  console.log("inside emotion rec js");
 
   const video = document.getElementById("video");
-  console.log("video " + video);
 
   let currentEmotion = "";
   let happyToggle = false;
   let emotionDuration = { happy: 0, sad: 0, angry: 0, surprised: 0 };
-  // let emotionDuration = { happy: 0, angry: 0, surprised: 0 };
+
   const statusBarsRef = {
     0: "□□□□",
     1: "■□□□",
@@ -58,13 +57,10 @@ export const emotionRecFullFunction = () => {
       // faceapi.draw.drawFaceLandmarks(canvasDetections, resizedDetections);
       // faceapi.draw.drawFaceExpressions(canvasDetections, resizedDetections);
 
-      //******************************************************* */
-
       if (detections[0]) {
         const { happy, sad, angry, surprised } = detections[0].expressions;
         const emotionNames = ["happy", "sad", "angry", "surprised"];
-        // const { happy, angry, surprised } = detections[0].expressions;
-        // const emotionNames = ["happy", "angry", "surprised"];
+
         const refObj = {
           happy: {
             name: "happy",
@@ -111,10 +107,7 @@ export const emotionRecFullFunction = () => {
           // ].data.toFixed(2)}`;
 
           //Keep updating the status bars for each emotion.
-          console.log("refObj[emotion].bars" + refObj[emotion].bars);
-          console.log(
-            "refObj[emotion].bars.innerText" + refObj[emotion].bars.innerText
-          );
+
           refObj[emotion].bars.innerText =
             statusBarsRef[emotionDuration[emotion]];
 
@@ -137,16 +130,10 @@ export const emotionRecFullFunction = () => {
           ) {
             //User has held this emotion for 2 seconds! Let's take a photo.
             if (emotionDuration[emotion] === 5) {
-              //ignore this msg. DEVELOPMENT ONLY, DURATION REQUIRED SHOULD BE 5
+              //DEVELOPMENT ONLY, DURATION REQUIRED SHOULD BE 5
               currentEmotion = emotion;
 
-              // takepicture(resizedDetections[0]);
-              takepicture(detections[0]);
-
-              emotionDuration[emotion] = 0;
-              document.getElementById(
-                "youAre"
-              ).innerText = `You are ${emotion}!`;
+              takepicture(detections[0], setStateCallback);
             } else {
               //User is holding the emotion, so start filling the status bars!
               currentEmotion = "";
@@ -173,7 +160,7 @@ export const emotionRecFullFunction = () => {
           }
         });
 
-        function takepicture(detect) {
+        function takepicture(detect, setStateCallback) {
           // const photo = document.getElementById("photo");
           var context = canvasPhoto.getContext("2d");
           context.canvas.width = detect.alignedRect._box._width;
@@ -207,9 +194,13 @@ export const emotionRecFullFunction = () => {
           const id_canvasPhoto = document.getElementById("canvasPhoto");
           id_canvasPhoto.setAttribute("src", data);
           id_canvasPhoto.setAttribute("label", currentEmotion);
+
+          setStateCallback("currentEmotion", {
+            name: currentEmotion,
+            src: data,
+          });
         }
       }
-      //************************* */
     }, 350);
   });
 };
