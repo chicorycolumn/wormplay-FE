@@ -29,7 +29,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    socket = this.game.react.state.socket; // Here is where the socket gets made.
+    console.log("in phaser PRELOAD");
+    socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
     p1Name = this.game.react.state.playersDetails.p1.username;
@@ -75,6 +76,14 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Head.yDest = 150;
     this.gameState.p2Head.count = 0;
     this.gameState.p2Head.body.collideWorldBounds = true;
+
+    // adding player variables
+    // this.gameState.p2Body6
+    // this.gameState.p2Body5
+    // this.gameState.p2Body4
+    // this.gameState.p2Body3
+    // this.gameState.p2Body2
+    // this.gameState.p2Body1
 
     //Create letter styling
     const wordTileStyle = {
@@ -128,17 +137,39 @@ export default class MainScene extends Phaser.Scene {
       const startY = thisLetter.y;
 
       // Loop through body parts and set up interaction with letters
-      for (const objectKey in this.gameState) {
-        if (/body\d/g.test(objectKey) === true) {
-          const bodyPart = this.gameState[objectKey];
-          bodyPart.hasLetter = false;
+      if (isP1 === true) {
+        for (const objectKey in this.gameState) {
+          if (/body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.hasLetter = false;
 
-          this.physics.add.overlap(thisLetter, bodyPart, function () {
-            if (thisLetter.onSegment === null && bodyPart.hasLetter === false) {
-              thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
-              bodyPart.hasLetter = true;
-            }
-          });
+            this.physics.add.overlap(thisLetter, bodyPart, function () {
+              if (
+                thisLetter.onSegment === null &&
+                bodyPart.hasLetter === false
+              ) {
+                thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
+                bodyPart.hasLetter = true;
+              }
+            });
+          }
+        }
+      } else if (isP2 === true) {
+        for (const objectKey in this.gameState) {
+          if (/p2Body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.hasLetter = false;
+
+            this.physics.add.overlap(thisLetter, bodyPart, function () {
+              if (
+                thisLetter.onSegment === null &&
+                bodyPart.hasLetter === false
+              ) {
+                thisLetter.onSegment = objectKey; //'objectKey' is the name/key of the body part
+                bodyPart.hasLetter = true;
+              }
+            });
+          }
         }
       }
 
@@ -269,7 +300,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+    if (this.model.musicOn === false && this.model.bgMusicPlaying === false) {
       this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
       this.bgMusic.play();
       this.model.bgMusicPlaying = true;
@@ -435,6 +466,7 @@ export default class MainScene extends Phaser.Scene {
       p2Name = this.game.react.state.playersDetails.p2.username;
     }
 
+    console.log("in phaser UPDATE");
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
       //to show that the head can be changed on cue. No luck yet.
