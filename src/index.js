@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import App from "./components/App.jsx";
 import socketIOClient from "socket.io-client";
 
-let shouldEndpointBeHeroku = true; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
+let shouldEndpointBeHeroku = false; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
 
 const socket = socketIOClient(
   shouldEndpointBeHeroku
