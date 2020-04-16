@@ -29,13 +29,14 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
     this.gameState = {
-      myArr: [" ", " ", " ", " ", " ", " "],
+
+      wormWordArr: [" ", " ", " ", " ", " ", " "],
       opponentsArr: [" ", " ", " ", " ", " ", " "],
       opponents: {},
       text: {},
-      scores: {},
-      p1Worm: {},
-      p2Worm: {},
+
+    scores:{}
+
     };
   }
 
@@ -58,7 +59,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { opponents, opponentsArr, myArr, p1Worm, p2Worm } = this.gameState;
+
+    const { opponents, opponentsArr } = this.gameState;
 
     console.log("in phaser CREATE");
 
@@ -69,28 +71,32 @@ export default class MainScene extends Phaser.Scene {
     bg.displayHeight = this.sys.game.config.height;
     bg.displayWidth = this.sys.game.config.width;
 
-    for (let i = 6; i > 0; i--) {
-      p1Worm[`p1Body${i}`] = this.physics.add.image(400, 125, "body");
-    }
+    this.gameState.body6 = this.physics.add.image(400, 125, "body");
+    this.gameState.body5 = this.physics.add.image(400, 125, "body");
+    this.gameState.body4 = this.physics.add.image(400, 125, "body");
+    this.gameState.body3 = this.physics.add.image(400, 125, "body");
+    this.gameState.body2 = this.physics.add.image(400, 125, "body");
+    this.gameState.body1 = this.physics.add.image(400, 125, "body");
+    this.gameState.head = this.physics.add.image(400, 125, "head");
 
-    p1Worm.p1Head = this.physics.add.image(400, 125, "head");
-
-    for (let i = 6; i > 0; i--) {
-      p2Worm[`p2Body${i}`] = this.physics.add.image(400, 125, "body");
-    }
-
-    p2Worm.p2Head = this.physics.add.image(600, 300, "p2Head");
+    this.gameState.p2Body6 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body5 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body4 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body3 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body2 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body1 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Head = this.physics.add.image(600, 300, "p2Head");
 
     //variables for destination
-    p1Worm.p1Head.xDest = 400;
-    p1Worm.p1Head.yDest = 150;
-    p1Worm.p1Head.count = 0;
-    p1Worm.p1Head.body.collideWorldBounds = true;
+    this.gameState.head.xDest = 400;
+    this.gameState.head.yDest = 150;
+    this.gameState.head.count = 0;
+    this.gameState.head.body.collideWorldBounds = true;
 
-    p2Worm.p2Head.xDest = 400;
-    p2Worm.p2Head.yDest = 150;
-    p2Worm.p2Head.count = 0;
-    p2Worm.p2Head.body.collideWorldBounds = true;
+    this.gameState.p2Head.xDest = 400;
+    this.gameState.p2Head.yDest = 150;
+    this.gameState.p2Head.count = 0;
+    this.gameState.p2Head.body.collideWorldBounds = true;
 
     //Create letter styling
     const wordTileStyle = {
@@ -136,6 +142,7 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].y,
         char,
         wordTileStyle
+
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -157,9 +164,9 @@ export default class MainScene extends Phaser.Scene {
 
       // Loop through body parts and set up interaction with letters
       if (isP1 === true) {
-        for (const objectKey in p1Worm) {
-          if (/p1Body\d/g.test(objectKey) === true) {
-            const bodyPart = p1Worm[objectKey];
+        for (const objectKey in this.gameState) {
+          if (/body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
 
@@ -172,18 +179,15 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
-          }
-        }
-        for (const objectKey in p2Worm) {
-          if (/p2Body\d/g.test(objectKey) === true) {
-            const bodyPart = p2Worm[objectKey];
+          } else if (/p2Body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
             bodyPart.setOrigin(0.3, 0.1);
           }
         }
       } else if (isP2 === true) {
-        for (const objectKey in p2Worm) {
+        for (const objectKey in this.gameState) {
           if (/p2Body\d/g.test(objectKey) === true) {
-            const bodyPart = p2Worm[objectKey];
+            const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
 
@@ -196,11 +200,8 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
-          }
-        }
-        for (const objectKey in p1Worm) {
-          if (/p1Body\d/g.test(objectKey) === true) {
-            const bodyPart = p1Worm[objectKey];
+          } else if (/body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
             bodyPart.setOrigin(0.3, 0.1);
           }
         }
@@ -244,18 +245,6 @@ export default class MainScene extends Phaser.Scene {
         } else {
           const n = this.onSegment.split("ody")[1];
           const indexOfChar = n - 1;
-          myArr[indexOfChar] = this.value;
-          // if (isP1 === true) {
-          //   for (const objectKey in p1Worm) {
-          //     if (
-          //       /p1Body\d/g.test(objectKey) === true &&
-          //       objectKey.onSegment === null
-          //     ) {
-          //       const bodyPart = objectKey;
-          //     }
-          //   }
-          // }
-
           socket.emit("playerChangesLetter", {
             index: indexOfChar,
             character: this.value,
@@ -325,7 +314,7 @@ export default class MainScene extends Phaser.Scene {
       this.hasBeenPressed = true;
       this.scene.gameState.sendWord(
         this.scene.gameState.text,
-        this.scene.gameState.myArr,
+        this.scene.gameState.wormWordArr,
         this.scene.game.react.state.socket,
         this.hasBeenPressed
       );
@@ -333,11 +322,11 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.sendWord = function (
       allLettersObj,
-      myArr,
+      wormWordArr,
       socket,
       submitBtnPressed
     ) {
-      let wordArr = myArr.map((el) => (el = " "));
+      let wordArr = wormWordArr.map((el) => (el = " "));
       for (const letter in allLettersObj) {
         if (allLettersObj[letter].onSegment !== null) {
           const bodyIndex = isP1
@@ -365,6 +354,7 @@ export default class MainScene extends Phaser.Scene {
       this.model.bgMusicPlaying = true;
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
+
 
     const scoreStyle = {
       font: "35px Arial",
@@ -470,6 +460,7 @@ export default class MainScene extends Phaser.Scene {
       }
     };
 
+
     // this.model = this.sys.game.globals.model;
 
     this.musicButton = this.add.image(130, 585, "checkedBox");
@@ -488,9 +479,11 @@ export default class MainScene extends Phaser.Scene {
 
     this.updateAudio();
 
+
     this.game.react.state.socket.on("word checked", function (scoreObj) {
       const isCurrentPlayer = true;
       scene.gameState.displayScore(scoreObj, isCurrentPlayer);
+
     });
 
     this.game.react.state.socket.on("opponent score", function (scoreObj) {
@@ -514,17 +507,15 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    const { text } = this.gameState;
     const {
-      p1Head,
-      p1Body1,
-      p1Body2,
-      p1Body3,
-      p1Body4,
-      p1Body5,
-      p1Body6,
-    } = this.gameState.p1Worm;
-    const {
+      head,
+      body1,
+      body2,
+      body3,
+      body4,
+      body5,
+      body6,
+      text,
       p2Head,
       p2Body1,
       p2Body2,
@@ -532,7 +523,7 @@ export default class MainScene extends Phaser.Scene {
       p2Body4,
       p2Body5,
       p2Body6,
-    } = this.gameState.p2Worm;
+    } = this.gameState;
     const {
       opponent1,
       opponent2,
@@ -541,6 +532,7 @@ export default class MainScene extends Phaser.Scene {
       opponent5,
       opponent6,
     } = this.gameState.opponents;
+
 
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.playersDetails.p1.username) {
@@ -559,9 +551,9 @@ export default class MainScene extends Phaser.Scene {
 
       currentEmotion = this.game.react.state.currentEmotion.name;
       // console.log(this.gameState.head.x, this.gameState.head.y);
-      // let { x, y } = this.gameState.head;
-      // this.load.image("obama", obama);
-      // console.log(this.textures.list.head.source[0].source.src);
+      let { x, y } = this.gameState.head;
+      this.load.image("obama", obama);
+      console.log(this.textures.list.head.source[0].source.src);
       // this.gameState.head.loadTexture("obama");
       // this.textures.list.head.source[0].source.src =
       //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
@@ -584,47 +576,41 @@ export default class MainScene extends Phaser.Scene {
       }
     }
 
-    if (p1Head.count === 0) {
-      p1Head.xDest = Math.floor(Math.random() * 800);
-      p1Head.yDest = Math.floor(Math.random() * 600);
-      if (p1Head.xDest - p1Head.x > 0 && p1Head.xDest - p1Head.x < 50) {
-        p1Head.xDest += Math.floor(Math.random() * 100 + 50);
-      } else if (
-        p1Head.xDest - p1Head.x <= 0 &&
-        p1Head.xDest - p1Head.x > -50
-      ) {
-        p1Head.xDest += Math.floor(Math.random() * 100 + 50);
+    if (head.count === 0) {
+      head.xDest = Math.floor(Math.random() * 800);
+      head.yDest = Math.floor(Math.random() * 600);
+      if (head.xDest - head.x > 0 && head.xDest - head.x < 50) {
+        head.xDest += Math.floor(Math.random() * 100 + 50);
+      } else if (head.xDest - head.x <= 0 && head.xDest - head.x > -50) {
+        head.xDest += Math.floor(Math.random() * 100 + 50);
       }
 
-      if (p1Head.yDest - p1Head.y > 0 && p1Head.yDest - p1Head.y < 50) {
-        p1Head.yDest += Math.floor(Math.random() * 100 + 50);
-      } else if (
-        p1Head.yDest - p1Head.x <= 0 &&
-        p1Head.yDest - p1Head.x > -50
-      ) {
-        p1Head.yDest += Math.floor(Math.random() * 100 + 50);
+      if (head.yDest - head.y > 0 && head.yDest - head.y < 50) {
+        head.yDest += Math.floor(Math.random() * 100 + 50);
+      } else if (head.yDest - head.x <= 0 && head.yDest - head.x > -50) {
+        head.yDest += Math.floor(Math.random() * 100 + 50);
       }
 
-      this.physics.moveTo(p1Head, p1Head.xDest, p1Head.yDest, 60, 60, 60);
+      this.physics.moveTo(head, head.xDest, head.yDest, 60, 60, 60);
 
-      p1Head.count = 300;
+      head.count = 300;
     }
-    p1Head.rotation = this.physics.accelerateTo(
-      p1Head,
-      p1Head.xDest,
-      p1Head.yDest,
+    head.rotation = this.physics.accelerateTo(
+      head,
+      head.xDest,
+      head.yDest,
       60,
       60,
       60
     );
-    this.physics.moveTo(p1Body1, p1Head.x, p1Head.y, 60, 750, 750);
-    this.physics.moveTo(p1Body2, p1Body1.x, p1Body1.y, 60, 750, 750);
-    this.physics.moveTo(p1Body3, p1Body2.x, p1Body2.y, 60, 750, 750);
-    this.physics.moveTo(p1Body4, p1Body3.x, p1Body3.y, 60, 750, 750);
-    this.physics.moveTo(p1Body5, p1Body4.x, p1Body4.y, 60, 750, 750);
-    this.physics.moveTo(p1Body6, p1Body5.x, p1Body5.y, 60, 750, 750);
-    if (p1Head.count > 0) {
-      p1Head.count--;
+    this.physics.moveTo(body1, head.x, head.y, 60, 750, 750);
+    this.physics.moveTo(body2, body1.x, body1.y, 60, 750, 750);
+    this.physics.moveTo(body3, body2.x, body2.y, 60, 750, 750);
+    this.physics.moveTo(body4, body3.x, body3.y, 60, 750, 750);
+    this.physics.moveTo(body5, body4.x, body4.y, 60, 750, 750);
+    this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
+    if (head.count > 0) {
+      head.count--;
     }
 
     // Fades out player scores after 3 seconds
