@@ -28,7 +28,9 @@ let currentEmotion = null;
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
-    this.gameState = {};
+    this.gameState = {
+    scores:{}
+    };
   }
 
   preload() {
@@ -314,7 +316,6 @@ export default class MainScene extends Phaser.Scene {
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
 
-    this.gameState.scores = {};
 
     const scoreStyle = {
       font: "35px Arial",
@@ -420,6 +421,7 @@ export default class MainScene extends Phaser.Scene {
       }
     };
 
+
     // this.model = this.sys.game.globals.model;
 
     this.musicButton = this.add.image(130, 585, "checkedBox");
@@ -438,9 +440,11 @@ export default class MainScene extends Phaser.Scene {
 
     this.updateAudio();
 
+
     this.game.react.state.socket.on("word checked", function (scoreObj) {
       const isCurrentPlayer = true;
       scene.gameState.displayScore(scoreObj, isCurrentPlayer);
+
     });
 
     this.game.react.state.socket.on("opponent score", function (scoreObj) {
