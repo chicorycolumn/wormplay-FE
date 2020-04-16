@@ -29,7 +29,14 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
     this.gameState = {
+
+      wormWordArr: [" ", " ", " ", " ", " ", " "],
+      opponentsArr: [" ", " ", " ", " ", " ", " "],
+      opponents: {},
+      text: {},
+
     scores:{}
+
     };
   }
 
@@ -52,7 +59,13 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+
+    const { opponents, opponentsArr } = this.gameState;
+
+    console.log("in phaser CREATE");
+
     const scene = this; // scene variable makes 'this' available anywhere within the create function
+
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
@@ -85,14 +98,6 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Head.count = 0;
     this.gameState.p2Head.body.collideWorldBounds = true;
 
-    // adding player variables
-    // this.gameState.p2Body6
-    // this.gameState.p2Body5
-    // this.gameState.p2Body4
-    // this.gameState.p2Body3
-    // this.gameState.p2Body2
-    // this.gameState.p2Body1
-
     //Create letter styling
     const wordTileStyle = {
       font: "35px Arial",
@@ -101,10 +106,20 @@ export default class MainScene extends Phaser.Scene {
       padding: { top: 4 },
     };
 
+    // create a text block for each part of the array
+    opponentsArr.forEach((char, i) => {
+      const n = i + 1;
+      this.gameState.opponents[`opponent${n}`] = this.add.text(
+        -50,
+        -50,
+        char,
+        wordTileStyle
+      );
+    });
+
     //letter array so the random letter generation can pick from it
 
     // Create a text object and put 6 random letters within it (with styling)
-    this.gameState.text = {};
 
     const letterTileSpecifications = {
       1: { x: 50, y: 25 },
@@ -121,12 +136,15 @@ export default class MainScene extends Phaser.Scene {
 
     Object.keys(letterTileSpecifications).forEach((n) => {
       let num = parseInt(n);
+      const char = Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
-        Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray),
+        char,
         wordTileStyle
+
       );
+      this.gameState.text[`letter${num}`].value = char;
     });
 
     // Loop through text object and set up drag and drop functionality
@@ -150,6 +168,7 @@ export default class MainScene extends Phaser.Scene {
           if (/body\d/g.test(objectKey) === true) {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
+            bodyPart.setInteractive();
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -160,6 +179,9 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
+          } else if (/p2Body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.setOrigin(0.3, 0.1);
           }
         }
       } else if (isP2 === true) {
@@ -167,6 +189,7 @@ export default class MainScene extends Phaser.Scene {
           if (/p2Body\d/g.test(objectKey) === true) {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
+            bodyPart.setInteractive();
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -177,6 +200,9 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
+          } else if (/body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.setOrigin(0.3, 0.1);
           }
         }
       }
@@ -216,12 +242,25 @@ export default class MainScene extends Phaser.Scene {
           this.body.enable = false;
           this.body.x = startX;
           this.body.y = startY;
+        } else {
+          const n = this.onSegment.split("ody")[1];
+          const indexOfChar = n - 1;
+          socket.emit("playerChangesLetter", {
+            index: indexOfChar,
+            character: this.value,
+          });
         }
       });
     }
 
-    // Create Array of worm letters
-    this.gameState.wormWordArr = [" ", " ", " ", " ", " ", " "];
+    //listening for changes in player array
+    socket.on("opponentUpdates", function (data) {
+      opponentsArr.splice(data.index, 1, data.character);
+      opponentsArr.forEach((char, i) => {
+        const n = i + 1;
+        opponents[`opponent${n}`].setText(char);
+      });
+    });
 
     // Create submit button
     const btnStyle = {
@@ -485,6 +524,15 @@ export default class MainScene extends Phaser.Scene {
       p2Body5,
       p2Body6,
     } = this.gameState;
+    const {
+      opponent1,
+      opponent2,
+      opponent3,
+      opponent4,
+      opponent5,
+      opponent6,
+    } = this.gameState.opponents;
+
 
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.playersDetails.p1.username) {
@@ -496,6 +544,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     console.log("in phaser UPDATE");
+
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
       //to show that the head can be changed on cue. No luck yet.
@@ -638,6 +687,34 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(p2Body6, p2Body5.x, p2Body5.y, 60, 750, 750);
     if (p2Head.count > 0) {
       p2Head.count--;
+    }
+
+    if (isP1 === true) {
+      opponent1.x = p2Body1.x;
+      opponent1.y = p2Body1.y;
+      opponent2.x = p2Body2.x;
+      opponent2.y = p2Body2.y;
+      opponent3.x = p2Body3.x;
+      opponent3.y = p2Body3.y;
+      opponent4.x = p2Body4.x;
+      opponent4.y = p2Body4.y;
+      opponent5.x = p2Body5.x;
+      opponent5.y = p2Body5.y;
+      opponent6.x = p2Body6.x;
+      opponent6.y = p2Body6.y;
+    } else if (isP2 === true) {
+      opponent1.x = body1.x;
+      opponent1.y = body1.y;
+      opponent2.x = body2.x;
+      opponent2.y = body2.y;
+      opponent3.x = body3.x;
+      opponent3.y = body3.y;
+      opponent4.x = body4.x;
+      opponent4.y = body4.y;
+      opponent5.x = body5.x;
+      opponent5.y = body5.y;
+      opponent6.x = body6.x;
+      opponent6.y = body6.y;
     }
   }
 
