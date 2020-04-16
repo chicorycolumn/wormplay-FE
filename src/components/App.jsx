@@ -35,26 +35,11 @@ export default class App extends React.Component {
         { name: "sad", action: "time" },
       ],
       currentEmotion: { name: null, src: null },
-      currentRoomIAmIn: null,
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
 
-  joinRoom = () => {
-    console.log("gonna try joining room 3!");
-    this.state.socket.emit("joinRoom", { roomID: 3 });
-  };
-
-  quitRoom = () => {
-    console.log("gonna try quitting room 3!");
-    this.state.socket.emit("quitRoom");
-  };
-
   componentDidMount() {
-    setTimeout(() => {
-      this.joinRoom();
-    }, 5000);
-
     this.setState({ socket: this.props.socket });
   }
 
@@ -96,21 +81,12 @@ export default class App extends React.Component {
     }
 
     if (this.state.socket) {
-      this.state.socket.on("connectionReply", (data) => {
-        console.log(`LOBBY DATA: ${data.rooms}`);
-      });
-
-      this.state.socket.on("connectionRefused", () => {
-        console.log(`Oh no! The room was full or something.`);
-      });
-
-      this.state.socket.on("youJoinedARoom", (data) => {
-        console.log(`Seems like we successfully joined ${data.room.roomID}`);
+      this.state.socket.on("loginConf", (data) => {
         //A check to avoid MFIR.
-        if (data.youCanEnter) {
-          console.log("inside socket.on youJoinedARoom");
+        if (!this.state.whichPlayerAmI) {
+          console.log("inside socket.on loginConf");
           if (data.youCanEnter) {
-            let whichPlayerAmI;
+            let whichPlayerAmI = null;
 
             if (this.state.socket.id === data.playersDetails.p1.id) {
               whichPlayerAmI = "p1";
@@ -132,7 +108,6 @@ export default class App extends React.Component {
               playersDetails: data.playersDetails,
               welcomeMessage,
               iJustLoggedIn: true,
-              currentRoomIAmIn: data.room.roomID,
             });
           } else {
             this.setState({ isRoomFull: true });
