@@ -29,14 +29,13 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
     this.gameState = {
-
       wormWordArr: [" ", " ", " ", " ", " ", " "],
       opponentsArr: [" ", " ", " ", " ", " ", " "],
       opponents: {},
       text: {},
 
-    scores:{}
-
+      scores: {},
+      wantsNewGame: { p1: false, p2: false },
     };
   }
 
@@ -59,7 +58,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-
     const { opponents, opponentsArr } = this.gameState;
 
     console.log("in phaser CREATE");
@@ -142,7 +140,6 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].y,
         char,
         wordTileStyle
-
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -355,7 +352,6 @@ export default class MainScene extends Phaser.Scene {
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
 
-
     const scoreStyle = {
       font: "35px Arial",
       align: "center",
@@ -458,8 +454,11 @@ export default class MainScene extends Phaser.Scene {
           finalScoreStyle
         );
       }
+      scene.gameState.newGameBtn.setVisible(true);
+      scene.gameState.newGameText.setVisible(true);
+      scene.gameState.quitBtn.setVisible(true);
+      scene.gameState.quitText.setVisible(true);
     };
-
 
     // this.model = this.sys.game.globals.model;
 
@@ -479,11 +478,9 @@ export default class MainScene extends Phaser.Scene {
 
     this.updateAudio();
 
-
     this.game.react.state.socket.on("word checked", function (scoreObj) {
       const isCurrentPlayer = true;
       scene.gameState.displayScore(scoreObj, isCurrentPlayer);
-
     });
 
     this.game.react.state.socket.on("opponent score", function (scoreObj) {
@@ -504,6 +501,168 @@ export default class MainScene extends Phaser.Scene {
         }
       );
     });
+
+    this.gameState.newGameBtn = this.add
+      .sprite(300, 350, "blueButton1")
+      .setInteractive();
+    this.gameState.newGameBtn.setScale(0.8);
+    this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+      fontSize: "20px",
+      fill: "#fff",
+      align: "center",
+    });
+    Phaser.Display.Align.In.Center(
+      this.gameState.newGameText,
+      this.gameState.newGameBtn
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerover",
+      function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerdown",
+      function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton2");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerout",
+      function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerup",
+      function (pointer) {
+        if (isP1 === true) {
+          this.game.react.state.socket.broadcast.emit("wants new game", {
+            name: p1Name,
+          });
+        }
+        // this.scene.start("MainScene");
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.setVisible(false);
+    this.gameState.newGameText.setVisible(false);
+
+    this.gameState.quitBtn = this.add
+      .sprite(500, 350, "blueButton1")
+      .setInteractive();
+    this.gameState.quitBtn.setScale(0.8);
+    this.gameState.quitText = this.add.text(0, 0, "Quit", {
+      fontSize: "20px",
+      fill: "#fff",
+      align: "center",
+    });
+
+    Phaser.Display.Align.In.Center(
+      this.gameState.quitText,
+      this.gameState.quitBtn
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerover",
+      function (pointer) {
+        this.gameState.quitBtn = this.add.sprite(500, 350, "blueButton1");
+
+        this.gameState.quitBtn.setScale(0.8);
+        this.gameState.quitText = this.add.text(0, 0, "Quit", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.quitText,
+          this.gameState.quitBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerdown",
+      function (pointer) {
+        this.gameState.quitBtn = this.add.sprite(500, 350, "blueButton2");
+
+        this.gameState.quitBtn.setScale(0.8);
+        this.gameState.quitText = this.add.text(0, 1, "Quit", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.quitText,
+          this.gameState.quitBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerout",
+      function (pointer) {
+        this.gameState.quitBtn = this.add.sprite(500, 350, "blueButton1");
+
+        this.gameState.quitBtn.setScale(0.8);
+        this.gameState.quitText = this.add.text(0, 0, "Quit", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.quitText,
+          this.gameState.quitBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerup",
+      function (pointer) {
+        this.scene.start("Title");
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.setVisible(false);
+    this.gameState.quitText.setVisible(false);
   }
 
   update() {
@@ -533,7 +692,6 @@ export default class MainScene extends Phaser.Scene {
       opponent6,
     } = this.gameState.opponents;
 
-
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.playersDetails.p1.username) {
       p1Name = this.game.react.state.playersDetails.p1.username;
@@ -542,8 +700,6 @@ export default class MainScene extends Phaser.Scene {
     if (p2Name !== this.game.react.state.playersDetails.p2.username) {
       p2Name = this.game.react.state.playersDetails.p2.username;
     }
-
-    console.log("in phaser UPDATE");
 
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
