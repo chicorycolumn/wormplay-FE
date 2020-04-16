@@ -5,6 +5,9 @@ import body from "../assets/body-resized.png";
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
 import blueButton1 from "../assets/ui/blue_button02.png";
+import blueButton2 from "../assets/ui/blue_button03.png";
+import checkedBox from "../assets/ui/blue_boxCheckmark.png";
+import box from "../assets/ui/grey_box.png";
 // import bgMusic from ["../assets/wiggle.mp3"];
 
 import { vowelArray, consonantArray } from "../refObjs.js";
@@ -17,6 +20,8 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 let isP1 = false;
 let isP2 = false;
+let p1Name = null;
+let p2Name = null;
 
 let currentEmotion = null;
 
@@ -24,10 +29,14 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
     this.gameState = {
+
       wormWordArr: [" ", " ", " ", " ", " ", " "],
       opponentsArr: [" ", " ", " ", " ", " ", " "],
       opponents: {},
       text: {},
+
+    scores:{}
+
     };
   }
 
@@ -36,18 +45,27 @@ export default class MainScene extends Phaser.Scene {
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
+    p1Name = this.game.react.state.playersDetails.p1.username;
+    p2Name = this.game.react.state.playersDetails.p2.username;
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("p2Head", p2Head);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
+    this.load.image("blueButton2", blueButton2);
+    this.load.image("checkedBox", checkedBox);
+    this.load.image("box", box);
     this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
   }
 
   create() {
+
     const { opponents, opponentsArr } = this.gameState;
 
     console.log("in phaser CREATE");
+
+    const scene = this; // scene variable makes 'this' available anywhere within the create function
+
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
@@ -81,7 +99,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Head.body.collideWorldBounds = true;
 
     //Create letter styling
-    const textStyle = {
+    const wordTileStyle = {
       font: "35px Arial",
       fill: "#007300",
       align: "center",
@@ -95,7 +113,7 @@ export default class MainScene extends Phaser.Scene {
         -50,
         -50,
         char,
-        textStyle
+        wordTileStyle
       );
     });
 
@@ -123,7 +141,8 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
         char,
-        textStyle
+        wordTileStyle
+
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -310,9 +329,10 @@ export default class MainScene extends Phaser.Scene {
       let wordArr = wormWordArr.map((el) => (el = " "));
       for (const letter in allLettersObj) {
         if (allLettersObj[letter].onSegment !== null) {
-          const bodyIndex =
-            Number(allLettersObj[letter].onSegment.slice(4)) - 1;
-
+          const bodyIndex = isP1
+            ? Number(allLettersObj[letter].onSegment.slice(4)) - 1
+            : Number(allLettersObj[letter].onSegment.slice(6)) - 1;
+          console.log(bodyIndex);
           wordArr[bodyIndex] = allLettersObj[letter].text;
         }
       }
@@ -335,16 +355,154 @@ export default class MainScene extends Phaser.Scene {
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
 
-    this.game.react.state.socket.on("word checked", function (response) {
-      console.log(response);
+
+    const scoreStyle = {
+      font: "35px Arial",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 5,
+    };
+
+    const finalScoreStyle = {
+      font: "45px Arial",
+      color: "#cc0000",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 10,
+    };
+
+    this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
+      const opponentName = isP1 === true ? p2Name : p1Name;
+      if (isCurrentPlayer === true) {
+        this.scores.currentPlayer = scoreObj;
+
+        if (scoreObj.isValid === false) {
+          this.scores.currentPlayerText = scene.add.text(
+            250,
+            400,
+            [`Oh no! ${scoreObj.word} isn't a word!`, `You get no points!`],
+            scoreStyle
+          );
+        } else {
+          this.scores.currentPlayerText = scene.add.text(
+            300,
+            400,
+            [`You said ${scoreObj.word}!`, `That's ${scoreObj.points} points!`],
+            scoreStyle
+          );
+        }
+      } else {
+        this.scores.opponent = scoreObj;
+        if (scoreObj.isValid === false) {
+          this.scores.opponentText = scene.add.text(
+            200,
+            400,
+            [
+              `Ha ha! ${opponentName} said ${scoreObj.word}.`,
+              `That's not a word stupid!`,
+            ],
+            scoreStyle
+          );
+        } else {
+          this.scores.opponentText = scene.add.text(
+            250,
+            400,
+            [
+              `${opponentName} said ${scoreObj.word}!`,
+              `They scored ${scoreObj.points} points!`,
+            ],
+            scoreStyle
+          );
+        }
+      }
+      if (
+        this.scores.currentPlayer !== undefined &&
+        this.scores.opponent !== undefined
+      ) {
+        scene.time.delayedCall(2000, this.showFinalScores, [
+          this.scores,
+          opponentName,
+        ]);
+      }
+    };
+
+    this.gameState.showFinalScores = function (scoresObj, opponentName) {
+      if (scoresObj.currentPlayer.points > scoresObj.opponent.points) {
+        this.finalScoreText = scene.add.text(
+          200,
+          200,
+          [
+            `You win with ${scoresObj.currentPlayer.word}!`,
+            `What a great word!`,
+          ],
+          finalScoreStyle
+        );
+      } else if (scoresObj.currentPlayer.points < scoresObj.opponent.points) {
+        this.finalScoreText = scene.add.text(
+          100,
+          200,
+          [
+            `Oh no ${opponentName} won with ${scoresObj.opponent.word}!`,
+            `I hate that word!`,
+          ],
+          finalScoreStyle
+        );
+      } else {
+        this.finalScoreText = scene.add.text(
+          50,
+          200,
+          [
+            `A drawer?!?! Now no-ones happy!`,
+            `I think your word ${scoresObj.currentPlayer.word} was better`,
+          ],
+          finalScoreStyle
+        );
+      }
+    };
+
+
+    // this.model = this.sys.game.globals.model;
+
+    this.musicButton = this.add.image(130, 585, "checkedBox");
+    this.musicButton.setScale(0.5);
+    this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
+    this.musicText.setScale(0.75);
+    this.musicButton.setInteractive();
+
+    this.musicButton.on(
+      "pointerdown",
+      function () {
+        this.model.musicOn = !this.model.musicOn;
+        this.updateAudio();
+      }.bind(this)
+    );
+
+    this.updateAudio();
+
+
+    this.game.react.state.socket.on("word checked", function (scoreObj) {
+      const isCurrentPlayer = true;
+      scene.gameState.displayScore(scoreObj, isCurrentPlayer);
+
     });
 
-    this.game.react.state.socket.on("opponent score", function (response) {
-      console.log(response);
+    this.game.react.state.socket.on("opponent score", function (scoreObj) {
+      const isCurrentPlayer = false;
+      scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
 
     this.game.react.state.socket.on("api error", function (error) {
       console.log("Error:", error.status, error.message);
+      scene.gameState.errMessage = scene.add.text(
+        250,
+        250,
+        `OH NO! API ERROR: ${error.status} ${error.message}`,
+        {
+          font: "35px Arial",
+          color: "#f00000",
+          align: "center",
+        }
+      );
     });
   }
 
@@ -374,6 +532,18 @@ export default class MainScene extends Phaser.Scene {
       opponent5,
       opponent6,
     } = this.gameState.opponents;
+
+
+    // Update Player Name(s)
+    if (p1Name !== this.game.react.state.playersDetails.p1.username) {
+      p1Name = this.game.react.state.playersDetails.p1.username;
+    }
+
+    if (p2Name !== this.game.react.state.playersDetails.p2.username) {
+      p2Name = this.game.react.state.playersDetails.p2.username;
+    }
+
+    console.log("in phaser UPDATE");
 
     if (this.game.react.state.currentEmotion.name !== currentEmotion) {
       //In here is where I'm  t r y i n g  to change Trump head to Obama,
@@ -441,6 +611,39 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
     if (head.count > 0) {
       head.count--;
+    }
+
+    // Fades out player scores after 3 seconds
+    if (this.gameState.scores.currentPlayerText !== undefined) {
+      this.time.delayedCall(
+        2500,
+        function () {
+          this.tweens.add({
+            targets: this.gameState.scores.currentPlayerText,
+            alpha: 0,
+            duration: 500,
+            ease: "Power 2",
+          });
+        },
+        null,
+        this
+      );
+    }
+
+    if (this.gameState.scores.opponentText !== undefined) {
+      this.time.delayedCall(
+        2500,
+        function () {
+          this.tweens.add({
+            targets: this.gameState.scores.opponentText,
+            alpha: 0,
+            duration: 500,
+            ease: "Power 2",
+          });
+        },
+        null,
+        this
+      );
     }
 
     if (p2Head.count === 0) {
@@ -512,6 +715,20 @@ export default class MainScene extends Phaser.Scene {
       opponent5.y = body5.y;
       opponent6.x = body6.x;
       opponent6.y = body6.y;
+    }
+  }
+
+  updateAudio() {
+    if (this.model.musicOn === false) {
+      this.musicButton.setTexture("box");
+      this.sys.game.globals.bgMusic.stop();
+      this.model.bgMusicPlaying = false;
+    } else {
+      this.musicButton.setTexture("checkedBox");
+      if (this.model.bgMusicPlaying === false) {
+        this.sys.game.globals.bgMusic.play();
+        this.model.bgMusicPlaying = true;
+      }
     }
   }
 }

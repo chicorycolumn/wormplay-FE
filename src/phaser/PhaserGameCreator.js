@@ -6,6 +6,8 @@ import Model from "../Model";
 import OptionsScene from "../phaser/OptionsScene";
 import TitleScene from "../phaser/TitleScene";
 import CreditScene from "../phaser/CreditScene";
+import PreloaderScene from "../phaser/PreloaderScene";
+import BootScene from "../phaser/BootScene";
 
 export default class PhaserGame extends Phaser.Game {
   constructor(react) {
@@ -30,8 +32,9 @@ export default class PhaserGame extends Phaser.Game {
     this.scene.add("Options", OptionsScene);
     this.scene.add("MainScene", MainScene);
     this.scene.add("Title", TitleScene);
-
+    this.scene.add("Preloader", PreloaderScene);
     this.scene.add("Credits", CreditScene);
-    this.scene.start("MainScene");
+    this.scene.add("Boot", BootScene);
+    this.scene.start("Boot");
   }
 }
