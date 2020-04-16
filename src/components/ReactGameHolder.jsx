@@ -16,6 +16,8 @@ export default class ReactGame extends Component {
 
       isP1: false,
       isP2: false,
+
+      playersDetails: null,
     };
   }
 
@@ -35,12 +37,14 @@ export default class ReactGame extends Component {
         currentEmotion: this.props.currentEmotion,
       });
     }
-        
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
       this.setState({ currentEmotion: this.props.currentEmotion });
+    }
+    if (this.state.playersDetails !== this.props.playersDetails) {
+      this.setState({ playersDetails: this.props.playersDetails });
     }
   }
 
