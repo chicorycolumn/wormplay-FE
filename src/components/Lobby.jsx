@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
 import styles from "./css/Lobby.module.css";
+import genStyles from "./css/General.module.css";
 
 import SidePanel from "./SidePanel.jsx";
 
@@ -160,36 +161,47 @@ export default class Lobby extends React.Component {
       <div>
         {this.state.shouldIEnterRoom &&
         this.state.shallIBotherLoadingTheGame ? (
-          <div>
-            <ReactGameHolder
-              socket={socket}
-              currentEmotion={currentEmotion}
-              playersDetails={playersDetails}
-              myUsername={myUsername}
-            />
-            <SidePanel
-              socket={socket}
-              playersDetails={playersDetails}
-              currentEmotion={currentEmotion}
-              myUsername={myUsername}
-              emoObj={emoObj}
-              iJustLoggedIn={iJustLoggedIn}
-            />
+          <div id="georgine" className={genStyles.georgine}>
+            <div id="leftPanel" className={genStyles.leftPanel}>
+              <ReactGameHolder
+                socket={socket}
+                currentEmotion={currentEmotion}
+                playersDetails={playersDetails}
+                myUsername={myUsername}
+              />
+            </div>
+            <div id="rightPanel" className={genStyles.rightPanel}>
+              <SidePanel
+                socket={socket}
+                playersDetails={playersDetails}
+                currentEmotion={currentEmotion}
+                myUsername={myUsername}
+                emoObj={emoObj}
+                iJustLoggedIn={iJustLoggedIn}
+              />
+            </div>
           </div>
         ) : (
-          <div>
-            <h1
-              className={styles.heading}
-            >{`Hello ${this.state.myUsername}, and welcome to the lobby!`}</h1>
-            <button
-              className={styles.buttons}
-              onClick={(e) => {
-                e.preventDefault();
-                this.setState({ shouldIEnterRoom: true });
-              }}
-            >
-              ENTOR
-            </button>
+          <div id="georgine" className={genStyles.georgine}>
+            <div id="leftPanel" className={genStyles.leftPanel}>
+              <div>
+                <h1
+                  className={styles.heading}
+                >{`Hello ${this.state.myUsername}, and welcome to the lobby!`}</h1>
+                <button
+                  className={styles.buttons}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    this.setState({ shouldIEnterRoom: true });
+                  }}
+                >
+                  ENTOR
+                </button>
+              </div>
+            </div>
+            <div id="rightPanel" className={genStyles.rightPanel}>
+              camera...
+            </div>
           </div>
         )}
       </div>

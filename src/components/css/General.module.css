@@ -1,0 +1,32 @@
+.georgine {
+  border: blue solid 2pt;
+  display: flex;
+  flex-direction: row;
+  width: 1000px;
+  height: 600px;
+  position: relative;
+  left: 5%;
+  top: 20px;
+}
+
+.preGeorgine {
+  border: red solid 2pt;
+  display: flex;
+  flex-direction: row;
+  width: 1000px;
+  height: 600px;
+  position: relative;
+  left: 5%;
+  top: 20px;
+}
+
+.leftPanel {
+  background-color: #b3ff99;
+  width: 800px;
+  height: 600px;
+}
+.rightPanel {
+  /* background-color: aquamarine; */
+  height: 600px;
+  width: 400px;
+}

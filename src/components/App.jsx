@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Lobby from "./Lobby.jsx";
 import styles from "./css/App.module.css";
+import genStyles from "./css/General.module.css";
 
 //You can access the socket as `this.state.socket`.
 //I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
@@ -211,33 +212,35 @@ export default class App extends React.Component {
             className={styles.lobbyInfoDisplay}
           >{`Fuck! I'm so sorry ${myUsername} but the room is full!`}</p>
         ) : (
-          <form>
-            <input
-              className={styles.loginField}
-              id="loginField"
-              maxlength="12"
-              autocomplete="off"
-              value={this.state.loginField}
-              onChange={(e) => {
-                this.setState({ loginField: e.target.value });
-              }}
-              placeholder="Welcome! Please enter your name."
-            ></input>
-            <button
-              className={styles.loginSubmitButton}
-              type="submit"
-              onClick={(e) => {
-                e.preventDefault();
-                if (this.state.loginField.length) {
-                  const myUsername = this.state.loginField;
-                  this.state.socket.emit("login", { username: myUsername });
-                  this.setState({ myUsername, loginField: "" });
-                }
-              }}
-            >
-              Let's play!
-            </button>
-          </form>
+          <div id="preGeorgine" className={genStyles.preGeorgine}>
+            <form>
+              <input
+                className={styles.loginField}
+                id="loginField"
+                maxlength="12"
+                autocomplete="off"
+                value={this.state.loginField}
+                onChange={(e) => {
+                  this.setState({ loginField: e.target.value });
+                }}
+                placeholder="Welcome! Please enter your name."
+              ></input>
+              <button
+                className={styles.loginSubmitButton}
+                type="submit"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (this.state.loginField.length) {
+                    const myUsername = this.state.loginField;
+                    this.state.socket.emit("login", { username: myUsername });
+                    this.setState({ myUsername, loginField: "" });
+                  }
+                }}
+              >
+                Let's play!
+              </button>
+            </form>
+          </div>
         )}
       </div>
     );
