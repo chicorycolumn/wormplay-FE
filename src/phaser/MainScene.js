@@ -35,7 +35,7 @@ export default class MainScene extends Phaser.Scene {
       text: {},
 
       scores: {},
-      wantsNewGame: { p1: false, p2: false },
+      wantsNewGame: null,
     };
   }
 
@@ -46,6 +46,7 @@ export default class MainScene extends Phaser.Scene {
     isP2 = this.game.react.state.isP2;
     p1Name = this.game.react.state.playersDetails.p1.username;
     p2Name = this.game.react.state.playersDetails.p2.username;
+    this.gameState.wantsNewGame = { p1: false, p2: false };
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("p2Head", p2Head);
@@ -502,6 +503,20 @@ export default class MainScene extends Phaser.Scene {
       );
     });
 
+    socket.on("new game request", function (opponentInfo) {
+      scene.gameState.wantsNewGame[opponentInfo.player] = true;
+      scene.gameState.errMessage = scene.add.text(
+        100,
+        400,
+        `Uh oh! ${opponentInfo.name} wants a re-match. Do you?`,
+        scoreStyle
+      );
+    });
+
+    socket.on("start new game", function () {
+      scene.scene.start("MainScene");
+    });
+
     this.gameState.newGameBtn = this.add
       .sprite(300, 350, "blueButton1")
       .setInteractive();
@@ -514,24 +529,6 @@ export default class MainScene extends Phaser.Scene {
     Phaser.Display.Align.In.Center(
       this.gameState.newGameText,
       this.gameState.newGameBtn
-    );
-
-    this.gameState.newGameBtn.on(
-      "pointerover",
-      function (pointer) {
-        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
-
-        this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
-          fontSize: "20px",
-          fill: "#fff",
-          align: "center",
-        });
-        Phaser.Display.Align.In.Center(
-          this.gameState.newGameText,
-          this.gameState.newGameBtn
-        );
-      }.bind(this)
     );
 
     this.gameState.newGameBtn.on(
@@ -573,12 +570,33 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.newGameBtn.on(
       "pointerup",
       function (pointer) {
-        if (isP1 === true) {
-          this.game.react.state.socket.broadcast.emit("wants new game", {
-            name: p1Name,
+        isP1 === true
+          ? (this.gameState.wantsNewGame.p1 = true)
+          : (this.gameState.wantsNewGame.p2 = true);
+        if (
+          this.gameState.wantsNewGame.p1 === true &&
+          this.gameState.wantsNewGame.p2 === true
+        ) {
+          socket.emit("new game");
+          // this.scene.start("MainScene"); // put this at socket.on('new game') - when it can be sent to all players in a namespace / room
+        } else {
+          socket.emit("make new game request", {
+            name: isP1 === true ? p1Name : p2Name,
+            player: isP1 === true ? "p1" : "p2",
           });
         }
-        // this.scene.start("MainScene");
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
       }.bind(this)
     );
 
@@ -598,24 +616,6 @@ export default class MainScene extends Phaser.Scene {
     Phaser.Display.Align.In.Center(
       this.gameState.quitText,
       this.gameState.quitBtn
-    );
-
-    this.gameState.quitBtn.on(
-      "pointerover",
-      function (pointer) {
-        this.gameState.quitBtn = this.add.sprite(500, 350, "blueButton1");
-
-        this.gameState.quitBtn.setScale(0.8);
-        this.gameState.quitText = this.add.text(0, 0, "Quit", {
-          fontSize: "20px",
-          fill: "#fff",
-          align: "center",
-        });
-        Phaser.Display.Align.In.Center(
-          this.gameState.quitText,
-          this.gameState.quitBtn
-        );
-      }.bind(this)
     );
 
     this.gameState.quitBtn.on(
