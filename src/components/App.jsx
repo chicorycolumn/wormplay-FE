@@ -51,7 +51,10 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
-    this.setState({ socket: this.props.socket });
+    this.setState({
+      socket: this.props.socket,
+      amILoggedIn: this.props.amILoggedIn,
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {

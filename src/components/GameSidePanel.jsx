@@ -86,10 +86,6 @@ export default class GameSidePanel extends React.Component {
     return (
       <div className={styles.rightPanelDisplay}>
         <div className={styles.topbox}>
-          {/* <div id="videoContainer" className={styles.videoContainer}>
-              <video id="video" className={styles.video} autoPlay muted></video>
-              <canvas id="canvasPhoto" className={styles.canvasPhoto}></canvas>
-            </div> */}
           <div className={styles.emojiHolder}>
             {Object.keys(photoSet).map((label) => {
               return (
@@ -97,7 +93,6 @@ export default class GameSidePanel extends React.Component {
                 //pictures in the game sidebar, though I didn't spend much time finding out
                 //how to set source, so currently they don't display. *********************/
                 <div className={styles.emoHolder} id={`${emoObj.name}Holder`}>
-                  {/* <p className={styles.emoBars} id={`${emoObj.name}Bars`}>□□□□</p> */}
                   <img
                     src={photoSet[label].src}
                     className={styles.emoEmoji}
@@ -114,16 +109,17 @@ export default class GameSidePanel extends React.Component {
 
         <div className={styles.midbox}>
           <div>
-            <p id="youAre"></p>
-            <p
-              id="playersDisplay"
-              className={styles.playersDisplay}
-            >{`Player 1: ${
-              currentRoom.p1.username ? currentRoom.p1.username : "waiting..."
-            } - - - - - Player 2: ${
-              currentRoom.p2.username ? currentRoom.p2.username : "waiting..."
-            }`}</p>
+            <div className={styles.playerNamesBox}>
+              <p className={styles.playersDisplay}>{`Player 1: ${
+                currentRoom.p1.username ? currentRoom.p1.username : "waiting..."
+              }`}</p>
+              <p className={styles.playersDisplay}>{`Player 2: ${
+                currentRoom.p2.username ? currentRoom.p2.username : "waiting..."
+              }`}</p>
+            </div>
+
             <ul id="infoDisplay" className={styles.infoDisplay}></ul>
+
             <div className={styles.bottombox}>
               {currentRoom.p1.username !== null &&
               currentRoom.p2.username !== null ? (

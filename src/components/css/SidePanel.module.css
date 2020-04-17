@@ -5,8 +5,17 @@
   padding: 0px;
 }
 
+.playerNamesBox {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
 .playersDisplay {
   color: blue;
+  font-family: arial;
+  font-weight: bold;
 }
 
 .rightPanelDisplay {
@@ -47,6 +56,8 @@
 .bottombox {
   background-color: thistle;
   grid-row: 3;
+  border: black solid 1pt;
+  height: 100%;
 }
 
 .webcamHolder {

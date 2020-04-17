@@ -12,6 +12,7 @@ export default class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
+      goStraightToRoomOne: false,
       ridEventListener: () => {
         console.log("empty fxn instead of ridEventListener");
       },
@@ -59,24 +60,18 @@ export default class Lobby extends React.Component {
   };
 
   componentDidMount() {
-    let {
-      socket,
-
-      myUsername,
-
-      rooms,
-    } = this.props;
+    let { socket, myUsername, goStraightToRoomOne, rooms } = this.props;
     this.setState({
       socket,
-
+      goStraightToRoomOne,
       myUsername,
-
       rooms,
     });
   }
 
   joinRoom = (roomID) => {
     this.stopWebcam();
+
     // console.log(roomID, "roomid");
     console.log("in joinroom function");
     this.state.socket.emit("joinRoom", { roomID });
@@ -88,9 +83,18 @@ export default class Lobby extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+    if (this.state.socket && this.state.goStraightToRoomOne) {
+      console.log(this.props.socket);
+      this.state.socket.emit("joinRoom", { roomID: 1, developmentCheat: true });
+    }
+
     if (this.state.socket) {
       this.state.socket.on("connectionRefused", () => {
         console.log(`Oh no! The room was full or something.`);
+      });
+
+      this.state.socket.on("lobbyUpdate", (data) => {
+        this.setState({ rooms: data.rooms });
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
@@ -228,15 +232,17 @@ export default class Lobby extends React.Component {
             </div>
           </div>
         ) : (
-          <div id="georgine" className={genStyles.georgine}>
-            <div id="leftPanel" className={genStyles.leftPanel}>
-              <div>
-                <h1
-                  className={styles.heading}
-                >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
+          <>
+            {!this.state.goStraightToRoomOne && (
+              <div id="georgine" className={genStyles.georgine}>
+                <div id="leftPanel" className={genStyles.leftPanel}>
+                  <div>
+                    <h1
+                      className={styles.heading}
+                    >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
-                <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
-                {/* 
+                    <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
+                    {/* 
                 <button
                   className={styles.buttons}
                   onClick={(e) => {
@@ -246,19 +252,21 @@ export default class Lobby extends React.Component {
                 >
                   ENTER ROOM 1
                 </button> */}
+                  </div>
+                </div>
+                <div id="rightPanel" className={genStyles.rightPanel}>
+                  <LobbySidePanel
+                    socket={socket}
+                    myUsername={myUsername}
+                    iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
+                    setStateCallback={this.setStateCallback}
+                    rooms={rooms}
+                    currentRoom={currentRoom}
+                  />
+                </div>
               </div>
-            </div>
-            <div id="rightPanel" className={genStyles.rightPanel}>
-              <LobbySidePanel
-                socket={socket}
-                myUsername={myUsername}
-                iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
-                setStateCallback={this.setStateCallback}
-                rooms={rooms}
-                currentRoom={currentRoom}
-              />
-            </div>
-          </div>
+            )}
+          </>
         )}
       </div>
     );
