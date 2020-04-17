@@ -31,6 +31,23 @@ export default class Lobby extends React.Component {
     this.setState(newState);
   };
 
+  stopWebcam = () => {
+    console.log("gonna stop WEBCAM!");
+    navigator.getUserMedia(
+      { video: {} },
+      (stream) => {
+        video.srcObject = null; // red underlined but is actually okay.
+        const tracks = stream.getTracks();
+        console.log(tracks);
+        tracks.forEach(function (track) {
+          track.stop();
+          track.enabled = false;
+        });
+      },
+      (err) => console.error(err)
+    );
+  };
+
   componentDidMount() {
     let {
       socket,
@@ -71,6 +88,7 @@ export default class Lobby extends React.Component {
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
+        this.stopWebcam();
         console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {

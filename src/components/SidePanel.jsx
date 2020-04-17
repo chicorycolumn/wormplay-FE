@@ -56,6 +56,13 @@ export default class SidePanel extends React.Component {
     if (this.state.currentComponent !== this.props.currentComponent) {
       this.setState({ currentComponent: this.props.currentComponent });
     }
+
+    if (
+      prevState.currentComponent === "lobby" &&
+      this.state.currentComponent !== "lobby"
+    ) {
+      // console.log("gonna try disable video!");
+    }
   }
   render() {
     const {
