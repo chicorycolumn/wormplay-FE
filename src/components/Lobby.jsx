@@ -202,6 +202,7 @@ export default class Lobby extends React.Component {
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
+                photoSet={photoSet}
               />
             </div>
           </div>
@@ -216,9 +217,13 @@ export default class Lobby extends React.Component {
                 <ul>
                   {rooms.map((room) => (
                     <li>
-                      {room.roomName +
+                      {" ...ROOM NAME:... " +
+                        room.roomName +
+                        " ...ROOM ID:... " +
                         room.roomID +
+                        " ...AND THE PLAYERS ARE... " +
                         room.p1.username +
+                        " ...AND... " +
                         room.p2.username}
                     </li>
                   ))}

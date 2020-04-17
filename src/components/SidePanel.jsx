@@ -6,6 +6,12 @@ export default class SidePanel extends React.Component {
   constructor() {
     super();
     this.state = {
+      photoSet: {
+        happy: { src: null },
+        angry: { src: null },
+        sad: { src: null },
+        surprised: { src: null },
+      },
       currentComponent: null,
       socket: null,
       playersDetails: {
@@ -51,6 +57,7 @@ export default class SidePanel extends React.Component {
       playersDetails,
       myUsername,
       emoObj,
+      photoSet,
     } = this.state;
 
     return (
@@ -62,7 +69,7 @@ export default class SidePanel extends React.Component {
             console.log("gonna call face rec");
             this.setState({ iJustEnteredLobbyOrRoom: false });
             emotionRecFullFunction(this.props.setStateCallback);
-          }, 500)}
+          }, 1000)}
         {/* /////////////////*/}
         {this.props.currentComponent === "lobby" && (
           <div className={styles.topbox}>
@@ -103,6 +110,31 @@ export default class SidePanel extends React.Component {
                     </div>
                   );
                 })}
+            </div>
+          </div>
+        )}
+        {this.props.currentComponent === "game" && (
+          <div className={styles.topbox}>
+            {/* <div id="videoContainer" className={styles.videoContainer}>
+              <video id="video" className={styles.video} autoPlay muted></video>
+              <canvas id="canvasPhoto" className={styles.canvasPhoto}></canvas>
+            </div> */}
+            <div className={styles.emojiHolder}>
+              {Object.keys(photoSet).map((label) => {
+                return (
+                  <div className={styles.emoHolder} id={`${emoObj.name}Holder`}>
+                    {/* <p className={styles.emoBars} id={`${emoObj.name}Bars`}>□□□□</p> */}
+                    <img
+                      src={photoSet[label].src}
+                      className={styles.emoEmoji}
+                      id={`${label}Photo`}
+                    />
+                    <p className={styles.emoLabel} id={`${label}Action`}>
+                      {label.toUpperCase()}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
