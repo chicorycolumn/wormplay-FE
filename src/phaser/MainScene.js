@@ -27,6 +27,7 @@ let isP2 = false;
 let p1Name = null;
 let p2Name = null;
 let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
+let scene;
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -44,6 +45,7 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     console.log("in phaser PRELOAD");
     console.log(this.game.react.state.photoSet);
+    scene = this; // scene variable makes 'this' available anywhere within the game
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
@@ -67,8 +69,6 @@ export default class MainScene extends Phaser.Scene {
     const { opponents, opponentsArr } = this.gameState;
 
     console.log("in phaser CREATE");
-
-    const scene = this; // scene variable makes 'this' available anywhere within the create function
 
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
@@ -286,6 +286,37 @@ export default class MainScene extends Phaser.Scene {
       fill: "#fff",
     });
     Phaser.Display.Align.In.Center(this.menuText, this.menuButton);
+
+    // Permanent quit button
+    this.lobbyBtn = this.add.sprite(750, 585, "blueButton1").setInteractive();
+    this.lobbyBtn.setScale(0.5);
+    this.lobbyText = this.add.text(0, 0, "Lobby", {
+      fontSize: "20px",
+      fill: "#fff",
+    });
+    Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+
+    this.lobbyBtn.on(
+      "pointerdown",
+      function (pointer) {
+        this.lobbyBtn = this.add
+          .sprite(750, 585, "blueButton2")
+          .setInteractive();
+        this.lobbyBtn.setScale(0.5);
+        this.lobbyText = this.add.text(0, 0, "Lobby", {
+          fontSize: "20px",
+          fill: "#fff",
+        });
+        Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+      }.bind(this)
+    );
+
+    this.menuButton.on(
+      "pointerup",
+      function (pointer) {
+        // GO TO LOBBY
+      }.bind(this)
+    );
 
     //adding menu button functionality, on click will take you to title
     this.menuButton.on(
@@ -590,6 +621,8 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.newGameBtn.on(
       "pointerup",
       function (pointer) {
+        console.log("P1:", isP1);
+        console.log("P2:", isP2);
         isP1 === true
           ? (this.gameState.wantsNewGame.p1 = true)
           : (this.gameState.wantsNewGame.p2 = true);
@@ -620,8 +653,8 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    this.gameState.newGameBtn.setVisible(false);
-    this.gameState.newGameText.setVisible(false);
+    // this.gameState.newGameBtn.setVisible(false);
+    // this.gameState.newGameText.setVisible(false);
 
     this.gameState.quitBtn = this.add
       .sprite(500, 350, "blueButton1")
