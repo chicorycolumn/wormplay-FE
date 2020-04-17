@@ -122,6 +122,9 @@ export default class SidePanel extends React.Component {
             <div className={styles.emojiHolder}>
               {Object.keys(photoSet).map((label) => {
                 return (
+                  //*********** JAMES this is where I tried to set the webcam photo sources as
+                  //pictures in the game sidebar, though I didn't spend much time finding out
+                  //how to set source, so currently they don't display. *********************/
                   <div className={styles.emoHolder} id={`${emoObj.name}Holder`}>
                     {/* <p className={styles.emoBars} id={`${emoObj.name}Bars`}>□□□□</p> */}
                     <img
