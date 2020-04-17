@@ -43,9 +43,12 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
+<<<<<<< HEAD
     console.log("in phaser PRELOAD");
     console.log(this.game.react.state.photoSet);
     scene = this; // scene variable makes 'this' available anywhere within the game
+=======
+>>>>>>> 5774fa8fb9c0ebe97f0015d94c01bd8ea25cd9d7
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
@@ -68,7 +71,11 @@ export default class MainScene extends Phaser.Scene {
   create() {
     const { opponents, opponentsArr } = this.gameState;
 
+<<<<<<< HEAD
     console.log("in phaser CREATE");
+=======
+    const scene = this; // scene variable makes 'this' available anywhere within the create function
+>>>>>>> 5774fa8fb9c0ebe97f0015d94c01bd8ea25cd9d7
 
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
@@ -182,9 +189,6 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
-          } else if (/p2Body\d/g.test(objectKey) === true) {
-            const bodyPart = this.gameState[objectKey];
-            bodyPart.setOrigin(0.3, 0.1);
           }
         }
       } else if (isP2 === true) {
@@ -203,9 +207,6 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
-          } else if (/body\d/g.test(objectKey) === true) {
-            const bodyPart = this.gameState[objectKey];
-            bodyPart.setOrigin(0.3, 0.1);
           }
         }
       }
@@ -218,6 +219,14 @@ export default class MainScene extends Phaser.Scene {
       thisLetter.on("dragstart", function (pointer) {
         this.body.enable = true;
         this.setTint(0xff0000);
+        if (this.onSegment !== null) {
+          const n = this.onSegment.split("ody")[1];
+          const indexOfChar = n - 1;
+          this.scene.gameState.wormWordArr.splice(indexOfChar, 1, " ");
+          socket.emit("playerChangesLetter", {
+            array: this.scene.gameState.wormWordArr,
+          });
+        }
       });
 
       thisLetter.on("drag", function (pointer, dragX, dragY) {
@@ -248,9 +257,30 @@ export default class MainScene extends Phaser.Scene {
         } else {
           const n = this.onSegment.split("ody")[1];
           const indexOfChar = n - 1;
+          this.scene.gameState.wormWordArr.splice(indexOfChar, 1, this.value);
+          if (isP1 === true) {
+            for (const objectKey in this.scene.gameState) {
+              if (
+                /body\d/g.test(objectKey) === true &&
+                this.scene.gameState[objectKey].hasLetter === false
+              ) {
+                const index = this.scene.gameState[objectKey].index;
+                this.scene.gameState.wormWordArr.splice(index, 1, " ");
+              }
+            }
+          } else if (isP2 === true) {
+            for (const objectKey in this.scene.gameState) {
+              if (
+                /p2Body\d/g.test(objectKey) === true &&
+                this.gameState[objectKey].hasLetter === false
+              ) {
+                const index = this.scene.gameState[objectKey].index;
+                this.scene.gameState.wormWordArr.splice(index, 1, " ");
+              }
+            }
+          }
           socket.emit("playerChangesLetter", {
-            index: indexOfChar,
-            character: this.value,
+            array: this.scene.gameState.wormWordArr,
           });
         }
       });
@@ -258,11 +288,11 @@ export default class MainScene extends Phaser.Scene {
 
     //listening for changes in player array
     socket.on("opponentUpdates", function (data) {
-      opponentsArr.splice(data.index, 1, data.character);
-      opponentsArr.forEach((char, i) => {
+      for (let i = 0; i < opponentsArr.length; i++) {
+        opponentsArr[i] = data.array[i];
         const n = i + 1;
-        opponents[`opponent${n}`].setText(char);
-      });
+        opponents[`opponent${n}`].setText(opponentsArr[i]);
+      }
     });
 
     // Create submit button
@@ -366,7 +396,6 @@ export default class MainScene extends Phaser.Scene {
           const bodyIndex = isP1
             ? Number(allLettersObj[letter].onSegment.slice(4)) - 1
             : Number(allLettersObj[letter].onSegment.slice(6)) - 1;
-          console.log(bodyIndex);
           wordArr[bodyIndex] = allLettersObj[letter].text;
         }
       }
@@ -754,26 +783,6 @@ export default class MainScene extends Phaser.Scene {
       p2Name = this.game.react.state.playersDetails.p2.username;
     }
 
-    //In here is where I was  t r y i n g  to change Trump head to Obama. ~Chris
-    // if (this.game.react.state.currentEmotion.name !== currentEmotion) {
-    //   //to show that the head can be changed on cue. No luck yet.
-    //   currentEmotion = this.game.react.state.currentEmotion.name;
-    //   // console.log(this.gameState.head.x, this.gameState.head.y);
-    //   let { x, y } = this.gameState.head;
-    //   this.load.image("obama", obama);
-    //   console.log(this.textures.list.head.source[0].source.src);
-    //   // this.gameState.head.loadTexture("obama");
-    //   // this.textures.list.head.source[0].source.src =
-    //   //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
-    //   // console.log(this);
-    //   // this.gameState.head.texture = headCartoon;
-    //   // this.gameState.head = this.physics.add.image(x, y, "newHead");
-    //   // console.log(this.gameState.head.texture.source[0].source);
-    //   // console.log(headCartoon);
-    //   // this.load.image("headCartoon", headCartoon);
-    //   // this.gameState.head.add.image("headCartoon");
-    // }
-
     // Fix letters to body parts
     for (const letter in text) {
       if (text[letter].onSegment !== null) {
@@ -898,30 +907,30 @@ export default class MainScene extends Phaser.Scene {
     }
 
     if (isP1 === true) {
-      opponent1.x = p2Body1.x;
-      opponent1.y = p2Body1.y;
-      opponent2.x = p2Body2.x;
-      opponent2.y = p2Body2.y;
-      opponent3.x = p2Body3.x;
-      opponent3.y = p2Body3.y;
-      opponent4.x = p2Body4.x;
-      opponent4.y = p2Body4.y;
-      opponent5.x = p2Body5.x;
-      opponent5.y = p2Body5.y;
-      opponent6.x = p2Body6.x;
-      opponent6.y = p2Body6.y;
+      opponent1.x = p2Body1.x - 28;
+      opponent1.y = p2Body1.y - 28;
+      opponent2.x = p2Body2.x - 28;
+      opponent2.y = p2Body2.y - 28;
+      opponent3.x = p2Body3.x - 28;
+      opponent3.y = p2Body3.y - 28;
+      opponent4.x = p2Body4.x - 28;
+      opponent4.y = p2Body4.y - 28;
+      opponent5.x = p2Body5.x - 28;
+      opponent5.y = p2Body5.y - 28;
+      opponent6.x = p2Body6.x - 28;
+      opponent6.y = p2Body6.y - 28;
     } else if (isP2 === true) {
-      opponent1.x = body1.x;
+      opponent1.x = body1.x - 28;
       opponent1.y = body1.y;
-      opponent2.x = body2.x;
+      opponent2.x = body2.x - 28;
       opponent2.y = body2.y;
-      opponent3.x = body3.x;
+      opponent3.x = body3.x - 28;
       opponent3.y = body3.y;
-      opponent4.x = body4.x;
+      opponent4.x = body4.x - 28;
       opponent4.y = body4.y;
-      opponent5.x = body5.x;
+      opponent5.x = body5.x - 28;
       opponent5.y = body5.y;
-      opponent6.x = body6.x;
+      opponent6.x = body6.x - 28;
       opponent6.y = body6.y;
     }
   }

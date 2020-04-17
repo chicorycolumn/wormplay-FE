@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import Lobby from "./Lobby.jsx";
 import styles from "./css/App.module.css";
+import { emotionRecFullFunction } from "../../public/emotion-rec.js";
+// import { Router } from "@reach/router";
+import RoomTable from "./RoomTable.jsx";
 import genStyles from "./css/General.module.css";
 import apple from "../assets/apple.png";
 
@@ -27,12 +30,19 @@ export default class App extends React.Component {
         p2: { username: null, id: null, score: 666 }, //change all back to null after CSS work
       },
       welcomeMessage: "",
+      emoObj: [
+        { name: "happy", action: "rush" },
+        { name: "angry", action: "steal" },
+        { name: "surprised", action: "drop" },
+        { name: "sad", action: "time" },
+      ],
+      currentEmotion: { name: null, src: null },
+
       currentRoomIAmIn: null,
       rooms: [],
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
-
 
   setStateCallback = (key, object) => {
     let newState = {};
@@ -79,7 +89,6 @@ export default class App extends React.Component {
     if (this.state.socket) {
       if (!this.state.amILoggedIn) {
         this.state.socket.on("connectionReply", (data) => {
-          console.log(data.rooms);
           this.setState({ amILoggedIn: true, rooms: data.rooms });
         });
       }
@@ -87,13 +96,16 @@ export default class App extends React.Component {
   }
 
   render() {
-    console.log("inside render in app.jsx");
     const {
       isRoomFull,
       whichPlayerAmI,
       playersDetails,
       socket,
       myUsername,
+
+      emoObj,
+      faceValue,
+      currentEmotion,
 
       rooms,
     } = this.state;
