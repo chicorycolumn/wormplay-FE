@@ -39,6 +39,11 @@
   grid-row: 2;
 }
 
+.midboxLong {
+  background-color: yellow;
+  grid-row: 2 / 4;
+}
+
 .bottombox {
   background-color: thistle;
   grid-row: 3;
@@ -147,4 +152,11 @@
 
 .emotions {
   display: inline-block;
+}
+
+.instructions {
+  font-family: arial;
+  font-size: 13.5pt;
+  margin: 15px;
+  margin-top: 25px;
 }

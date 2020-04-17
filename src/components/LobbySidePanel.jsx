@@ -119,18 +119,25 @@ export default class LobbySidePanel extends React.Component {
           </div>
         </div>
 
-        <div className={styles.midbox}>
+        <div className={styles.midboxLong}>
           <div>
-            <h2>{`Hey ${myUsername}!`}</h2>
-            <p>
-              Wormplay is a fast-paced competitive word game that combines
-              scrabble and eye-hand coordination. You can take some pictures of
-              yourself with your webcam above, which will personalise your worm!
-              Don't worry though, this is completely optional. <br />
+            <p className={styles.instructions}>
+              Pull a face and we'll capture your emotion! This is optional and{" "}
+              <strong>personalises</strong> your worm!
+              <br />
+              <br />
+              Wormplay is a fast-paced competitive <strong>
+                word game
+              </strong>{" "}
+              that combines scrabble and coordination. Remember - words are
+              always spelled
+              <strong> head to tail</strong>.
+              <br />
+              <br />
               When you're ready, click a room to enter, or create a new room.
-              Don't forget - the words are always spelled from{" "}
-              <strong>head to tail</strong>. <br /> Good luck, and happy
-              worming!
+              <br />
+              <br />
+              Good luck, and happy worming!
             </p>
           </div>
         </div>

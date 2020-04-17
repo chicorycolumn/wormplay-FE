@@ -20,15 +20,17 @@ class RoomTable extends Component {
           <td>{room.p1.username}</td>
           <td>{room.p2.username}</td>
           <td>
-            <button
-              value={roomID}
-              onClick={(e) => {
-                e.preventDefault();
-                joinRoom(e.target.value);
-              }}
-            >
-              Join
-            </button>
+            {(room.p1.username === null || room.p2.username === null) && (
+              <button
+                value={roomID}
+                onClick={(e) => {
+                  e.preventDefault();
+                  joinRoom(e.target.value);
+                }}
+              >
+                Join
+              </button>
+            )}
           </td>
         </tr>
       );

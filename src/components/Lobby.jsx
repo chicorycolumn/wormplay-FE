@@ -5,6 +5,8 @@ import LobbySidePanel from "./LobbySidePanel.jsx";
 import styles from "./css/Lobby.module.css";
 import genStyles from "./css/General.module.css";
 import RoomTable from "./RoomTable.jsx";
+import { greetings } from "../refObjs";
+const greeting = greetings[Math.floor(Math.random() * 10)];
 
 export default class Lobby extends React.Component {
   constructor() {
@@ -231,7 +233,7 @@ export default class Lobby extends React.Component {
               <div>
                 <h1
                   className={styles.heading}
-                >{`Hello ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
+                >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
                 <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
                 {/* 
