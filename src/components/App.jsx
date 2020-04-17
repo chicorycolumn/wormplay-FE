@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
 import styles from "./css/App.module.css";
 import { emotionRecFullFunction } from "../../public/emotion-rec.js";
+// import { Router } from "@reach/router";
+import RoomTable from "./RoomTable.jsx";
 
 //You can access the socket as `this.state.socket`.
 //I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
@@ -35,6 +37,26 @@ export default class App extends React.Component {
         { name: "sad", action: "time" },
       ],
       currentEmotion: { name: null, src: null },
+      rooms: [
+        {
+          roomName: "wormy room 5",
+          roomID: 1,
+          p1: { username: "benny", id: 12345 },
+          p2: { username: null, id: null },
+        },
+        {
+          roomName: "slithery room 2",
+          roomID: 2,
+          p1: { username: null, id: null },
+          p2: { username: "linda", id: 6789 },
+        },
+        {
+          roomName: "earthy room 3",
+          roomID: 3,
+          p1: { username: null, id: null },
+          p2: { username: null, id: null },
+        },
+      ],
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
@@ -186,6 +208,7 @@ export default class App extends React.Component {
       emoObj,
       faceValue,
       currentEmotion,
+      rooms,
     } = this.state;
 
     const ul = document.getElementById("infoDisplay");
@@ -198,6 +221,8 @@ export default class App extends React.Component {
     console.log(this.state.currentEmotion);
     return (
       <div>
+        <RoomTable rooms={rooms} />
+
         {this.state.amILoggedIn ? (
           <div>
             {this.state.shallIBotherLoadingTheGame && (
