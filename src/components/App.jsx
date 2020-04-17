@@ -33,7 +33,6 @@ export default class App extends React.Component {
     this.setStateCallback = this.setStateCallback.bind(this);
   }
 
-
   setStateCallback = (key, object) => {
     let newState = {};
     newState[key] = object;
@@ -79,7 +78,6 @@ export default class App extends React.Component {
     if (this.state.socket) {
       if (!this.state.amILoggedIn) {
         this.state.socket.on("connectionReply", (data) => {
-          console.log(data.rooms);
           this.setState({ amILoggedIn: true, rooms: data.rooms });
         });
       }
@@ -94,7 +92,6 @@ export default class App extends React.Component {
       playersDetails,
       socket,
       myUsername,
-
       rooms,
     } = this.state;
 

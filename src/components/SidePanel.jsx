@@ -31,6 +31,7 @@ export default class SidePanel extends React.Component {
 
   componentDidMount() {
     let { socket, playersDetails, myUsername, currentComponent } = this.props;
+    console.log("gonna set state with ", myUsername);
     this.setState({
       socket,
       playersDetails,
@@ -49,6 +50,12 @@ export default class SidePanel extends React.Component {
     ) {
       this.setState({ playersDetails: this.props.playersDetails });
     }
+    if (this.state.myUsername !== this.props.myUsername) {
+      this.setState({ myUsername: this.props.myUsername });
+    }
+    if (this.state.currentComponent !== this.props.currentComponent) {
+      this.setState({ currentComponent: this.props.currentComponent });
+    }
   }
   render() {
     const {
@@ -62,7 +69,6 @@ export default class SidePanel extends React.Component {
 
     return (
       <div className={styles.rightPanelDisplay}>
-        {/* /////////////////THIS IS WHERE WE CALL THE FACE RECOGNITION. */}
         {this.state.iJustEnteredLobbyOrRoom &&
           this.props.currentComponent === "lobby" &&
           setTimeout(() => {
@@ -70,19 +76,10 @@ export default class SidePanel extends React.Component {
             this.setState({ iJustEnteredLobbyOrRoom: false });
             emotionRecFullFunction(this.props.setStateCallback);
           }, 1000)}
-        {/* /////////////////*/}
         {this.props.currentComponent === "lobby" && (
           <div className={styles.topbox}>
             <div id="videoContainer" className={styles.videoContainer}>
-              {/* <div id="videoObscurer" className={styles.videoObscurer}>
-                          video obscured for you
-                        </div> */}
               <video id="video" className={styles.video} autoPlay muted></video>
-
-              {/* <canvas
-                          id="canvasDetections"
-                          className={styles.canvasDetections}
-                        ></canvas> */}
               <canvas id="canvasPhoto" className={styles.canvasPhoto}></canvas>
             </div>
             <div className={styles.emojiHolder}>
@@ -142,20 +139,40 @@ export default class SidePanel extends React.Component {
           </div>
         )}
         <div className={styles.midbox}>
-          <p id="youAre"></p>
-          <p
-            id="playersDisplay"
-            className={styles.playersDisplay}
-          >{`Player 1: ${
-            playersDetails.p1.username
-              ? playersDetails.p1.username
-              : "waiting..."
-          } - - - - - Player 2: ${
-            playersDetails.p2.username
-              ? playersDetails.p2.username
-              : "waiting..."
-          }`}</p>
-          <ul id="infoDisplay" className={styles.infoDisplay}></ul>
+          {this.state.currentComponent === "lobby" && (
+            <div>
+              <h2>{`Hey ${myUsername}!`}</h2>
+              <p>
+                Wormplay is a fast-paced competitive word game that combines
+                scrabble and eye-hand coordination. You can take some pictures
+                of yourself with your webcam above, which will personalise your
+                worm! Don't worry though, this is completely optional. <br />
+                When you're ready, click a room to enter, or create a new room.
+                Don't forget - the words are always spelled from{" "}
+                <strong>head to tail</strong>. <br /> Good luck, and happy
+                worming!
+              </p>
+            </div>
+          )}
+
+          {this.state.currentComponent === "game" && (
+            <div>
+              <p id="youAre"></p>
+              <p
+                id="playersDisplay"
+                className={styles.playersDisplay}
+              >{`Player 1: ${
+                playersDetails.p1.username
+                  ? playersDetails.p1.username
+                  : "waiting..."
+              } - - - - - Player 2: ${
+                playersDetails.p2.username
+                  ? playersDetails.p2.username
+                  : "waiting..."
+              }`}</p>
+              <ul id="infoDisplay" className={styles.infoDisplay}></ul>
+            </div>
+          )}
         </div>
         <div className={styles.bottombox}>
           {playersDetails.p1.username !== null &&
