@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
-import SidePanel from "./SidePanel.jsx";
+import GameSidePanel from "./GameSidePanel.jsx";
+import LobbySidePanel from "./LobbySidePanel.jsx";
 import styles from "./css/Lobby.module.css";
 import genStyles from "./css/General.module.css";
 import RoomTable from "./RoomTable.jsx";
@@ -214,8 +215,7 @@ export default class Lobby extends React.Component {
               </div>
             </div>
             <div id="rightPanel" className={genStyles.rightPanel}>
-              <SidePanel
-                currentComponent="game"
+              <GameSidePanel
                 socket={socket}
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
@@ -247,8 +247,7 @@ export default class Lobby extends React.Component {
               </div>
             </div>
             <div id="rightPanel" className={genStyles.rightPanel}>
-              <SidePanel
-                currentComponent="lobby"
+              <LobbySidePanel
                 socket={socket}
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
