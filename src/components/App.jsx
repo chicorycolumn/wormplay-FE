@@ -33,6 +33,7 @@ export default class App extends React.Component {
     this.setStateCallback = this.setStateCallback.bind(this);
   }
 
+
   setStateCallback = (key, object) => {
     let newState = {};
     newState[key] = object;
