@@ -1,6 +1,9 @@
 import Phaser from "phaser";
-import head from "../assets/head-smaller.png";
-import obama from "../assets/obama.png";
+import p1HeadHappy from "../assets/p1-default-head/p1-face-default.png";
+import p1HeadSad from "../assets/p1-default-head/p1-face-sad.png";
+import p1HeadAngry from "../assets/p1-default-head/p1-face-angry.png";
+import p1HeadShocked from "../assets/p1-default-head/p1-face-shocked.png";
+
 import body from "../assets/body-resized.png";
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
@@ -38,6 +41,7 @@ export default class MainScene extends Phaser.Scene {
       text: {},
       scores: {},
       wantsNewGame: null,
+      timer: { p1: 0, p2: 0 },
     };
   }
 
@@ -48,7 +52,8 @@ export default class MainScene extends Phaser.Scene {
     p1Name = this.game.react.state.playersDetails.p1.username;
     p2Name = this.game.react.state.playersDetails.p2.username;
     this.gameState.wantsNewGame = { p1: false, p2: false };
-    this.load.image("head", head);
+    this.load.image("head", p1HeadHappy);
+    this.load.image("p1HeadShocked", p1HeadShocked);
     this.load.image("body", body);
     this.load.image("p2Head", p2Head);
     this.load.image("background", background);
@@ -62,7 +67,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { opponents, opponentsArr } = this.gameState;
+    const { opponents, opponentsArr, timer } = this.gameState;
 
     const scene = this; // scene variable makes 'this' available anywhere within the create function
 
@@ -78,6 +83,8 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.body2 = this.physics.add.image(400, 125, "body");
     this.gameState.body1 = this.physics.add.image(400, 125, "body");
     this.gameState.head = this.physics.add.image(400, 125, "head");
+    this.gameState.p1HeadShocked = this.add.image(400, 125, "p1HeadShocked");
+    this.gameState.p1HeadShocked.setVisible(false);
 
     this.gameState.p2Body6 = this.physics.add.image(600, 300, "body");
     this.gameState.p2Body5 = this.physics.add.image(600, 300, "body");
@@ -282,6 +289,7 @@ export default class MainScene extends Phaser.Scene {
         const n = i + 1;
         opponents[`opponent${n}`].setText(opponentsArr[i]);
       }
+      timer.p1 = 20;
     });
 
     // Create submit button
@@ -706,6 +714,8 @@ export default class MainScene extends Phaser.Scene {
   update() {
     const {
       head,
+      p1HeadShocked,
+      timer,
       body1,
       body2,
       body3,
@@ -875,19 +885,31 @@ export default class MainScene extends Phaser.Scene {
       opponent5.y = p2Body5.y - 28;
       opponent6.x = p2Body6.x - 28;
       opponent6.y = p2Body6.y - 28;
+
+      if (timer.p1 > 0) {
+        timer.p1 -= 1;
+        head.setVisible(false);
+        p1HeadShocked.setVisible(true);
+        p1HeadShocked.x = head.x;
+        p1HeadShocked.y = head.y;
+        if (timer.p1 === 0) {
+          head.setVisible(true);
+          p1HeadShocked.setVisible(false);
+        }
+      }
     } else if (isP2 === true) {
       opponent1.x = body1.x - 28;
-      opponent1.y = body1.y;
+      opponent1.y = body1.y - 28;
       opponent2.x = body2.x - 28;
-      opponent2.y = body2.y;
+      opponent2.y = body2.y - 28;
       opponent3.x = body3.x - 28;
-      opponent3.y = body3.y;
+      opponent3.y = body3.y - 28;
       opponent4.x = body4.x - 28;
-      opponent4.y = body4.y;
+      opponent4.y = body4.y - 28;
       opponent5.x = body5.x - 28;
-      opponent5.y = body5.y;
+      opponent5.y = body5.y - 28;
       opponent6.x = body6.x - 28;
-      opponent6.y = body6.y;
+      opponent6.y = body6.y - 28;
     }
   }
 
