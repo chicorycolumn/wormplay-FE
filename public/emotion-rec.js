@@ -74,7 +74,7 @@ export const emotionRecFullFunction = (setStateCallback) => {
             name: "sad",
             data: sad,
             // display: document.getElementById("sadDisplay"),
-            threshold: 0.95,
+            threshold: 0.4,
             bars: document.getElementById(`sadBars`),
           },
 
@@ -82,7 +82,7 @@ export const emotionRecFullFunction = (setStateCallback) => {
             name: "angry",
             data: angry,
             // display: document.getElementById("angryDisplay"),
-            threshold: 0.95,
+            threshold: 0.6,
             bars: document.getElementById(`angryBars`),
           },
 
@@ -195,8 +195,7 @@ export const emotionRecFullFunction = (setStateCallback) => {
           id_canvasPhoto.setAttribute("src", data);
           id_canvasPhoto.setAttribute("label", currentEmotion);
 
-          setStateCallback("currentEmotion", {
-            name: currentEmotion,
+          setStateCallback(`${currentEmotion}Data`, {
             src: data,
           });
         }

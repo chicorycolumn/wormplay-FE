@@ -1,33 +1,17 @@
 import React, { Component } from "react";
 import styles from "./css/App.module.css";
+import { render } from "@testing-library/react";
 
 class RoomTable extends Component {
-  state = {
-    rooms: [
-      {
-        roomName: "wormy room",
-        roomID: 1,
-        p1: { username: "benny", id: 12345 },
-        p2: { username: null, id: null },
-      },
-      {
-        roomName: "slithery room",
-        roomID: 2,
-        p1: { username: null, id: null },
-        p2: { username: "linda", id: 6789 },
-      },
-      {
-        roomName: "earthy room",
-        roomID: 3,
-        p1: { username: null, id: null },
-        p2: { username: null, id: null },
-      },
-    ],
-  };
+  constructor() {
+    super();
+    this.state = {};
+    // this.setStateCallback = this.setStateCallback.bind(this);
+  }
 
-  renderTableData = () => {
-    console.log("inrendertable");
-    const { rooms } = this.state;
+  renderTableData = (props) => {
+    console.log(props, "props in render data");
+    const { joinRoom, rooms } = props;
     return rooms.map((room, index) => {
       const { roomID, roomName } = room;
       return (
@@ -38,11 +22,11 @@ class RoomTable extends Component {
           <td>{room.p2.username}</td>
           <td>
             <button
-            // value={roomID}
-            // onClick={(e) => {
-            //   e.preventDefault();
-            //   this.joinRoom(e.target.value);
-            // }}
+              value={roomID}
+              onClick={(e) => {
+                e.preventDefault();
+                joinRoom(e.target.value);
+              }}
             >
               Join
             </button>
@@ -52,20 +36,27 @@ class RoomTable extends Component {
     });
   };
 
-  renderTableHeader = () => {
-    let header = Object.keys(this.state.rooms[0]);
-    return header.map((key, index) => {
-      return <th key={index}>{key.toUpperCase()}</th>;
+  renderTableHeader = (props) => {
+    console.log(props, "props in render table header");
+
+    let headers = ["Room name", "Room ID", "Player 1", "Player 2"];
+
+    return headers.map((name) => {
+      return <th>{name.toUpperCase()}</th>;
     });
   };
 
   render() {
+    console.log("roomtable component", this.props);
     return (
       <div>
         <h2 id="title">🐛 Pick a room you'd like to join 🐛</h2>
         <table className={styles.rooms}>
-          <tbody>{this.renderTableHeader()}</tbody>
-          {this.renderTableData()}
+          <tbody>
+            {" "}
+            {this.renderTableHeader(this.props)}{" "}
+            {this.renderTableData(this.props)}
+          </tbody>
         </table>
       </div>
     );

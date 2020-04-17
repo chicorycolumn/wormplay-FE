@@ -8,7 +8,11 @@ import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
-// import bgMusic from ["../assets/wiggle.mp3"];
+
+//****************************************** */
+//Hey James! We now have access to any photos were taken
+//with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
+//****************************************** */
 
 import { vowelArray, consonantArray } from "../refObjs.js";
 
@@ -22,31 +26,30 @@ let isP1 = false;
 let isP2 = false;
 let p1Name = null;
 let p2Name = null;
-
-let currentEmotion = null;
+let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
     this.gameState = {
-
       wormWordArr: [" ", " ", " ", " ", " ", " "],
       opponentsArr: [" ", " ", " ", " ", " ", " "],
       opponents: {},
       text: {},
-
-    scores:{}
-
+      scores: {},
+      wantsNewGame: null,
     };
   }
 
   preload() {
     console.log("in phaser PRELOAD");
+    console.log(this.game.react.state.photoSet);
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
     p1Name = this.game.react.state.playersDetails.p1.username;
     p2Name = this.game.react.state.playersDetails.p2.username;
+    this.gameState.wantsNewGame = { p1: false, p2: false };
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("p2Head", p2Head);
@@ -55,11 +58,12 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("blueButton2", blueButton2);
     this.load.image("checkedBox", checkedBox);
     this.load.image("box", box);
-    this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+    if (shouldIBotherPlayingMusic) {
+      this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+    }
   }
 
   create() {
-
     const { opponents, opponentsArr } = this.gameState;
 
     console.log("in phaser CREATE");
@@ -142,7 +146,6 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].y,
         char,
         wordTileStyle
-
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -348,13 +351,23 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+    if (
+      shouldIBotherPlayingMusic &&
+      this.model.musicOn === true &&
+      this.model.bgMusicPlaying === false
+    ) {
       this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
       this.bgMusic.play();
       this.model.bgMusicPlaying = true;
       this.sys.game.globals.bgMusic = this.bgMusic;
     }
 
+    // if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+    //   this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
+    //   this.bgMusic.play();
+    //   this.model.bgMusicPlaying = true;
+    //   this.sys.game.globals.bgMusic = this.bgMusic;
+    // }
 
     const scoreStyle = {
       font: "35px Arial",
@@ -458,10 +471,13 @@ export default class MainScene extends Phaser.Scene {
           finalScoreStyle
         );
       }
+      scene.gameState.newGameBtn.setVisible(true);
+      scene.gameState.newGameText.setVisible(true);
+      scene.gameState.quitBtn.setVisible(true);
+      scene.gameState.quitText.setVisible(true);
     };
 
-
-    // this.model = this.sys.game.globals.model;
+    this.model = this.sys.game.globals.model;
 
     this.musicButton = this.add.image(130, 585, "checkedBox");
     this.musicButton.setScale(0.5);
@@ -477,13 +493,15 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    this.updateAudio();
+    if (shouldIBotherPlayingMusic) {
+      this.updateAudio();
+    }
 
+    // this.updateAudio();
 
     this.game.react.state.socket.on("word checked", function (scoreObj) {
       const isCurrentPlayer = true;
       scene.gameState.displayScore(scoreObj, isCurrentPlayer);
-
     });
 
     this.game.react.state.socket.on("opponent score", function (scoreObj) {
@@ -504,6 +522,167 @@ export default class MainScene extends Phaser.Scene {
         }
       );
     });
+
+    socket.on("new game request", function (opponentInfo) {
+      scene.gameState.wantsNewGame[opponentInfo.player] = true;
+      scene.gameState.errMessage = scene.add.text(
+        100,
+        400,
+        `Uh oh! ${opponentInfo.name} wants a re-match. Do you?`,
+        scoreStyle
+      );
+    });
+
+    socket.on("start new game", function () {
+      scene.scene.start("MainScene");
+    });
+
+    this.gameState.newGameBtn = this.add
+      .sprite(300, 350, "blueButton1")
+      .setInteractive();
+    this.gameState.newGameBtn.setScale(0.8);
+    this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+      fontSize: "20px",
+      fill: "#fff",
+      align: "center",
+    });
+    Phaser.Display.Align.In.Center(
+      this.gameState.newGameText,
+      this.gameState.newGameBtn
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerdown",
+      function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton2");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerout",
+      function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.on(
+      "pointerup",
+      function (pointer) {
+        isP1 === true
+          ? (this.gameState.wantsNewGame.p1 = true)
+          : (this.gameState.wantsNewGame.p2 = true);
+        if (
+          this.gameState.wantsNewGame.p1 === true &&
+          this.gameState.wantsNewGame.p2 === true
+        ) {
+          socket.emit("new game");
+          // this.scene.start("MainScene"); // put this at socket.on('new game') - when it can be sent to all players in a namespace / room
+        } else {
+          socket.emit("make new game request", {
+            name: isP1 === true ? p1Name : p2Name,
+            player: isP1 === true ? "p1" : "p2",
+          });
+        }
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
+
+        this.gameState.newGameBtn.setScale(0.8);
+        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.newGameText,
+          this.gameState.newGameBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.newGameBtn.setVisible(false);
+    this.gameState.newGameText.setVisible(false);
+
+    this.gameState.quitBtn = this.add
+      .sprite(500, 350, "blueButton1")
+      .setInteractive();
+    this.gameState.quitBtn.setScale(0.8);
+    this.gameState.quitText = this.add.text(0, 0, "Quit", {
+      fontSize: "20px",
+      fill: "#fff",
+      align: "center",
+    });
+
+    Phaser.Display.Align.In.Center(
+      this.gameState.quitText,
+      this.gameState.quitBtn
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerdown",
+      function (pointer) {
+        this.gameState.quitBtn = this.add.sprite(500, 350, "blueButton2");
+
+        this.gameState.quitBtn.setScale(0.8);
+        this.gameState.quitText = this.add.text(0, 1, "Quit", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.quitText,
+          this.gameState.quitBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerout",
+      function (pointer) {
+        this.gameState.quitBtn = this.add.sprite(500, 350, "blueButton1");
+
+        this.gameState.quitBtn.setScale(0.8);
+        this.gameState.quitText = this.add.text(0, 0, "Quit", {
+          fontSize: "20px",
+          fill: "#fff",
+          align: "center",
+        });
+        Phaser.Display.Align.In.Center(
+          this.gameState.quitText,
+          this.gameState.quitBtn
+        );
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.on(
+      "pointerup",
+      function (pointer) {
+        this.scene.start("Title");
+      }.bind(this)
+    );
+
+    this.gameState.quitBtn.setVisible(false);
+    this.gameState.quitText.setVisible(false);
   }
 
   update() {
@@ -533,7 +712,6 @@ export default class MainScene extends Phaser.Scene {
       opponent6,
     } = this.gameState.opponents;
 
-
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.playersDetails.p1.username) {
       p1Name = this.game.react.state.playersDetails.p1.username;
@@ -543,28 +721,25 @@ export default class MainScene extends Phaser.Scene {
       p2Name = this.game.react.state.playersDetails.p2.username;
     }
 
-    console.log("in phaser UPDATE");
-
-    if (this.game.react.state.currentEmotion.name !== currentEmotion) {
-      //In here is where I'm  t r y i n g  to change Trump head to Obama,
-      //to show that the head can be changed on cue. No luck yet.
-
-      currentEmotion = this.game.react.state.currentEmotion.name;
-      // console.log(this.gameState.head.x, this.gameState.head.y);
-      let { x, y } = this.gameState.head;
-      this.load.image("obama", obama);
-      console.log(this.textures.list.head.source[0].source.src);
-      // this.gameState.head.loadTexture("obama");
-      // this.textures.list.head.source[0].source.src =
-      //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
-      // console.log(this);
-      // this.gameState.head.texture = headCartoon;
-      // this.gameState.head = this.physics.add.image(x, y, "newHead");
-      // console.log(this.gameState.head.texture.source[0].source);
-      // console.log(headCartoon);
-      // this.load.image("headCartoon", headCartoon);
-      // this.gameState.head.add.image("headCartoon");
-    }
+    //In here is where I was  t r y i n g  to change Trump head to Obama. ~Chris
+    // if (this.game.react.state.currentEmotion.name !== currentEmotion) {
+    //   //to show that the head can be changed on cue. No luck yet.
+    //   currentEmotion = this.game.react.state.currentEmotion.name;
+    //   // console.log(this.gameState.head.x, this.gameState.head.y);
+    //   let { x, y } = this.gameState.head;
+    //   this.load.image("obama", obama);
+    //   console.log(this.textures.list.head.source[0].source.src);
+    //   // this.gameState.head.loadTexture("obama");
+    //   // this.textures.list.head.source[0].source.src =
+    //   //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
+    //   // console.log(this);
+    //   // this.gameState.head.texture = headCartoon;
+    //   // this.gameState.head = this.physics.add.image(x, y, "newHead");
+    //   // console.log(this.gameState.head.texture.source[0].source);
+    //   // console.log(headCartoon);
+    //   // this.load.image("headCartoon", headCartoon);
+    //   // this.gameState.head.add.image("headCartoon");
+    // }
 
     // Fix letters to body parts
     for (const letter in text) {
