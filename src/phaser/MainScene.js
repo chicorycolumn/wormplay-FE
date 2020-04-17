@@ -8,7 +8,6 @@ import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
-// import bgMusic from ["../assets/wiggle.mp3"];
 
 //****************************************** */
 //Hey James! We now have access to any photos were taken
@@ -27,6 +26,7 @@ let isP1 = false;
 let isP2 = false;
 let p1Name = null;
 let p2Name = null;
+let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -57,7 +57,9 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("blueButton2", blueButton2);
     this.load.image("checkedBox", checkedBox);
     this.load.image("box", box);
-    // this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+    if (shouldIBotherPlayingMusic) {
+      this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+    }
   }
 
   create() {
@@ -348,12 +350,16 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    // if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
-    //   this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
-    //   this.bgMusic.play();
-    //   this.model.bgMusicPlaying = true;
-    //   this.sys.game.globals.bgMusic = this.bgMusic;
-    // }
+    if (
+      shouldIBotherPlayingMusic &&
+      this.model.musicOn === true &&
+      this.model.bgMusicPlaying === false
+    ) {
+      this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
+      this.bgMusic.play();
+      this.model.bgMusicPlaying = true;
+      this.sys.game.globals.bgMusic = this.bgMusic;
+    }
 
     const scoreStyle = {
       font: "35px Arial",
@@ -459,23 +465,25 @@ export default class MainScene extends Phaser.Scene {
       }
     };
 
-    // this.model = this.sys.game.globals.model;
+    this.model = this.sys.game.globals.model;
 
-    // this.musicButton = this.add.image(130, 585, "checkedBox");
-    // this.musicButton.setScale(0.5);
-    // this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
-    // this.musicText.setScale(0.75);
-    // this.musicButton.setInteractive();
+    this.musicButton = this.add.image(130, 585, "checkedBox");
+    this.musicButton.setScale(0.5);
+    this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
+    this.musicText.setScale(0.75);
+    this.musicButton.setInteractive();
 
-    // this.musicButton.on(
-    //   "pointerdown",
-    //   function () {
-    //     this.model.musicOn = !this.model.musicOn;
-    //     this.updateAudio();
-    //   }.bind(this)
-    // );
+    this.musicButton.on(
+      "pointerdown",
+      function () {
+        this.model.musicOn = !this.model.musicOn;
+        this.updateAudio();
+      }.bind(this)
+    );
 
-    // this.updateAudio();
+    if (shouldIBotherPlayingMusic) {
+      this.updateAudio();
+    }
 
     this.game.react.state.socket.on("word checked", function (scoreObj) {
       const isCurrentPlayer = true;
@@ -692,17 +700,17 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  // updateAudio() {
-  //   if (this.model.musicOn === false) {
-  //     this.musicButton.setTexture("box");
-  //     this.sys.game.globals.bgMusic.stop();
-  //     this.model.bgMusicPlaying = false;
-  //   } else {
-  //     this.musicButton.setTexture("checkedBox");
-  //     if (this.model.bgMusicPlaying === false) {
-  //       this.sys.game.globals.bgMusic.play();
-  //       this.model.bgMusicPlaying = true;
-  //     }
-  //   }
-  // }
+  updateAudio() {
+    if (this.model.musicOn === false) {
+      this.musicButton.setTexture("box");
+      this.sys.game.globals.bgMusic.stop();
+      this.model.bgMusicPlaying = false;
+    } else {
+      this.musicButton.setTexture("checkedBox");
+      if (this.model.bgMusicPlaying === false) {
+        this.sys.game.globals.bgMusic.play();
+        this.model.bgMusicPlaying = true;
+      }
+    }
+  }
 }
