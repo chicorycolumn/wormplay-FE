@@ -1,9 +1,14 @@
-export const emotionRecFullFunction = (setStateCallback) => {
+import "geteventlisteners";
+
+export const emotionRecFullFunction = (
+  setStateCallback,
+  setStateCallbackToSidePanel
+) => {
   require("regenerator-runtime/runtime");
   console.log("inside emotion rec js");
 
   const video = document.getElementById("video");
-
+  console.log("000", video.getEventListeners().play);
   let currentEmotion = "";
   let happyToggle = false;
   let emotionDuration = { happy: 0, sad: 0, angry: 0, surprised: 0 };
@@ -41,7 +46,7 @@ export const emotionRecFullFunction = (setStateCallback) => {
     );
   }
 
-  video.addEventListener("play", () => {
+  function facialRecogitionFunction() {
     setInterval(async () => {
       const detections = await faceapi
         .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
@@ -205,5 +210,22 @@ export const emotionRecFullFunction = (setStateCallback) => {
         }
       }
     }, 350);
-  });
+  }
+
+  console.log(111, video.getEventListeners().play);
+
+  if (video.getEventListeners().play.length < 2) {
+    video.addEventListener("play", facialRecogitionFunction, true);
+    console.log(222, video.getEventListeners().play);
+  }
+
+  function ridEventListener() {
+    console.log("inside ridEventListener");
+    if (video.getEventListeners().play.length > 1) {
+      video.removeEventListener("play", facialRecogitionFunction, true);
+      console.log(333, video.getEventListeners().play);
+    }
+  }
+
+  setStateCallback("ridEventListener", ridEventListener);
 };

@@ -27,11 +27,20 @@ export default class SidePanel extends React.Component {
         { name: "sad", action: "time" },
       ],
     };
+    this.setStateCallbackToSidePanel = this.setStateCallbackToSidePanel.bind(
+      this
+    );
   }
+
+  setStateCallbackToSidePanel = (key, object) => {
+    let newState = {};
+    newState[key] = object;
+    this.setState(newState);
+  };
 
   componentDidMount() {
     let { socket, playersDetails, myUsername, currentComponent } = this.props;
-    console.log("gonna set state with ", myUsername);
+    // console.log("gonna set state with ", myUsername);
     this.setState({
       socket,
       playersDetails,
@@ -79,9 +88,12 @@ export default class SidePanel extends React.Component {
         {this.state.iJustEnteredLobbyOrRoom &&
           this.props.currentComponent === "lobby" &&
           setTimeout(() => {
-            console.log("gonna call face rec");
+            console.log("gonna CALL face rec");
             this.setState({ iJustEnteredLobbyOrRoom: false });
-            emotionRecFullFunction(this.props.setStateCallback);
+            emotionRecFullFunction(
+              this.props.setStateCallback,
+              this.setStateCallbackToSidePanel
+            );
           }, 1000)}
         {this.props.currentComponent === "lobby" && (
           <div className={styles.topbox}>

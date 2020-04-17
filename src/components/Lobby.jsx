@@ -9,6 +9,9 @@ export default class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
+      ridEventListener: () => {
+        console.log("empty fxn instead of ridEventListener");
+      },
       happyData: { src: null },
       sadData: { src: null },
       angryData: { src: null },
@@ -33,13 +36,14 @@ export default class Lobby extends React.Component {
   };
 
   stopWebcam = () => {
-    console.log("gonna stop WEBCAM!");
+    console.log("gonna stop webcam");
+    this.state.ridEventListener();
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
         video.srcObject = null; // red underlined but is actually okay.
         const tracks = stream.getTracks();
-        console.log(tracks);
+        console.log("tracks", tracks);
         tracks.forEach(function (track) {
           track.stop();
           track.enabled = false;
@@ -67,7 +71,8 @@ export default class Lobby extends React.Component {
   }
 
   joinRoom = (roomID) => {
-    console.log(roomID, "roomid");
+    this.stopWebcam();
+    // console.log(roomID, "roomid");
     console.log("in joinroom function");
     this.state.socket.emit("joinRoom", { roomID });
   };
@@ -78,8 +83,6 @@ export default class Lobby extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("props.rooms in lobby", this.props.rooms);
-
     if (
       this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
       this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
@@ -93,7 +96,6 @@ export default class Lobby extends React.Component {
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
-        this.stopWebcam();
         console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {

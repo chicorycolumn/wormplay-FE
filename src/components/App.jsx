@@ -102,11 +102,6 @@ export default class App extends React.Component {
       playersDetails,
       socket,
       myUsername,
-
-      emoObj,
-      faceValue,
-      currentEmotion,
-
       rooms,
     } = this.state;
 

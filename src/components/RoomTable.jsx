@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import styles from "./css/App.module.css";
+import styles from "./css/RoomTable.module.css";
 import { render } from "@testing-library/react";
 
 class RoomTable extends Component {
@@ -10,7 +10,6 @@ class RoomTable extends Component {
   }
 
   renderTableData = (props) => {
-    console.log(props, "props in render data");
     const { joinRoom, rooms } = props;
     return rooms.map((room, index) => {
       const { roomID, roomName } = room;
@@ -37,8 +36,6 @@ class RoomTable extends Component {
   };
 
   renderTableHeader = (props) => {
-    console.log(props, "props in render table header");
-
     let headers = ["Room name", "Room ID", "Player 1", "Player 2"];
 
     return headers.map((name) => {
@@ -47,7 +44,6 @@ class RoomTable extends Component {
   };
 
   render() {
-    console.log("roomtable component", this.props);
     return (
       <div>
         <h2 id="title">🐛 Pick a room you'd like to join 🐛</h2>
