@@ -3,6 +3,7 @@ import ReactGameHolder from "./ReactGameHolder.jsx";
 import SidePanel from "./SidePanel.jsx";
 import styles from "./css/Lobby.module.css";
 import genStyles from "./css/General.module.css";
+import RoomTable from "./RoomTable.jsx";
 
 export default class Lobby extends React.Component {
   constructor() {
@@ -66,6 +67,8 @@ export default class Lobby extends React.Component {
   }
 
   joinRoom = (roomID) => {
+    console.log(roomID, "roomid");
+    console.log("in joinroom function");
     this.state.socket.emit("joinRoom", { roomID });
   };
 
@@ -75,6 +78,8 @@ export default class Lobby extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+    console.log("props.rooms in lobby", this.props.rooms);
+
     if (
       this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
       this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
@@ -173,6 +178,7 @@ export default class Lobby extends React.Component {
       });
     }
   }
+
   render() {
     const {
       socket,
@@ -232,21 +238,8 @@ export default class Lobby extends React.Component {
                   className={styles.heading}
                 >{`Hello ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
-                <ul>
-                  {rooms.map((room) => (
-                    <li>
-                      {" ...ROOM NAME:... " +
-                        room.roomName +
-                        " ...ROOM ID:... " +
-                        room.roomID +
-                        " ...AND THE PLAYERS ARE... " +
-                        room.p1.username +
-                        " ...AND... " +
-                        room.p2.username}
-                    </li>
-                  ))}
-                </ul>
-
+                <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
+                {/* 
                 <button
                   className={styles.buttons}
                   onClick={(e) => {
@@ -255,7 +248,7 @@ export default class Lobby extends React.Component {
                   }}
                 >
                   ENTER ROOM 1
-                </button>
+                </button> */}
               </div>
             </div>
             <div id="rightPanel" className={genStyles.rightPanel}>
@@ -266,6 +259,7 @@ export default class Lobby extends React.Component {
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
+                rooms={rooms}
               />
             </div>
           </div>
