@@ -17,7 +17,6 @@ import box from "../assets/ui/grey_box.png";
 import { vowelArray, consonantArray } from "../refObjs.js";
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
-
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
 //I (Chris) suggest that in this file we use the socket for all the in-game stuff.
 
@@ -39,15 +38,18 @@ export default class MainScene extends Phaser.Scene {
       text: {},
       scores: {},
       wantsNewGame: null,
+      roundsWon: { p1: 0, p2: 0 },
     };
   }
 
   preload() {
+    scene = this; // scene variable makes 'this' available anywhere within the game
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
     p1Name = this.game.react.state.playersDetails.p1.username;
     p2Name = this.game.react.state.playersDetails.p2.username;
+    this.gameState.scores = {}; // Resets scores every <round></round>
     this.gameState.wantsNewGame = { p1: false, p2: false };
     this.load.image("head", head);
     this.load.image("body", body);
@@ -63,9 +65,13 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { opponents, opponentsArr } = this.gameState;
+    const { opponents, opponentsArr, roundsWon } = this.gameState;
 
-    const scene = this; // scene variable makes 'this' available anywhere within the create function
+    // Resets count of rounds won when in new game
+    if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
+      roundsWon.p1 = 0;
+      roundsWon.p2 = 0;
+    }
 
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
@@ -482,30 +488,34 @@ export default class MainScene extends Phaser.Scene {
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
       ) {
-        scene.time.delayedCall(2000, this.showFinalScores, [
+        scene.time.delayedCall(2000, this.showRoundWinner, [
           this.scores,
           opponentName,
         ]);
+        scene.gameState.scores = {};
       }
     };
 
-    this.gameState.showFinalScores = function (scoresObj, opponentName) {
-      if (scoresObj.currentPlayer.points > scoresObj.opponent.points) {
+    this.gameState.showRoundWinner = function (scoreObj, opponentName) {
+      if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
         this.finalScoreText = scene.add.text(
           200,
           200,
           [
-            `You win with ${scoresObj.currentPlayer.word}!`,
+            `You win with ${scoreObj.currentPlayer.word}!`,
             `What a great word!`,
           ],
           finalScoreStyle
         );
-      } else if (scoresObj.currentPlayer.points < scoresObj.opponent.points) {
+        const winner = isP1 === true ? "p1" : "p2";
+        roundsWon[winner] += 1;
+        socket.emit("update rounds", roundsWon);
+      } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
         this.finalScoreText = scene.add.text(
           100,
           200,
           [
-            `Oh no ${opponentName} won with ${scoresObj.opponent.word}!`,
+            `Oh no ${opponentName} won with ${scoreObj.opponent.word}!`,
             `I hate that word!`,
           ],
           finalScoreStyle
@@ -516,15 +526,12 @@ export default class MainScene extends Phaser.Scene {
           200,
           [
             `A drawer?!?! Now no-ones happy!`,
-            `I think your word ${scoresObj.currentPlayer.word} was better`,
+            `I think your word ${scoreObj.currentPlayer.word} was better`,
           ],
           finalScoreStyle
         );
+        socket.emit("update rounds", roundsWon);
       }
-      scene.gameState.newGameBtn.setVisible(true);
-      scene.gameState.newGameText.setVisible(true);
-      scene.gameState.quitBtn.setVisible(true);
-      scene.gameState.quitText.setVisible(true);
     };
 
     this.model = this.sys.game.globals.model;
@@ -575,7 +582,7 @@ export default class MainScene extends Phaser.Scene {
 
     socket.on("new game request", function (opponentInfo) {
       scene.gameState.wantsNewGame[opponentInfo.player] = true;
-      scene.gameState.errMessage = scene.add.text(
+      scene.gameState.newGameText = scene.add.text(
         100,
         400,
         `Uh oh! ${opponentInfo.name} wants a re-match. Do you?`,
@@ -585,6 +592,26 @@ export default class MainScene extends Phaser.Scene {
 
     socket.on("start new game", function () {
       scene.scene.start("MainScene");
+    });
+
+    socket.on("set new rounds", function (newRounds) {
+      scene.gameState.roundsWon = newRounds;
+      scene.gameState.displayRounds(scene.gameState.roundsWon);
+
+      if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
+        console.log("WE HAVE A WINNER!!!");
+        // Socket emit "I won" - socket.emit + socket.broadcast.emit "game won" -> func showWinner()
+        scene.gameState.newGameBtn.setVisible(true);
+        scene.gameState.newGameText.setVisible(true);
+        scene.gameState.quitBtn.setVisible(true);
+        scene.gameState.quitText.setVisible(true);
+      } else {
+        console.log("ELSE?");
+        // Add countdown on screen
+        scene.time.delayedCall(3000, function () {
+          scene.scene.start("MainScene");
+        });
+      }
     });
 
     this.gameState.newGameBtn = this.add
@@ -604,8 +631,6 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.newGameBtn.on(
       "pointerdown",
       function (pointer) {
-        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton2");
-
         this.gameState.newGameBtn.setScale(0.8);
         this.gameState.newGameText = this.add.text(0, 0, "New Game", {
           fontSize: "20px",
@@ -640,8 +665,6 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.newGameBtn.on(
       "pointerup",
       function (pointer) {
-        console.log("P1:", isP1);
-        console.log("P2:", isP2);
         isP1 === true
           ? (this.gameState.wantsNewGame.p1 = true)
           : (this.gameState.wantsNewGame.p2 = true);
@@ -650,12 +673,20 @@ export default class MainScene extends Phaser.Scene {
           this.gameState.wantsNewGame.p2 === true
         ) {
           socket.emit("new game");
-          // this.scene.start("MainScene"); // put this at socket.on('new game') - when it can be sent to all players in a namespace / room
         } else {
           socket.emit("make new game request", {
             name: isP1 === true ? p1Name : p2Name,
             player: isP1 === true ? "p1" : "p2",
           });
+          scene.gameState.newGameText = scene.add.text(
+            150,
+            400,
+            [
+              `You asked ${isP1 === true ? p2Name : p1Name} for a re-match!`,
+              `Are they brave enough?`,
+            ],
+            scoreStyle
+          );
         }
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
@@ -672,8 +703,8 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    // this.gameState.newGameBtn.setVisible(false);
-    // this.gameState.newGameText.setVisible(false);
+    this.gameState.newGameBtn.setVisible(false);
+    this.gameState.newGameText.setVisible(false);
 
     this.gameState.quitBtn = this.add
       .sprite(500, 350, "blueButton1")
@@ -735,6 +766,36 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.quitBtn.setVisible(false);
     this.gameState.quitText.setVisible(false);
+
+    this.gameState.displayRounds = function (currentRounds) {
+      this.gameState.thisPlayerScore = this.add.text(
+        650,
+        85,
+        `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`,
+        {
+          fontSize: "30px",
+          color: "blue",
+          strokeThickness: 3,
+          fontFamily: "Arial",
+        }
+      );
+
+      this.gameState.oppositionScore = this.add.text(
+        650,
+        160,
+        `${isP1 ? p2Name : p1Name}: ${
+          isP1 ? currentRounds.p2 : currentRounds.p1
+        }`,
+        {
+          fontSize: "30px",
+          color: "red",
+          stroke: "black",
+          strokeThickness: 3,
+          fontFamily: "Arial",
+        }
+      );
+    }.bind(this);
+    this.gameState.displayRounds(roundsWon);
   }
 
   update() {
