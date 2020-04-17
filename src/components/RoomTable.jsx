@@ -36,7 +36,17 @@ class RoomTable extends Component {
           <td>{roomID}</td>
           <td>{room.p1.username}</td>
           <td>{room.p2.username}</td>
-          <td>{"Join"}</td>
+          <td>
+            <button
+            // value={roomID}
+            // onClick={(e) => {
+            //   e.preventDefault();
+            //   this.joinRoom(e.target.value);
+            // }}
+            >
+              Join
+            </button>
+          </td>
         </tr>
       );
     });
