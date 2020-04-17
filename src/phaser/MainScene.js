@@ -45,8 +45,8 @@ export default class MainScene extends Phaser.Scene {
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
-    p1Name = this.game.react.state.playersDetails.p1.username;
-    p2Name = this.game.react.state.playersDetails.p2.username;
+    p1Name = this.game.react.state.currentRoom.p1.username;
+    p2Name = this.game.react.state.currentRoom.p2.username;
     this.gameState.wantsNewGame = { p1: false, p2: false };
     this.load.image("head", head);
     this.load.image("body", body);
@@ -731,12 +731,12 @@ export default class MainScene extends Phaser.Scene {
     } = this.gameState.opponents;
 
     // Update Player Name(s)
-    if (p1Name !== this.game.react.state.playersDetails.p1.username) {
-      p1Name = this.game.react.state.playersDetails.p1.username;
+    if (p1Name !== this.game.react.state.currentRoom.p1.username) {
+      p1Name = this.game.react.state.currentRoom.p1.username;
     }
 
-    if (p2Name !== this.game.react.state.playersDetails.p2.username) {
-      p2Name = this.game.react.state.playersDetails.p2.username;
+    if (p2Name !== this.game.react.state.currentRoom.p2.username) {
+      p2Name = this.game.react.state.currentRoom.p2.username;
     }
 
     // Fix letters to body parts

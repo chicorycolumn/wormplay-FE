@@ -18,13 +18,15 @@ export default class Lobby extends React.Component {
       surprisedData: { src: null },
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       socket: null,
-      playersDetails: {
-        p1: { username: null, id: null, score: 0 },
-        p2: { username: null, id: null, score: 0 },
-      },
       myUsername: "",
       iHavePermissionToEnterRoom: false, //DEVELOPMENT
       rooms: [],
+      currentRoom: {
+        roomID: null,
+        roomName: null,
+        p1: { id: null, username: null },
+        p2: { id: null, username: null },
+      },
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
@@ -56,16 +58,16 @@ export default class Lobby extends React.Component {
   componentDidMount() {
     let {
       socket,
-      playersDetails,
+
       myUsername,
-      iHavePermissionToEnterRoom,
+
       rooms,
     } = this.props;
     this.setState({
       socket,
-      playersDetails,
+
       myUsername,
-      iHavePermissionToEnterRoom,
+
       rooms,
     });
   }
@@ -83,13 +85,6 @@ export default class Lobby extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (
-      this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
-      this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
-    ) {
-      this.setState({ playersDetails: this.props.playersDetails });
-    }
-
     if (this.state.socket) {
       this.state.socket.on("connectionRefused", () => {
         console.log(`Oh no! The room was full or something.`);
@@ -101,21 +96,23 @@ export default class Lobby extends React.Component {
         if (data.youCanEnter) {
           console.log("inside socket.on youJoinedARoom");
           if (data.youCanEnter) {
+            console.log("congrats");
             let whichPlayerAmI = data.whichPlayerIsShe;
 
             let welcomeMessage =
               "Hey " +
               "<strong>" +
-              `${data.playersDetails[`${whichPlayerAmI}`].username}` +
+              `${data.room[`${whichPlayerAmI}`].username}` +
               "</strong>" +
               ", it's awesome you're here!";
 
+            console.log("data.room", data.room);
+
             this.setState({
               whichPlayerAmI,
-              playersDetails: data.playersDetails,
               welcomeMessage,
               iHavePermissionToEnterRoom: true,
-              currentRoomIAmIn: data.room.roomID,
+              currentRoom: data.room,
             });
           }
         }
@@ -184,7 +181,6 @@ export default class Lobby extends React.Component {
   render() {
     const {
       socket,
-      playersDetails,
       myUsername,
       iHavePermissionToEnterRoom,
       rooms,
@@ -192,11 +188,8 @@ export default class Lobby extends React.Component {
       sadData,
       surprisedData,
       angryData,
+      currentRoom,
     } = this.state;
-
-    if (iHavePermissionToEnterRoom) {
-      console.log("gonna load GAME!");
-    }
 
     let photoSet = {
       happy: happyData,
@@ -214,9 +207,9 @@ export default class Lobby extends React.Component {
               <div id="phaserContainer">
                 <ReactGameHolder
                   socket={socket}
-                  playersDetails={playersDetails}
                   myUsername={myUsername}
                   photoSet={photoSet}
+                  currentRoom={currentRoom}
                 />
               </div>
             </div>
@@ -224,11 +217,11 @@ export default class Lobby extends React.Component {
               <SidePanel
                 currentComponent="game"
                 socket={socket}
-                playersDetails={playersDetails}
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
                 photoSet={photoSet}
+                currentRoom={currentRoom}
               />
             </div>
           </div>
@@ -257,11 +250,11 @@ export default class Lobby extends React.Component {
               <SidePanel
                 currentComponent="lobby"
                 socket={socket}
-                playersDetails={playersDetails}
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
                 rooms={rooms}
+                currentRoom={currentRoom}
               />
             </div>
           </div>

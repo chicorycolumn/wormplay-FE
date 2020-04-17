@@ -8,7 +8,6 @@ export const emotionRecFullFunction = (
   console.log("inside emotion rec js");
 
   const video = document.getElementById("video");
-  console.log("000", video.getEventListeners().play);
   let currentEmotion = "";
   let happyToggle = false;
   let emotionDuration = { happy: 0, sad: 0, angry: 0, surprised: 0 };
@@ -212,18 +211,14 @@ export const emotionRecFullFunction = (
     }, 350);
   }
 
-  console.log(111, video.getEventListeners().play);
-
   if (video.getEventListeners().play.length < 2) {
     video.addEventListener("play", facialRecogitionFunction, true);
-    console.log(222, video.getEventListeners().play);
   }
 
   function ridEventListener() {
     console.log("inside ridEventListener");
     if (video.getEventListeners().play.length > 1) {
       video.removeEventListener("play", facialRecogitionFunction, true);
-      console.log(333, video.getEventListeners().play);
     }
   }
 

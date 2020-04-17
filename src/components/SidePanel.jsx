@@ -14,10 +14,6 @@ export default class SidePanel extends React.Component {
       },
       currentComponent: null,
       socket: null,
-      playersDetails: {
-        p1: { username: null, id: null, score: 0 },
-        p2: { username: null, id: null, score: 0 },
-      },
       myUsername: "",
       iJustEnteredLobbyOrRoom: true,
       emoObj: [
@@ -26,6 +22,12 @@ export default class SidePanel extends React.Component {
         { name: "surprised", action: "drop" },
         { name: "sad", action: "time" },
       ],
+      currentRoom: {
+        roomID: null,
+        roomName: null,
+        p1: { id: null, username: null },
+        p2: { id: null, username: null },
+      },
     };
     this.setStateCallbackToSidePanel = this.setStateCallbackToSidePanel.bind(
       this
@@ -39,13 +41,19 @@ export default class SidePanel extends React.Component {
   };
 
   componentDidMount() {
-    let { socket, playersDetails, myUsername, currentComponent } = this.props;
-    // console.log("gonna set state with ", myUsername);
-    this.setState({
+    let {
       socket,
-      playersDetails,
+
       myUsername,
       currentComponent,
+      currentRoom,
+    } = this.props;
+    this.setState({
+      socket,
+
+      myUsername,
+      currentComponent,
+      currentRoom,
     });
   }
 
@@ -53,35 +61,30 @@ export default class SidePanel extends React.Component {
     // if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
     //   this.setState({ currentEmotion: this.props.currentEmotion });
     // }
-    if (
-      this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
-      this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
-    ) {
-      this.setState({ playersDetails: this.props.playersDetails });
-    }
+    // if (
+    //   this.state.currentRoom.p1.id !== this.props.currentRoom.p1.id ||
+    //   this.state.currentRoom.p2.id !== this.props.currentRoom.p2.id
+    // ) {
+    //   this.setState({ currentRoom: this.props.currentRoom });
+    // }
     if (this.state.myUsername !== this.props.myUsername) {
       this.setState({ myUsername: this.props.myUsername });
     }
     if (this.state.currentComponent !== this.props.currentComponent) {
       this.setState({ currentComponent: this.props.currentComponent });
     }
-
-    if (
-      prevState.currentComponent === "lobby" &&
-      this.state.currentComponent !== "lobby"
-    ) {
-      // console.log("gonna try disable video!");
-    }
   }
   render() {
     const {
       socket,
       currentEmotion,
-      playersDetails,
+      currentRoom,
       myUsername,
       emoObj,
       photoSet,
     } = this.state;
+
+    console.log("SIDEPANEL says currentRoom is ", currentRoom);
 
     return (
       <div className={styles.rightPanelDisplay}>
@@ -181,31 +184,27 @@ export default class SidePanel extends React.Component {
                 id="playersDisplay"
                 className={styles.playersDisplay}
               >{`Player 1: ${
-                playersDetails.p1.username
-                  ? playersDetails.p1.username
-                  : "waiting..."
+                currentRoom.p1.username ? currentRoom.p1.username : "waiting..."
               } - - - - - Player 2: ${
-                playersDetails.p2.username
-                  ? playersDetails.p2.username
-                  : "waiting..."
+                currentRoom.p2.username ? currentRoom.p2.username : "waiting..."
               }`}</p>
               <ul id="infoDisplay" className={styles.infoDisplay}></ul>
+              <div className={styles.bottombox}>
+                {currentRoom.p1.username !== null &&
+                currentRoom.p2.username !== null ? (
+                  <div>
+                    <p>
+                      {currentRoom.p1.username + ": " + currentRoom.p1.score}
+                    </p>
+                    <p>
+                      {currentRoom.p2.username + ": " + currentRoom.p2.score}
+                    </p>
+                  </div>
+                ) : (
+                  "waiting..."
+                )}
+              </div>
             </div>
-          )}
-        </div>
-        <div className={styles.bottombox}>
-          {playersDetails.p1.username !== null &&
-          playersDetails.p2.username !== null ? (
-            <div>
-              <p>
-                {playersDetails.p1.username + ": " + playersDetails.p1.score}
-              </p>
-              <p>
-                {playersDetails.p2.username + ": " + playersDetails.p2.score}
-              </p>
-            </div>
-          ) : (
-            "waiting..."
           )}
         </div>
       </div>
