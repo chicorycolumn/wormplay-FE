@@ -11,4 +11,4 @@ const socket = socketIOClient(
     : "http://localhost:4001"
 );
 
-ReactDOM.render(<App socket={socket} />, document.getElementById("rightPanel"));
+ReactDOM.render(<App socket={socket} />, document.getElementById("mainBody"));

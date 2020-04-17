@@ -1,166 +1,114 @@
-.infoDisplay {
-  color: blue;
-  font-style: italic;
-  margin: 0px;
-  padding: 0px;
-}
-
-.playersDisplay {
-  color: blue;
-}
-
 .lobbyInfoDisplay {
   color: blue;
 }
 
 .loginField {
-  height: 45px;
-  width: 450px;
-  background-color: yellow;
+  height: 30px;
+  width: 270px;
+  background-color: lightgoldenrodyellow;
+  position: relative;
+  /* left: 380px;
+  top: 240px; */
+  border: green solid 1pt;
+  font-size: 12pt;
+  text-align: center;
 }
 
 .loginSubmitButton {
   height: 50px;
-  width: 100px;
-  background-color: lime;
+  width: 180px;
+  background-color: lightgoldenrodyellow;
+  border: green solid 1pt;
+  position: relative;
+  font-size: 14pt;
+  /* top: 100%;
+  right: 200%; */
 }
 
-.rightPanelDisplay {
-  height: 600px;
-  display: grid;
-  grid-template-rows: 52.5% 1fr 12.5%;
-  width: 450px;
-}
-
-.topbox {
-  background-color: coral;
-  grid-row: 1;
+.appleGraphic {
+  /* width:  */
   height: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  /* justify-content: space-between; */
+  position: relative;
 }
 
-.emojiHolder {
-  height: 100%;
+.loginForm {
+  position: absolute;
+  width: 250px;
+  /* border: yellow solid 5pt; */
+  top: 34.5%;
+  left: 32.5%;
+  text-align: left;
+  height: 265px;
+
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   justify-content: space-between;
 }
 
-.midbox {
-  background-color: yellow;
-  grid-row: 2;
+/* Customize the label (the container) */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.bottombox {
-  background-color: thistle;
-  grid-row: 3;
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
 
-.webcamHolder {
-  height: 150px;
-  width: 150px;
-  display: flex;
-  justify-content: center;
-  /* border: white solid 2pt; */
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: lightgoldenrodyellow;
 }
 
-.webcamImage {
-  align-self: center;
-  height: 75%;
-  width: 75%;
-  border-radius: 50%;
-}
-
-.emoHolder {
-  /* border: black solid 2.5pt; */
-  height: 150px;
-  width: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.emoEmoji {
-  height: 50%;
-  width: 50%;
-}
-
-.emoBars {
-  align-self: center;
-  font-size: 24pt;
-  margin: 0px;
-}
-
-.emoLabel {
-  margin: 0px;
-  font-size: 21pt;
-}
-
-.infoDisplayMessage {
-  font-family: "Lucida Sans";
-}
-
-/* .container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  border: blueviolet solid 2.5pt;
+/* On mouse-over, add a grey background color */
+/* .container:hover input ~ .checkmark {
+  background-color: lightcyan;
 } */
 
-.videoContainer {
-  /* border: bisque solid 5pt; */
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 150px;
-  align-self: center;
-  overflow: hidden;
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: greenyellow;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
   display: block;
 }
 
-.videoObscurer {
-  /* border: black solid 1pt; */
-  background-color: coral;
-  width: 180px;
-  height: 140px;
-  position: absolute;
-  margin: 0px;
-  padding: 0px;
-  z-index: 2;
-}
-
-/* .canvasDetections {
-  border: yellow solid 10pt;
-  width: 120px;
-  height: 120px;
-  position: absolute;
-  z-index: 1;
-} */
-
-.video {
-  /* border: orange solid 5pt; */
-  position: relative;
-  z-index: 0;
-  /* border: indigo solid 2.5pt; */
-  width: 180px;
-  height: 140px;
-  margin-left: -25px;
-}
-
-.canvasPhoto {
-  width: 120px;
-  height: 120px;
-  border: forestgreen solid 2.5pt;
-  align-self: center;
-  border-radius: 50%;
-  margin-left: 12.5px;
-  margin-top: 12.5px;
-}
-
-.emotions {
-  display: inline-block;
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }

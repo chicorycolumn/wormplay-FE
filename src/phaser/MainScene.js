@@ -10,6 +10,11 @@ import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
 // import bgMusic from ["../assets/wiggle.mp3"];
 
+//****************************************** */
+//Hey James! We now have access to any photos were taken
+//with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
+//****************************************** */
+
 import { vowelArray, consonantArray } from "../refObjs.js";
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
@@ -23,8 +28,6 @@ let isP2 = false;
 let p1Name = null;
 let p2Name = null;
 
-let currentEmotion = null;
-
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
@@ -33,7 +36,6 @@ export default class MainScene extends Phaser.Scene {
       opponentsArr: [" ", " ", " ", " ", " ", " "],
       opponents: {},
       text: {},
-
       scores: {},
       wantsNewGame: null,
     };
@@ -41,6 +43,7 @@ export default class MainScene extends Phaser.Scene {
 
   preload() {
     console.log("in phaser PRELOAD");
+    console.log(this.game.react.state.photoSet);
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
@@ -55,7 +58,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("blueButton2", blueButton2);
     this.load.image("checkedBox", checkedBox);
     this.load.image("box", box);
-    this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+    // this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
   }
 
   create() {
@@ -346,12 +349,14 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
-      this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
-      this.bgMusic.play();
-      this.model.bgMusicPlaying = true;
-      this.sys.game.globals.bgMusic = this.bgMusic;
-    }
+
+    // if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+    //   this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
+    //   this.bgMusic.play();
+    //   this.model.bgMusicPlaying = true;
+    //   this.sys.game.globals.bgMusic = this.bgMusic;
+    // }
+
 
     const scoreStyle = {
       font: "35px Arial",
@@ -463,21 +468,23 @@ export default class MainScene extends Phaser.Scene {
 
     // this.model = this.sys.game.globals.model;
 
-    this.musicButton = this.add.image(130, 585, "checkedBox");
-    this.musicButton.setScale(0.5);
-    this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
-    this.musicText.setScale(0.75);
-    this.musicButton.setInteractive();
+    // this.musicButton = this.add.image(130, 585, "checkedBox");
+    // this.musicButton.setScale(0.5);
+    // this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
+    // this.musicText.setScale(0.75);
+    // this.musicButton.setInteractive();
 
-    this.musicButton.on(
-      "pointerdown",
-      function () {
-        this.model.musicOn = !this.model.musicOn;
-        this.updateAudio();
-      }.bind(this)
-    );
+    // this.musicButton.on(
+    //   "pointerdown",
+    //   function () {
+    //     this.model.musicOn = !this.model.musicOn;
+    //     this.updateAudio();
+    //   }.bind(this)
+    // );
 
-    this.updateAudio();
+
+    // this.updateAudio();
+
 
     this.game.react.state.socket.on("word checked", function (scoreObj) {
       const isCurrentPlayer = true;
@@ -722,6 +729,7 @@ export default class MainScene extends Phaser.Scene {
       // this.gameState.head.add.image("headCartoon");
     }
 
+
     // Fix letters to body parts
     for (const letter in text) {
       if (text[letter].onSegment !== null) {
@@ -874,17 +882,17 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  updateAudio() {
-    if (this.model.musicOn === false) {
-      this.musicButton.setTexture("box");
-      this.sys.game.globals.bgMusic.stop();
-      this.model.bgMusicPlaying = false;
-    } else {
-      this.musicButton.setTexture("checkedBox");
-      if (this.model.bgMusicPlaying === false) {
-        this.sys.game.globals.bgMusic.play();
-        this.model.bgMusicPlaying = true;
-      }
-    }
-  }
+  // updateAudio() {
+  //   if (this.model.musicOn === false) {
+  //     this.musicButton.setTexture("box");
+  //     this.sys.game.globals.bgMusic.stop();
+  //     this.model.bgMusicPlaying = false;
+  //   } else {
+  //     this.musicButton.setTexture("checkedBox");
+  //     if (this.model.bgMusicPlaying === false) {
+  //       this.sys.game.globals.bgMusic.play();
+  //       this.model.bgMusicPlaying = true;
+  //     }
+  //   }
+  // }
 }
