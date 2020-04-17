@@ -43,12 +43,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
-<<<<<<< HEAD
-    console.log("in phaser PRELOAD");
-    console.log(this.game.react.state.photoSet);
-    scene = this; // scene variable makes 'this' available anywhere within the game
-=======
->>>>>>> 5774fa8fb9c0ebe97f0015d94c01bd8ea25cd9d7
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
@@ -71,11 +65,7 @@ export default class MainScene extends Phaser.Scene {
   create() {
     const { opponents, opponentsArr } = this.gameState;
 
-<<<<<<< HEAD
-    console.log("in phaser CREATE");
-=======
     const scene = this; // scene variable makes 'this' available anywhere within the create function
->>>>>>> 5774fa8fb9c0ebe97f0015d94c01bd8ea25cd9d7
 
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
