@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactGameHolder from "./ReactGameHolder.jsx";
 import styles from "./css/SidePanel.module.css";
 import { emotionRecFullFunction } from "../../public/emotion-rec.js";
 
@@ -7,49 +6,37 @@ export default class SidePanel extends React.Component {
   constructor() {
     super();
     this.state = {
+      currentComponent: null,
       socket: null,
-      currentEmotion: { name: null, src: null },
       playersDetails: {
         p1: { username: null, id: null, score: 0 },
         p2: { username: null, id: null, score: 0 },
       },
       myUsername: "",
-      shouldIEnterRoom: false,
-      emoObj: null,
-      iJustLoggedIn: false,
+      iJustEnteredLobbyOrRoom: true,
+      emoObj: [
+        { name: "happy", action: "rush" },
+        { name: "angry", action: "steal" },
+        { name: "surprised", action: "drop" },
+        { name: "sad", action: "time" },
+      ],
     };
-    this.setStateCallback = this.setStateCallback.bind(this);
   }
 
-  setStateCallback = (key, object) => {
-    let newState = {};
-    newState[key] = object;
-    this.setState(newState);
-  };
-
   componentDidMount() {
-    let {
-      socket,
-      playersDetails,
-      currentEmotion,
-      myUsername,
-      emoObj,
-      iJustLoggedIn,
-    } = this.props;
+    let { socket, playersDetails, myUsername, currentComponent } = this.props;
     this.setState({
       socket,
       playersDetails,
-      currentEmotion,
       myUsername,
-      emoObj,
-      iJustLoggedIn,
+      currentComponent,
     });
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
-      this.setState({ currentEmotion: this.props.currentEmotion });
-    }
+    // if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
+    //   this.setState({ currentEmotion: this.props.currentEmotion });
+    // }
     if (
       this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
       this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
@@ -69,46 +56,56 @@ export default class SidePanel extends React.Component {
     return (
       <div className={styles.rightPanelDisplay}>
         {/* /////////////////THIS IS WHERE WE CALL THE FACE RECOGNITION. */}
-        {this.state.iJustLoggedIn &&
+        {this.state.iJustEnteredLobbyOrRoom &&
+          this.props.currentComponent === "lobby" &&
           setTimeout(() => {
-            this.setState({ iJustLoggedIn: false });
-            emotionRecFullFunction(this.setStateCallback);
-          }, 0)}
+            console.log("gonna call face rec");
+            this.setState({ iJustEnteredLobbyOrRoom: false });
+            emotionRecFullFunction(this.props.setStateCallback);
+          }, 500)}
         {/* /////////////////*/}
-        <div className={styles.topbox}>
-          <div id="videoContainer" className={styles.videoContainer}>
-            {/* <div id="videoObscurer" className={styles.videoObscurer}>
+        {this.props.currentComponent === "lobby" && (
+          <div className={styles.topbox}>
+            <div id="videoContainer" className={styles.videoContainer}>
+              {/* <div id="videoObscurer" className={styles.videoObscurer}>
                           video obscured for you
                         </div> */}
-            <video id="video" className={styles.video} autoPlay muted></video>
+              <video id="video" className={styles.video} autoPlay muted></video>
 
-            {/* <canvas
+              {/* <canvas
                           id="canvasDetections"
                           className={styles.canvasDetections}
                         ></canvas> */}
-            <canvas id="canvasPhoto" className={styles.canvasPhoto}></canvas>
+              <canvas id="canvasPhoto" className={styles.canvasPhoto}></canvas>
+            </div>
+            <div className={styles.emojiHolder}>
+              {emoObj &&
+                emoObj.map((emoObj) => {
+                  return (
+                    <div
+                      className={styles.emoHolder}
+                      id={`${emoObj.name}Holder`}
+                    >
+                      <p className={styles.emoBars} id={`${emoObj.name}Bars`}>
+                        □□□□
+                      </p>
+                      <img
+                        src={`src/assets/${emoObj.name}Emoji.png`}
+                        className={styles.emoEmoji}
+                        id={`${emoObj.name}Image`}
+                      />
+                      <p
+                        className={styles.emoLabel}
+                        id={`${emoObj.name}Action`}
+                      >
+                        {emoObj.name.toUpperCase()}
+                      </p>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
-          <div className={styles.emojiHolder}>
-            {emoObj &&
-              emoObj.map((emoObj) => {
-                return (
-                  <div className={styles.emoHolder} id={`${emoObj.name}Holder`}>
-                    <p className={styles.emoBars} id={`${emoObj.name}Bars`}>
-                      □□□□
-                    </p>
-                    <img
-                      src={`src/assets/${emoObj.name}Emoji.png`}
-                      className={styles.emoEmoji}
-                      id={`${emoObj.name}Image`}
-                    />
-                    <p className={styles.emoLabel} id={`${emoObj.name}Action`}>
-                      {emoObj.action.toUpperCase()}
-                    </p>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
+        )}
         <div className={styles.midbox}>
           <p id="youAre"></p>
           <p

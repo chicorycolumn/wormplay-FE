@@ -195,8 +195,7 @@ export const emotionRecFullFunction = (setStateCallback) => {
           id_canvasPhoto.setAttribute("src", data);
           id_canvasPhoto.setAttribute("label", currentEmotion);
 
-          setStateCallback("currentEmotion", {
-            name: currentEmotion,
+          setStateCallback(`${currentEmotion}Data`, {
             src: data,
           });
         }

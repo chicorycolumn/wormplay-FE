@@ -5,7 +5,15 @@ import body from "../assets/body-resized.png";
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
 import blueButton1 from "../assets/ui/blue_button02.png";
+import blueButton2 from "../assets/ui/blue_button03.png";
+import checkedBox from "../assets/ui/blue_boxCheckmark.png";
+import box from "../assets/ui/grey_box.png";
 // import bgMusic from ["../assets/wiggle.mp3"];
+
+//****************************************** */
+//Hey James! We now have access to any photos were taken
+//with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
+//****************************************** */
 
 import { vowelArray, consonantArray } from "../refObjs.js";
 
@@ -17,30 +25,48 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 let isP1 = false;
 let isP2 = false;
-
-let currentEmotion = null;
+let p1Name = null;
+let p2Name = null;
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super("MainScene");
-    this.gameState = {};
+    this.gameState = {
+      wormWordArr: [" ", " ", " ", " ", " ", " "],
+      opponentsArr: [" ", " ", " ", " ", " ", " "],
+      opponents: {},
+      text: {},
+
+      scores: {},
+    };
   }
 
   preload() {
     console.log("in phaser PRELOAD");
+    console.log(this.game.react.state.photoSet);
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
+    p1Name = this.game.react.state.playersDetails.p1.username;
+    p2Name = this.game.react.state.playersDetails.p2.username;
     this.load.image("head", head);
     this.load.image("body", body);
     this.load.image("p2Head", p2Head);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
-    this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+    this.load.image("blueButton2", blueButton2);
+    this.load.image("checkedBox", checkedBox);
+    this.load.image("box", box);
+    // this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
   }
 
   create() {
+    const { opponents, opponentsArr } = this.gameState;
+
     console.log("in phaser CREATE");
+
+    const scene = this; // scene variable makes 'this' available anywhere within the create function
+
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
@@ -73,26 +99,28 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Head.count = 0;
     this.gameState.p2Head.body.collideWorldBounds = true;
 
-    // adding player variables
-    // this.gameState.p2Body6
-    // this.gameState.p2Body5
-    // this.gameState.p2Body4
-    // this.gameState.p2Body3
-    // this.gameState.p2Body2
-    // this.gameState.p2Body1
-
     //Create letter styling
-    const textStyle = {
+    const wordTileStyle = {
       font: "35px Arial",
       fill: "#007300",
       align: "center",
       padding: { top: 4 },
     };
 
+    // create a text block for each part of the array
+    opponentsArr.forEach((char, i) => {
+      const n = i + 1;
+      this.gameState.opponents[`opponent${n}`] = this.add.text(
+        -50,
+        -50,
+        char,
+        wordTileStyle
+      );
+    });
+
     //letter array so the random letter generation can pick from it
 
     // Create a text object and put 6 random letters within it (with styling)
-    this.gameState.text = {};
 
     const letterTileSpecifications = {
       1: { x: 50, y: 25 },
@@ -109,12 +137,14 @@ export default class MainScene extends Phaser.Scene {
 
     Object.keys(letterTileSpecifications).forEach((n) => {
       let num = parseInt(n);
+      const char = Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
-        Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray),
-        textStyle
+        char,
+        wordTileStyle
       );
+      this.gameState.text[`letter${num}`].value = char;
     });
 
     // Loop through text object and set up drag and drop functionality
@@ -138,6 +168,7 @@ export default class MainScene extends Phaser.Scene {
           if (/body\d/g.test(objectKey) === true) {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
+            bodyPart.setInteractive();
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -148,6 +179,9 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
+          } else if (/p2Body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.setOrigin(0.3, 0.1);
           }
         }
       } else if (isP2 === true) {
@@ -155,6 +189,7 @@ export default class MainScene extends Phaser.Scene {
           if (/p2Body\d/g.test(objectKey) === true) {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
+            bodyPart.setInteractive();
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -165,6 +200,9 @@ export default class MainScene extends Phaser.Scene {
                 bodyPart.hasLetter = true;
               }
             });
+          } else if (/body\d/g.test(objectKey) === true) {
+            const bodyPart = this.gameState[objectKey];
+            bodyPart.setOrigin(0.3, 0.1);
           }
         }
       }
@@ -204,12 +242,25 @@ export default class MainScene extends Phaser.Scene {
           this.body.enable = false;
           this.body.x = startX;
           this.body.y = startY;
+        } else {
+          const n = this.onSegment.split("ody")[1];
+          const indexOfChar = n - 1;
+          socket.emit("playerChangesLetter", {
+            index: indexOfChar,
+            character: this.value,
+          });
         }
       });
     }
 
-    // Create Array of worm letters
-    this.gameState.wormWordArr = [" ", " ", " ", " ", " ", " "];
+    //listening for changes in player array
+    socket.on("opponentUpdates", function (data) {
+      opponentsArr.splice(data.index, 1, data.character);
+      opponentsArr.forEach((char, i) => {
+        const n = i + 1;
+        opponents[`opponent${n}`].setText(char);
+      });
+    });
 
     // Create submit button
     const btnStyle = {
@@ -278,9 +329,10 @@ export default class MainScene extends Phaser.Scene {
       let wordArr = wormWordArr.map((el) => (el = " "));
       for (const letter in allLettersObj) {
         if (allLettersObj[letter].onSegment !== null) {
-          const bodyIndex =
-            Number(allLettersObj[letter].onSegment.slice(4)) - 1;
-
+          const bodyIndex = isP1
+            ? Number(allLettersObj[letter].onSegment.slice(4)) - 1
+            : Number(allLettersObj[letter].onSegment.slice(6)) - 1;
+          console.log(bodyIndex);
           wordArr[bodyIndex] = allLettersObj[letter].text;
         }
       }
@@ -296,23 +348,157 @@ export default class MainScene extends Phaser.Scene {
 
     this.model = this.sys.game.globals.model;
 
-    if (this.model.musicOn === false && this.model.bgMusicPlaying === false) {
-      this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
-      this.bgMusic.play();
-      this.model.bgMusicPlaying = true;
-      this.sys.game.globals.bgMusic = this.bgMusic;
-    }
+    // if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {
+    //   this.bgMusic = this.sound.add("bgMusic", { volume: 0.5, loop: true });
+    //   this.bgMusic.play();
+    //   this.model.bgMusicPlaying = true;
+    //   this.sys.game.globals.bgMusic = this.bgMusic;
+    // }
 
-    this.game.react.state.socket.on("word checked", function (response) {
-      // console.log(response);
+    const scoreStyle = {
+      font: "35px Arial",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 5,
+    };
+
+    const finalScoreStyle = {
+      font: "45px Arial",
+      color: "#cc0000",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 10,
+    };
+
+    this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
+      const opponentName = isP1 === true ? p2Name : p1Name;
+      if (isCurrentPlayer === true) {
+        this.scores.currentPlayer = scoreObj;
+
+        if (scoreObj.isValid === false) {
+          this.scores.currentPlayerText = scene.add.text(
+            250,
+            400,
+            [`Oh no! ${scoreObj.word} isn't a word!`, `You get no points!`],
+            scoreStyle
+          );
+        } else {
+          this.scores.currentPlayerText = scene.add.text(
+            300,
+            400,
+            [`You said ${scoreObj.word}!`, `That's ${scoreObj.points} points!`],
+            scoreStyle
+          );
+        }
+      } else {
+        this.scores.opponent = scoreObj;
+        if (scoreObj.isValid === false) {
+          this.scores.opponentText = scene.add.text(
+            200,
+            400,
+            [
+              `Ha ha! ${opponentName} said ${scoreObj.word}.`,
+              `That's not a word stupid!`,
+            ],
+            scoreStyle
+          );
+        } else {
+          this.scores.opponentText = scene.add.text(
+            250,
+            400,
+            [
+              `${opponentName} said ${scoreObj.word}!`,
+              `They scored ${scoreObj.points} points!`,
+            ],
+            scoreStyle
+          );
+        }
+      }
+      if (
+        this.scores.currentPlayer !== undefined &&
+        this.scores.opponent !== undefined
+      ) {
+        scene.time.delayedCall(2000, this.showFinalScores, [
+          this.scores,
+          opponentName,
+        ]);
+      }
+    };
+
+    this.gameState.showFinalScores = function (scoresObj, opponentName) {
+      if (scoresObj.currentPlayer.points > scoresObj.opponent.points) {
+        this.finalScoreText = scene.add.text(
+          200,
+          200,
+          [
+            `You win with ${scoresObj.currentPlayer.word}!`,
+            `What a great word!`,
+          ],
+          finalScoreStyle
+        );
+      } else if (scoresObj.currentPlayer.points < scoresObj.opponent.points) {
+        this.finalScoreText = scene.add.text(
+          100,
+          200,
+          [
+            `Oh no ${opponentName} won with ${scoresObj.opponent.word}!`,
+            `I hate that word!`,
+          ],
+          finalScoreStyle
+        );
+      } else {
+        this.finalScoreText = scene.add.text(
+          50,
+          200,
+          [
+            `A drawer?!?! Now no-ones happy!`,
+            `I think your word ${scoresObj.currentPlayer.word} was better`,
+          ],
+          finalScoreStyle
+        );
+      }
+    };
+
+    // this.model = this.sys.game.globals.model;
+
+    // this.musicButton = this.add.image(130, 585, "checkedBox");
+    // this.musicButton.setScale(0.5);
+    // this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
+    // this.musicText.setScale(0.75);
+    // this.musicButton.setInteractive();
+
+    // this.musicButton.on(
+    //   "pointerdown",
+    //   function () {
+    //     this.model.musicOn = !this.model.musicOn;
+    //     this.updateAudio();
+    //   }.bind(this)
+    // );
+
+    // this.updateAudio();
+
+    this.game.react.state.socket.on("word checked", function (scoreObj) {
+      const isCurrentPlayer = true;
+      scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
 
-    this.game.react.state.socket.on("opponent score", function (response) {
-      // console.log(response);
+    this.game.react.state.socket.on("opponent score", function (scoreObj) {
+      const isCurrentPlayer = false;
+      scene.gameState.displayScore(scoreObj, isCurrentPlayer);
     });
 
     this.game.react.state.socket.on("api error", function (error) {
       console.log("Error:", error.status, error.message);
+      scene.gameState.errMessage = scene.add.text(
+        250,
+        250,
+        `OH NO! API ERROR: ${error.status} ${error.message}`,
+        {
+          font: "35px Arial",
+          color: "#f00000",
+          align: "center",
+        }
+      );
     });
   }
 
@@ -334,28 +520,25 @@ export default class MainScene extends Phaser.Scene {
       p2Body5,
       p2Body6,
     } = this.gameState;
+    const {
+      opponent1,
+      opponent2,
+      opponent3,
+      opponent4,
+      opponent5,
+      opponent6,
+    } = this.gameState.opponents;
+
+    // Update Player Name(s)
+    if (p1Name !== this.game.react.state.playersDetails.p1.username) {
+      p1Name = this.game.react.state.playersDetails.p1.username;
+    }
+
+    if (p2Name !== this.game.react.state.playersDetails.p2.username) {
+      p2Name = this.game.react.state.playersDetails.p2.username;
+    }
 
     console.log("in phaser UPDATE");
-    if (this.game.react.state.currentEmotion.name !== currentEmotion) {
-      //In here is where I'm  t r y i n g  to change Trump head to Obama,
-      //to show that the head can be changed on cue. No luck yet.
-
-      currentEmotion = this.game.react.state.currentEmotion.name;
-      // console.log(this.gameState.head.x, this.gameState.head.y);
-      let { x, y } = this.gameState.head;
-      this.load.image("obama", obama);
-      // console.log(this.textures.list.head.source[0].source.src);
-      // this.gameState.head.loadTexture("obama");
-      // this.textures.list.head.source[0].source.src =
-      //   "blob:http://localhost:8081/f0e6dbb791f7708202dc125ac3cfe189";
-      // console.log(this);
-      // this.gameState.head.texture = headCartoon;
-      // this.gameState.head = this.physics.add.image(x, y, "newHead");
-      // console.log(this.gameState.head.texture.source[0].source);
-      // console.log(headCartoon);
-      // this.load.image("headCartoon", headCartoon);
-      // this.gameState.head.add.image("headCartoon");
-    }
 
     // Fix letters to body parts
     for (const letter in text) {
@@ -404,6 +587,39 @@ export default class MainScene extends Phaser.Scene {
       head.count--;
     }
 
+    // Fades out player scores after 3 seconds
+    if (this.gameState.scores.currentPlayerText !== undefined) {
+      this.time.delayedCall(
+        2500,
+        function () {
+          this.tweens.add({
+            targets: this.gameState.scores.currentPlayerText,
+            alpha: 0,
+            duration: 500,
+            ease: "Power 2",
+          });
+        },
+        null,
+        this
+      );
+    }
+
+    if (this.gameState.scores.opponentText !== undefined) {
+      this.time.delayedCall(
+        2500,
+        function () {
+          this.tweens.add({
+            targets: this.gameState.scores.opponentText,
+            alpha: 0,
+            duration: 500,
+            ease: "Power 2",
+          });
+        },
+        null,
+        this
+      );
+    }
+
     if (p2Head.count === 0) {
       p2Head.xDest = Math.floor(Math.random() * 800);
       p2Head.yDest = Math.floor(Math.random() * 600);
@@ -446,5 +662,47 @@ export default class MainScene extends Phaser.Scene {
     if (p2Head.count > 0) {
       p2Head.count--;
     }
+
+    if (isP1 === true) {
+      opponent1.x = p2Body1.x;
+      opponent1.y = p2Body1.y;
+      opponent2.x = p2Body2.x;
+      opponent2.y = p2Body2.y;
+      opponent3.x = p2Body3.x;
+      opponent3.y = p2Body3.y;
+      opponent4.x = p2Body4.x;
+      opponent4.y = p2Body4.y;
+      opponent5.x = p2Body5.x;
+      opponent5.y = p2Body5.y;
+      opponent6.x = p2Body6.x;
+      opponent6.y = p2Body6.y;
+    } else if (isP2 === true) {
+      opponent1.x = body1.x;
+      opponent1.y = body1.y;
+      opponent2.x = body2.x;
+      opponent2.y = body2.y;
+      opponent3.x = body3.x;
+      opponent3.y = body3.y;
+      opponent4.x = body4.x;
+      opponent4.y = body4.y;
+      opponent5.x = body5.x;
+      opponent5.y = body5.y;
+      opponent6.x = body6.x;
+      opponent6.y = body6.y;
+    }
   }
+
+  // updateAudio() {
+  //   if (this.model.musicOn === false) {
+  //     this.musicButton.setTexture("box");
+  //     this.sys.game.globals.bgMusic.stop();
+  //     this.model.bgMusicPlaying = false;
+  //   } else {
+  //     this.musicButton.setTexture("checkedBox");
+  //     if (this.model.bgMusicPlaying === false) {
+  //       this.sys.game.globals.bgMusic.play();
+  //       this.model.bgMusicPlaying = true;
+  //     }
+  //   }
+  // }
 }

@@ -8,6 +8,12 @@ export default class ReactGame extends Component {
   constructor() {
     super();
     this.state = {
+      photoSet: {
+        happy: { src: null },
+        angry: { src: null },
+        sad: { src: null },
+        surprised: { src: null },
+      },
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
       currentEmotion: { name: null, src: null },
@@ -23,25 +29,24 @@ export default class ReactGame extends Component {
   componentDidMount() {
     this.game = new PhaserGame(this);
 
-    if (this.props.socket.id === this.props.playersDetails.p1.id) {
-      this.setState({
-        socket: this.props.socket,
-        isP1: true,
-        currentEmotion: this.props.currentEmotion,
-      });
-    } else if (this.props.socket.id === this.props.playersDetails.p2.id) {
-      this.setState({
-        socket: this.props.socket,
-        isP2: true,
-        currentEmotion: this.props.currentEmotion,
-      });
-    }
+    this.setState({
+      socket: this.props.socket,
+      isP1: this.props.socket.id === this.props.playersDetails.p1.id,
+      isP2: this.props.socket.id === this.props.playersDetails.p2.id,
+      currentEmotion: this.props.currentEmotion,
+      photoSet: this.props.photoSet,
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
-      this.setState({ currentEmotion: this.props.currentEmotion });
+    if (
+      Object.keys(this.state.photoSet).filter((emotion) => {
+        this.state.photoSet[emotion].src !== this.props.photoSet[emotion].src;
+      }).length
+    ) {
+      this.setState({ photoSet: this.props.photoSet });
     }
+
     if (
       this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
       this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
