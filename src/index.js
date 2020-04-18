@@ -8,7 +8,7 @@ let shouldEndpointBeHeroku = false; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
 const socket = socketIOClient(
   shouldEndpointBeHeroku
     ? "https://wormplayserver.herokuapp.com/"
-    : "http://localhost:4001"
+    : "http://localhost:4002"
 );
 
 ReactDOM.render(<App socket={socket} />, document.getElementById("mainBody"));

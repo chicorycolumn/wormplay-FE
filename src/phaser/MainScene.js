@@ -45,10 +45,8 @@ export default class MainScene extends Phaser.Scene {
       text: {},
       scores: {},
       wantsNewGame: null,
-
+      roundsWon: { p1: 0, p2: 0 },
       timer: { p1: 0, p2: 0 },
-//    roundsWon: { p1: 0, p2: 0 },
-
     };
   }
 
@@ -77,10 +75,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-
-    const { opponents, opponentsArr, timer } = this.gameState;
-//const { opponents, opponentsArr, roundsWon } = this.gameState;
-
+    const { opponents, opponentsArr, timer, roundsWon } = this.gameState;
 
     // Resets count of rounds won when in new game
     if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
@@ -808,36 +803,35 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitBtn.setVisible(false);
     this.gameState.quitText.setVisible(false);
 
-//     console.log(this.gameState.body1.index);
-//     this.gameState.displayRounds = function (currentRounds) {
-//       this.gameState.thisPlayerScore = this.add.text(
-//         650,
-//         85,
-//         `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`,
-//         {
-//           fontSize: "30px",
-//           color: "blue",
-//           strokeThickness: 3,
-//           fontFamily: "Arial",
-//         }
-//       );
+    this.gameState.displayRounds = function (currentRounds) {
+      this.gameState.thisPlayerScore = this.add.text(
+        650,
+        85,
+        `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`,
+        {
+          fontSize: "30px",
+          color: "blue",
+          strokeThickness: 3,
+          fontFamily: "Arial",
+        }
+      );
 
-//       this.gameState.oppositionScore = this.add.text(
-//         650,
-//         160,
-//         `${isP1 ? p2Name : p1Name}: ${
-//           isP1 ? currentRounds.p2 : currentRounds.p1
-//         }`,
-//         {
-//           fontSize: "30px",
-//           color: "red",
-//           stroke: "black",
-//           strokeThickness: 3,
-//           fontFamily: "Arial",
-//         }
-//       );
-//     }.bind(this);
-//     this.gameState.displayRounds(roundsWon);
+      this.gameState.oppositionScore = this.add.text(
+        650,
+        160,
+        `${isP1 ? p2Name : p1Name}: ${
+          isP1 ? currentRounds.p2 : currentRounds.p1
+        }`,
+        {
+          fontSize: "30px",
+          color: "red",
+          stroke: "black",
+          strokeThickness: 3,
+          fontFamily: "Arial",
+        }
+      );
+    }.bind(this);
+    this.gameState.displayRounds(roundsWon);
   }
 
   update() {
