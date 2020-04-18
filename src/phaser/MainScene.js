@@ -1,6 +1,13 @@
 import Phaser from "phaser";
-import head from "../assets/head-smaller.png";
-import obama from "../assets/obama.png";
+import p1HeadHappy from "../assets/p1-default-head/p1-face-default.png";
+import p1HeadSad from "../assets/p1-default-head/p1-face-sad.png";
+import p1HeadAngry from "../assets/p1-default-head/p1-face-angry.png";
+import p1HeadShocked from "../assets/p1-default-head/p1-face-shocked.png";
+import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
+import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
+import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
+import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
+
 import body from "../assets/body-resized.png";
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
@@ -38,7 +45,10 @@ export default class MainScene extends Phaser.Scene {
       text: {},
       scores: {},
       wantsNewGame: null,
-      roundsWon: { p1: 0, p2: 0 },
+
+      timer: { p1: 0, p2: 0 },
+//    roundsWon: { p1: 0, p2: 0 },
+
     };
   }
 
@@ -51,9 +61,11 @@ export default class MainScene extends Phaser.Scene {
     p2Name = this.game.react.state.playersDetails.p2.username;
     this.gameState.scores = {}; // Resets scores every <round></round>
     this.gameState.wantsNewGame = { p1: false, p2: false };
-    this.load.image("head", head);
+    this.load.image("head", p1HeadHappy);
+    this.load.image("p1HeadShocked", p1HeadShocked);
     this.load.image("body", body);
-    this.load.image("p2Head", p2Head);
+    this.load.image("p2Head", p2HeadHappy);
+    this.load.image("p2HeadShocked", p2HeadShocked);
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
     this.load.image("blueButton2", blueButton2);
@@ -65,7 +77,10 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { opponents, opponentsArr, roundsWon } = this.gameState;
+
+    const { opponents, opponentsArr, timer } = this.gameState;
+//const { opponents, opponentsArr, roundsWon } = this.gameState;
+
 
     // Resets count of rounds won when in new game
     if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
@@ -79,20 +94,36 @@ export default class MainScene extends Phaser.Scene {
     bg.displayWidth = this.sys.game.config.width;
 
     this.gameState.body6 = this.physics.add.image(400, 125, "body");
+    this.gameState.body6.index = 5;
     this.gameState.body5 = this.physics.add.image(400, 125, "body");
+    this.gameState.body5.index = 4;
     this.gameState.body4 = this.physics.add.image(400, 125, "body");
+    this.gameState.body4.index = 3;
     this.gameState.body3 = this.physics.add.image(400, 125, "body");
+    this.gameState.body3.index = 2;
     this.gameState.body2 = this.physics.add.image(400, 125, "body");
+    this.gameState.body2.index = 1;
     this.gameState.body1 = this.physics.add.image(400, 125, "body");
+    this.gameState.body1.index = 0;
     this.gameState.head = this.physics.add.image(400, 125, "head");
+    this.gameState.p1HeadShocked = this.add.image(400, 125, "p1HeadShocked");
+    this.gameState.p1HeadShocked.setVisible(false);
 
     this.gameState.p2Body6 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body6.index = 5;
     this.gameState.p2Body5 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body5.index = 4;
     this.gameState.p2Body4 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body4.index = 3;
     this.gameState.p2Body3 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body3.index = 2;
     this.gameState.p2Body2 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body2.index = 1;
     this.gameState.p2Body1 = this.physics.add.image(600, 300, "body");
+    this.gameState.p2Body1.index = 0;
     this.gameState.p2Head = this.physics.add.image(600, 300, "p2Head");
+    this.gameState.p2HeadShocked = this.add.image(600, 300, "p2HeadShocked");
+    this.gameState.p2HeadShocked.setVisible(false);
 
     //variables for destination
     this.gameState.head.xDest = 400;
@@ -193,6 +224,8 @@ export default class MainScene extends Phaser.Scene {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
+            console.log(this.gameState[objectKey]);
+            console.log(this.gameState[objectKey].hasLetter);
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -243,7 +276,7 @@ export default class MainScene extends Phaser.Scene {
 
       thisLetter.on("dragend", function (pointer) {
         this.clearTint();
-
+        console.log(this);
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
@@ -268,8 +301,9 @@ export default class MainScene extends Phaser.Scene {
             for (const objectKey in this.scene.gameState) {
               if (
                 /p2Body\d/g.test(objectKey) === true &&
-                this.gameState[objectKey].hasLetter === false
+                this.scene.gameState[objectKey].hasLetter === false
               ) {
+                console.log(this.scene.gameState[objectKey]);
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
               }
@@ -288,6 +322,11 @@ export default class MainScene extends Phaser.Scene {
         opponentsArr[i] = data.array[i];
         const n = i + 1;
         opponents[`opponent${n}`].setText(opponentsArr[i]);
+      }
+      if (isP1 === true) {
+        timer.p1 = 20;
+      } else if (isP2 === true) {
+        timer.p2 = 20;
       }
     });
 
@@ -538,7 +577,9 @@ export default class MainScene extends Phaser.Scene {
 
     this.musicButton = this.add.image(130, 585, "checkedBox");
     this.musicButton.setScale(0.5);
-    this.musicText = this.add.text(150, 578, "Music Enabled", { fontSize: 24 });
+    this.musicText = this.add.text(150, 578, "Music Enabled", {
+      fontSize: 24,
+    });
     this.musicText.setScale(0.75);
     this.musicButton.setInteractive();
 
@@ -767,40 +808,43 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitBtn.setVisible(false);
     this.gameState.quitText.setVisible(false);
 
-    this.gameState.displayRounds = function (currentRounds) {
-      this.gameState.thisPlayerScore = this.add.text(
-        650,
-        85,
-        `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`,
-        {
-          fontSize: "30px",
-          color: "blue",
-          strokeThickness: 3,
-          fontFamily: "Arial",
-        }
-      );
+//     console.log(this.gameState.body1.index);
+//     this.gameState.displayRounds = function (currentRounds) {
+//       this.gameState.thisPlayerScore = this.add.text(
+//         650,
+//         85,
+//         `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`,
+//         {
+//           fontSize: "30px",
+//           color: "blue",
+//           strokeThickness: 3,
+//           fontFamily: "Arial",
+//         }
+//       );
 
-      this.gameState.oppositionScore = this.add.text(
-        650,
-        160,
-        `${isP1 ? p2Name : p1Name}: ${
-          isP1 ? currentRounds.p2 : currentRounds.p1
-        }`,
-        {
-          fontSize: "30px",
-          color: "red",
-          stroke: "black",
-          strokeThickness: 3,
-          fontFamily: "Arial",
-        }
-      );
-    }.bind(this);
-    this.gameState.displayRounds(roundsWon);
+//       this.gameState.oppositionScore = this.add.text(
+//         650,
+//         160,
+//         `${isP1 ? p2Name : p1Name}: ${
+//           isP1 ? currentRounds.p2 : currentRounds.p1
+//         }`,
+//         {
+//           fontSize: "30px",
+//           color: "red",
+//           stroke: "black",
+//           strokeThickness: 3,
+//           fontFamily: "Arial",
+//         }
+//       );
+//     }.bind(this);
+//     this.gameState.displayRounds(roundsWon);
   }
 
   update() {
     const {
       head,
+      p1HeadShocked,
+      timer,
       body1,
       body2,
       body3,
@@ -809,6 +853,7 @@ export default class MainScene extends Phaser.Scene {
       body6,
       text,
       p2Head,
+      p2HeadShocked,
       p2Body1,
       p2Body2,
       p2Body3,
@@ -970,19 +1015,43 @@ export default class MainScene extends Phaser.Scene {
       opponent5.y = p2Body5.y - 28;
       opponent6.x = p2Body6.x - 28;
       opponent6.y = p2Body6.y - 28;
+
+      if (timer.p1 > 0) {
+        timer.p1 -= 1;
+        head.setVisible(false);
+        p1HeadShocked.setVisible(true);
+        p1HeadShocked.x = head.x;
+        p1HeadShocked.y = head.y;
+        if (timer.p1 === 0) {
+          head.setVisible(true);
+          p1HeadShocked.setVisible(false);
+        }
+      }
     } else if (isP2 === true) {
       opponent1.x = body1.x - 28;
-      opponent1.y = body1.y;
+      opponent1.y = body1.y - 28;
       opponent2.x = body2.x - 28;
-      opponent2.y = body2.y;
+      opponent2.y = body2.y - 28;
       opponent3.x = body3.x - 28;
-      opponent3.y = body3.y;
+      opponent3.y = body3.y - 28;
       opponent4.x = body4.x - 28;
-      opponent4.y = body4.y;
+      opponent4.y = body4.y - 28;
       opponent5.x = body5.x - 28;
-      opponent5.y = body5.y;
+      opponent5.y = body5.y - 28;
       opponent6.x = body6.x - 28;
-      opponent6.y = body6.y;
+      opponent6.y = body6.y - 28;
+
+      if (timer.p2 > 0) {
+        timer.p2 -= 1;
+        p2Head.setVisible(false);
+        p2HeadShocked.setVisible(true);
+        p2HeadShocked.x = p2Head.x;
+        p2HeadShocked.y = p2Head.y;
+        if (timer.p2 === 0) {
+          p2Head.setVisible(true);
+          p2HeadShocked.setVisible(false);
+        }
+      }
     }
   }
 
