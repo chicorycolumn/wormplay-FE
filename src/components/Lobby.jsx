@@ -199,7 +199,12 @@ export default class Lobby extends React.Component {
                       className={styles.heading}
                     >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
-                    <form onSubmit={this.createNewRoom}>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        this.createNewRoom();
+                      }}
+                    >
                       <label>
                         New room name:{" "}
                         <input

@@ -15,7 +15,7 @@ let goStraightToRoomOne = false; //USE THIS TO SKIP STRAIGHT TO GAME, BYPASSING 
 const socket = socketIOClient(
   shouldEndpointBeHeroku
     ? "https://wormplayserver.herokuapp.com/"
-    : "http://localhost:4003"
+    : "http://localhost:4002"
 );
 
 if (goStraightToRoomOne) {
