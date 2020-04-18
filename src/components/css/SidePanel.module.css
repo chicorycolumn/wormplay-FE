@@ -18,13 +18,15 @@
 }
 
 .rightPanelDisplay {
+  border: darkorchid solid 5pt;
   height: 600px;
   display: grid;
   grid-template-rows: 52.5% 1fr 12.5%;
-  width: 450px;
+  width: 350px;
 }
 
 .topbox {
+  border: black solid 2.5pt;
   background-color: coral;
   grid-row: 1;
   height: 100%;

@@ -1,5 +1,5 @@
 .georgine {
-  /* border: blue solid 2pt; */
+  border: blue solid 2pt;
   display: flex;
   flex-direction: row;
   width: 1250px;
@@ -10,7 +10,7 @@
 }
 
 .largeContainer {
-  /* border: fuchsia solid 5pt; */
+  border: fuchsia solid 5pt;
   text-align: center;
   display: flex;
   flex-direction: row;
@@ -22,7 +22,7 @@
 }
 
 .preGeorgine {
-  /* border: red solid 2pt; */
+  border: red solid 2pt;
   /* display: flex;
   flex-direction: row; */
   justify-content: center;
@@ -42,6 +42,7 @@
 }
 .rightPanel {
   /* background-color: aquamarine; */
+  border: cyan solid 5pt;
   height: 600px;
   width: 400px;
 }
