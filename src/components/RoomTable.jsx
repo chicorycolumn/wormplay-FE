@@ -48,7 +48,7 @@ class RoomTable extends Component {
   render() {
     return (
       <div>
-        <h2 id="title">🐛 Pick a room you'd like to join 🐛</h2>
+        <h2 id="title">🐛 or pick a room you'd like to join 🐛</h2>
         <table className={styles.rooms}>
           <tbody>
             {" "}
