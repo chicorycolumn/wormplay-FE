@@ -170,7 +170,7 @@ export default class MainScene extends Phaser.Scene {
     };
 
     Object.keys(letterTileSpecifications).forEach((n) => {
-      let num = parseInt(n);
+      let num = parseInt(n, 10);
       const char = Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
@@ -437,7 +437,7 @@ export default class MainScene extends Phaser.Scene {
         }
         const submittedWord = wordArr.join("");
         socket.emit("worm word submitted", submittedWord);
-      } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
+      }
     };
 
     this.model = this.sys.game.globals.model;
