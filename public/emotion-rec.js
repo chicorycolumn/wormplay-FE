@@ -32,7 +32,11 @@ export const emotionRecFullFunction = (setStateCallback) => {
   function startVideo() {
     navigator.getUserMedia(
       { video: {} },
-      (stream) => (video.srcObject = stream),
+      (stream) => {
+        video.srcObject = stream;
+
+        // video.srcObject.stop();
+      },
       (err) => console.error(err)
     );
   }

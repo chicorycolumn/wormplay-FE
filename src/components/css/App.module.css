@@ -112,3 +112,38 @@
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+#title {
+  text-align: center;
+  font-family: arial, sans-serif;
+}
+
+.rooms {
+  text-align: center;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  border: 3px solid #ddd;
+  width: 100%;
+}
+
+.rooms td,
+.rooms th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.rooms tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.rooms tr:hover {
+  background-color: #ddd;
+}
+
+.rooms th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #4caf50;
+  color: white;
+}
