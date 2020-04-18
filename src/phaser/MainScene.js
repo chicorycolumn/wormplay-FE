@@ -478,18 +478,22 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
       const opponentName = isP1 === true ? p2Name : p1Name;
+      if (this.scoreText !== undefined) {
+        this.scoreText.destroy();
+      }
+
       if (isCurrentPlayer === true) {
         this.scores.currentPlayer = scoreObj;
 
         if (scoreObj.isValid === false) {
-          this.scores.currentPlayerText = scene.add.text(
+          this.scoreText = scene.add.text(
             250,
             400,
             [`Oh no! ${scoreObj.word} isn't a word!`, `You get no points!`],
             scoreStyle
           );
         } else {
-          this.scores.currentPlayerText = scene.add.text(
+          this.scoreText = scene.add.text(
             300,
             400,
             [`You said ${scoreObj.word}!`, `That's ${scoreObj.points} points!`],
@@ -499,7 +503,7 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.scores.opponent = scoreObj;
         if (scoreObj.isValid === false) {
-          this.scores.opponentText = scene.add.text(
+          this.scoreText = scene.add.text(
             200,
             400,
             [
@@ -509,7 +513,7 @@ export default class MainScene extends Phaser.Scene {
             scoreStyle
           );
         } else {
-          this.scores.opponentText = scene.add.text(
+          this.scoreText = scene.add.text(
             250,
             400,
             [
@@ -520,6 +524,15 @@ export default class MainScene extends Phaser.Scene {
           );
         }
       }
+      // Fades out player scores after 3 second
+      scene.time.delayedCall(2500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.scoreText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
       if (
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
@@ -920,39 +933,6 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
     if (head.count > 0) {
       head.count--;
-    }
-
-    // Fades out player scores after 3 seconds
-    if (this.gameState.scores.currentPlayerText !== undefined) {
-      this.time.delayedCall(
-        2500,
-        function () {
-          this.tweens.add({
-            targets: this.gameState.scores.currentPlayerText,
-            alpha: 0,
-            duration: 500,
-            ease: "Power 2",
-          });
-        },
-        null,
-        this
-      );
-    }
-
-    if (this.gameState.scores.opponentText !== undefined) {
-      this.time.delayedCall(
-        2500,
-        function () {
-          this.tweens.add({
-            targets: this.gameState.scores.opponentText,
-            alpha: 0,
-            duration: 500,
-            ease: "Power 2",
-          });
-        },
-        null,
-        this
-      );
     }
 
     if (p2Head.count === 0) {
