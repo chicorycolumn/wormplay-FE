@@ -418,7 +418,11 @@ export default class MainScene extends Phaser.Scene {
           this.scores.currentPlayerText = scene.add.text(
             300,
             400,
-            [`You said ${scoreObj.word}!`, `That's ${scoreObj.points} points!`],
+            [
+              `You said ${scoreObj.word}!`,
+              `${scoreObj.pointsArray.join(" + ")}`,
+              `makes ${scoreObj.points} points!`,
+            ],
             scoreStyle
           );
         }
