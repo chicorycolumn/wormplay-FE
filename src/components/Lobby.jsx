@@ -25,6 +25,7 @@ export default class Lobby extends React.Component {
       myUsername: "",
       iHavePermissionToEnterRoom: false, //DEVELOPMENT
       rooms: [],
+      newRoomName: "",
       currentRoom: {
         roomID: null,
         roomName: null,
@@ -127,6 +128,20 @@ export default class Lobby extends React.Component {
     }
   }
 
+  handleInput = (input) => {
+    console.log("handling input");
+    const { newRoomName } = this.state;
+    this.setState({ newRoomName: input });
+    // this.state.socket.emit("create room", { roomName: newRoomName });
+  };
+
+  createNewRoom = () => {
+    console.log("increateroom");
+    console.log(this.state.newRoomName, "new room name");
+    const { newRoomName } = this.state;
+    this.state.socket.emit("create room", { roomName: newRoomName });
+  };
+
   render() {
     const {
       socket,
@@ -184,6 +199,19 @@ export default class Lobby extends React.Component {
                       className={styles.heading}
                     >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
+                    <form onSubmit={this.createNewRoom}>
+                      <label>
+                        New room name:{" "}
+                        <input
+                          value={this.state.newRoomName}
+                          type="text"
+                          onChange={(event) => {
+                            this.handleInput(event.target.value);
+                          }}
+                        />
+                        <button type="submit">Create room</button>
+                      </label>
+                    </form>
                     <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
                   </div>
                 </div>
