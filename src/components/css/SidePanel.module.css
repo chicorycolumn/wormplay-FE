@@ -5,8 +5,16 @@
   padding: 0px;
 }
 
+.playerNamesBox {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
 .playersDisplay {
   color: blue;
+  font-weight: bold;
 }
 
 .rightPanelDisplay {
@@ -39,9 +47,16 @@
   grid-row: 2;
 }
 
+.midboxLong {
+  background-color: yellow;
+  grid-row: 2 / 4;
+}
+
 .bottombox {
   background-color: thistle;
   grid-row: 3;
+
+  height: 100%;
 }
 
 .webcamHolder {
@@ -81,7 +96,7 @@
 
 .emoLabel {
   margin: 0px;
-  font-size: 21pt;
+  font-size: 18pt;
 }
 
 .infoDisplayMessage {
@@ -147,4 +162,10 @@
 
 .emotions {
   display: inline-block;
+}
+
+.instructions {
+  font-size: 13.5pt;
+  margin: 15px;
+  margin-top: 25px;
 }

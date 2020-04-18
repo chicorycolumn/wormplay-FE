@@ -59,4 +59,17 @@ const consonantArray = [
   "Z",
 ];
 
-module.exports = { vowelArray, consonantArray };
+const greetings = [
+  "Hiya",
+  "Howdy",
+  "Hey",
+  "Hello",
+  "Hi",
+  "Greetings",
+  "Salutations",
+  "Ahoy there",
+  "Good morrow",
+  "G'day",
+];
+
+module.exports = { vowelArray, consonantArray, greetings };

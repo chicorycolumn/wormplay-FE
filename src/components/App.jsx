@@ -27,7 +27,7 @@ export default class App extends React.Component {
       isRoomFull: false, //This should be setStated when a player exits a room back into the lobby, I think. ~Chris
       playersDetails: {
         p1: { username: null, id: null, score: 0 }, //change all back to null after CSS work
-        p2: { username: null, id: null, score: 666 }, //change all back to null after CSS work
+        p2: { username: null, id: null, score: 0, tag: "from app.jsx" }, //change all back to null after CSS work
       },
       welcomeMessage: "",
       emoObj: [
@@ -51,7 +51,10 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
-    this.setState({ socket: this.props.socket });
+    this.setState({
+      socket: this.props.socket,
+      amILoggedIn: this.props.amILoggedIn,
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -102,11 +105,6 @@ export default class App extends React.Component {
       playersDetails,
       socket,
       myUsername,
-
-      emoObj,
-      faceValue,
-      currentEmotion,
-
       rooms,
     } = this.state;
 

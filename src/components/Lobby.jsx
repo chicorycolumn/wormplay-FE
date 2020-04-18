@@ -1,27 +1,36 @@
 import React, { Component } from "react";
 import ReactGameHolder from "./ReactGameHolder.jsx";
-import SidePanel from "./SidePanel.jsx";
+import GameSidePanel from "./GameSidePanel.jsx";
+import LobbySidePanel from "./LobbySidePanel.jsx";
 import styles from "./css/Lobby.module.css";
 import genStyles from "./css/General.module.css";
 import RoomTable from "./RoomTable.jsx";
+import { greetings } from "../refObjs";
+const greeting = greetings[Math.floor(Math.random() * 10)];
 
 export default class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
+      goStraightToRoomOne: false,
+      ridEventListener: () => {
+        console.log("empty fxn instead of ridEventListener");
+      },
       happyData: { src: null },
       sadData: { src: null },
       angryData: { src: null },
       surprisedData: { src: null },
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       socket: null,
-      playersDetails: {
-        p1: { username: null, id: null, score: 0 },
-        p2: { username: null, id: null, score: 0 },
-      },
       myUsername: "",
       iHavePermissionToEnterRoom: false, //DEVELOPMENT
       rooms: [],
+      currentRoom: {
+        roomID: null,
+        roomName: null,
+        p1: { id: null, username: null },
+        p2: { id: null, username: null },
+      },
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
@@ -33,58 +42,52 @@ export default class Lobby extends React.Component {
   };
 
   stopWebcam = () => {
-    console.log("gonna stop WEBCAM!");
+    // const video = document.getElementById("video");
+    console.log(">>KILL WEBCAM<<");
+    this.state.ridEventListener();
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
+        console.log("***");
         video.srcObject = null; // red underlined but is actually okay.
         const tracks = stream.getTracks();
-        console.log(tracks);
+        console.log("LOBBY", tracks[0].enabled);
         tracks.forEach(function (track) {
           track.stop();
           track.enabled = false;
         });
+        console.log("LOBBY", tracks[0].enabled);
       },
       (err) => console.error(err)
     );
   };
 
   componentDidMount() {
-    let {
-      socket,
-      playersDetails,
-      myUsername,
-      iHavePermissionToEnterRoom,
-      rooms,
-    } = this.props;
+    let { socket, myUsername, goStraightToRoomOne, rooms } = this.props;
     this.setState({
       socket,
-      playersDetails,
+      goStraightToRoomOne,
       myUsername,
-      iHavePermissionToEnterRoom,
       rooms,
     });
   }
 
   joinRoom = (roomID) => {
-    console.log(roomID, "roomid");
-    console.log("in joinroom function");
-    this.state.socket.emit("joinRoom", { roomID });
+    this.stopWebcam();
+    setTimeout(() => {
+      //THIS TIMEOUT IS A BODGE.
+      this.state.socket.emit("joinRoom", { roomID });
+    }, 1000);
   };
 
   quitRoom = () => {
-    console.log("gonna try quitting room 3!");
+    console.log("gonna try quitting room");
     this.state.socket.emit("quitRoom");
   };
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("props.rooms in lobby", this.props.rooms);
-
-    if (
-      this.state.playersDetails.p1.id !== this.props.playersDetails.p1.id ||
-      this.state.playersDetails.p2.id !== this.props.playersDetails.p2.id
-    ) {
-      this.setState({ playersDetails: this.props.playersDetails });
+    if (this.state.socket && this.state.goStraightToRoomOne) {
+      this.state.socket.emit("joinRoom", { roomID: 1, developmentCheat: true });
     }
 
     if (this.state.socket) {
@@ -92,28 +95,30 @@ export default class Lobby extends React.Component {
         console.log(`Oh no! The room was full or something.`);
       });
 
+      this.state.socket.on("lobbyUpdate", (data) => {
+        console.log("gonna update lobby");
+        this.setState({ rooms: data.rooms });
+      });
+
       this.state.socket.on("youJoinedARoom", (data) => {
-        this.stopWebcam();
         console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {
-          console.log("inside socket.on youJoinedARoom");
           if (data.youCanEnter) {
             let whichPlayerAmI = data.whichPlayerIsShe;
 
             let welcomeMessage =
               "Hey " +
               "<strong>" +
-              `${data.playersDetails[`${whichPlayerAmI}`].username}` +
+              `${data.room[`${whichPlayerAmI}`].username}` +
               "</strong>" +
               ", it's awesome you're here!";
 
             this.setState({
               whichPlayerAmI,
-              playersDetails: data.playersDetails,
               welcomeMessage,
               iHavePermissionToEnterRoom: true,
-              currentRoomIAmIn: data.room.roomID,
+              currentRoom: data.room,
             });
           }
         }
@@ -182,7 +187,6 @@ export default class Lobby extends React.Component {
   render() {
     const {
       socket,
-      playersDetails,
       myUsername,
       iHavePermissionToEnterRoom,
       rooms,
@@ -190,11 +194,8 @@ export default class Lobby extends React.Component {
       sadData,
       surprisedData,
       angryData,
+      currentRoom,
     } = this.state;
-
-    if (iHavePermissionToEnterRoom) {
-      console.log("gonna load GAME!");
-    }
 
     let photoSet = {
       happy: happyData,
@@ -212,57 +213,50 @@ export default class Lobby extends React.Component {
               <div id="phaserContainer">
                 <ReactGameHolder
                   socket={socket}
-                  playersDetails={playersDetails}
                   myUsername={myUsername}
                   photoSet={photoSet}
+                  currentRoom={currentRoom}
                 />
               </div>
             </div>
             <div id="rightPanel" className={genStyles.rightPanel}>
-              <SidePanel
-                currentComponent="game"
+              <GameSidePanel
                 socket={socket}
-                playersDetails={playersDetails}
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
                 photoSet={photoSet}
+                currentRoom={currentRoom}
+                stopWebcam={this.stopWebcam}
               />
             </div>
           </div>
         ) : (
-          <div id="georgine" className={genStyles.georgine}>
-            <div id="leftPanel" className={genStyles.leftPanel}>
-              <div>
-                <h1
-                  className={styles.heading}
-                >{`Hello ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
+          <>
+            {!this.state.goStraightToRoomOne && (
+              <div id="georgine" className={genStyles.georgine}>
+                <div id="leftPanel" className={genStyles.leftPanel}>
+                  <div>
+                    <h1
+                      className={styles.heading}
+                    >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
-                <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
-                {/* 
-                <button
-                  className={styles.buttons}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    this.joinRoom(1);
-                  }}
-                >
-                  ENTER ROOM 1
-                </button> */}
+                    <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
+                  </div>
+                </div>
+                <div id="rightPanel" className={genStyles.rightPanel}>
+                  <LobbySidePanel
+                    socket={socket}
+                    myUsername={myUsername}
+                    iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
+                    setStateCallback={this.setStateCallback}
+                    rooms={rooms}
+                    currentRoom={currentRoom}
+                  />
+                </div>
               </div>
-            </div>
-            <div id="rightPanel" className={genStyles.rightPanel}>
-              <SidePanel
-                currentComponent="lobby"
-                socket={socket}
-                playersDetails={playersDetails}
-                myUsername={myUsername}
-                iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
-                setStateCallback={this.setStateCallback}
-                rooms={rooms}
-              />
-            </div>
-          </div>
+            )}
+          </>
         )}
       </div>
     );

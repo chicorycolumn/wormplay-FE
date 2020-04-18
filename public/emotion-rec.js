@@ -1,9 +1,13 @@
-export const emotionRecFullFunction = (setStateCallback) => {
+import "geteventlisteners";
+
+export const emotionRecFullFunction = (
+  setStateCallback,
+  setStateCallbackToSidePanel
+) => {
   require("regenerator-runtime/runtime");
   console.log("inside emotion rec js");
 
   const video = document.getElementById("video");
-
   let currentEmotion = "";
   let happyToggle = false;
   let emotionDuration = { happy: 0, sad: 0, angry: 0, surprised: 0 };
@@ -29,19 +33,19 @@ export const emotionRecFullFunction = (setStateCallback) => {
     faceapi.nets.faceExpressionNet.loadFromUri("public/models"),
   ]).then(startVideo);
 
+  console.log("about to start video in eRec");
   function startVideo() {
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
         video.srcObject = stream;
-
         // video.srcObject.stop();
       },
       (err) => console.error(err)
     );
   }
 
-  video.addEventListener("play", () => {
+  function facialRecogitionFunction() {
     setInterval(async () => {
       const detections = await faceapi
         .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
@@ -205,5 +209,19 @@ export const emotionRecFullFunction = (setStateCallback) => {
         }
       }
     }, 350);
-  });
+  }
+
+  if (video.getEventListeners().play.length < 2) {
+    video.addEventListener("play", facialRecogitionFunction, true);
+  }
+
+  function ridEventListener() {
+    console.log("inside ridEventListener");
+    if (video.getEventListeners().play.length > 1) {
+      video.removeEventListener("play", facialRecogitionFunction, true);
+      console.log("video in ERec", video);
+    }
+  }
+
+  setStateCallback("ridEventListener", ridEventListener);
 };
