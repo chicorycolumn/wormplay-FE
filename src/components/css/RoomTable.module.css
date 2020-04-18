@@ -21,8 +21,12 @@
   background-color: #f2f2f2;
 }
 
-.rooms tr:hover {
-  background-color: #ddd;
+.rooms tr:nth-child(even):hover {
+  background-color: #e6e6e6;
+}
+
+.rooms tr:nth-child(odd):hover {
+  background-color: #9fff80;
 }
 
 .rooms th {

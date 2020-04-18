@@ -81,8 +81,6 @@ export default class GameSidePanel extends React.Component {
       photoSet,
     } = this.state;
 
-    console.log("SIDEPANEL says currentRoom is ", currentRoom);
-
     return (
       <div className={styles.rightPanelDisplay}>
         <div className={styles.topbox}>
@@ -119,19 +117,18 @@ export default class GameSidePanel extends React.Component {
             </div>
 
             <ul id="infoDisplay" className={styles.infoDisplay}></ul>
-
-            <div className={styles.bottombox}>
-              {currentRoom.p1.username !== null &&
-              currentRoom.p2.username !== null ? (
-                <div>
-                  <p>{currentRoom.p1.username + ": " + currentRoom.p1.score}</p>
-                  <p>{currentRoom.p2.username + ": " + currentRoom.p2.score}</p>
-                </div>
-              ) : (
-                "waiting..."
-              )}
-            </div>
           </div>
+        </div>
+        <div className={styles.bottombox}>
+          {currentRoom.p1.username !== null &&
+          currentRoom.p2.username !== null ? (
+            <div>
+              <p>{currentRoom.p1.username + ": " + currentRoom.p1.score}</p>
+              <p>{currentRoom.p2.username + ": " + currentRoom.p2.score}</p>
+            </div>
+          ) : (
+            "waiting..."
+          )}
         </div>
       </div>
     );

@@ -67,6 +67,15 @@ export default class LobbySidePanel extends React.Component {
     if (this.state.myUsername !== this.props.myUsername) {
       this.setState({ myUsername: this.props.myUsername });
     }
+
+    if (this.state.iJustEnteredLobbyOrRoom) {
+      console.log("gonna CALL face rec");
+      this.setState({ iJustEnteredLobbyOrRoom: false });
+      emotionRecFullFunction(
+        this.props.setStateCallback,
+        this.setStateCallbackToSidePanel
+      );
+    }
   }
   render() {
     const {
@@ -78,20 +87,8 @@ export default class LobbySidePanel extends React.Component {
       photoSet,
     } = this.state;
 
-    console.log("SIDEPANEL says currentRoom is ", currentRoom);
-
     return (
       <div className={styles.rightPanelDisplay}>
-        {this.state.iJustEnteredLobbyOrRoom &&
-          setTimeout(() => {
-            console.log("gonna CALL face rec");
-            this.setState({ iJustEnteredLobbyOrRoom: false });
-            emotionRecFullFunction(
-              this.props.setStateCallback,
-              this.setStateCallbackToSidePanel
-            );
-          }, 1000)}
-
         <div className={styles.topbox}>
           <div id="videoContainer" className={styles.videoContainer}>
             <video id="video" className={styles.video} autoPlay muted></video>

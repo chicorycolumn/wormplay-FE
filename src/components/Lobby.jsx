@@ -42,18 +42,21 @@ export default class Lobby extends React.Component {
   };
 
   stopWebcam = () => {
-    console.log("gonna stop webcam");
+    // const video = document.getElementById("video");
+    console.log(">>KILL WEBCAM<<");
     this.state.ridEventListener();
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
+        console.log("***");
         video.srcObject = null; // red underlined but is actually okay.
         const tracks = stream.getTracks();
-        console.log("tracks", tracks);
+        console.log("LOBBY", tracks[0].enabled);
         tracks.forEach(function (track) {
           track.stop();
           track.enabled = false;
         });
+        console.log("LOBBY", tracks[0].enabled);
       },
       (err) => console.error(err)
     );
@@ -71,20 +74,19 @@ export default class Lobby extends React.Component {
 
   joinRoom = (roomID) => {
     this.stopWebcam();
-
-    // console.log(roomID, "roomid");
-    console.log("in joinroom function");
-    this.state.socket.emit("joinRoom", { roomID });
+    setTimeout(() => {
+      //THIS TIMEOUT IS A BODGE.
+      this.state.socket.emit("joinRoom", { roomID });
+    }, 1000);
   };
 
   quitRoom = () => {
-    console.log("gonna try quitting room 3!");
+    console.log("gonna try quitting room");
     this.state.socket.emit("quitRoom");
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.socket && this.state.goStraightToRoomOne) {
-      console.log(this.props.socket);
       this.state.socket.emit("joinRoom", { roomID: 1, developmentCheat: true });
     }
 
@@ -94,6 +96,7 @@ export default class Lobby extends React.Component {
       });
 
       this.state.socket.on("lobbyUpdate", (data) => {
+        console.log("gonna update lobby");
         this.setState({ rooms: data.rooms });
       });
 
@@ -101,9 +104,7 @@ export default class Lobby extends React.Component {
         console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {
-          console.log("inside socket.on youJoinedARoom");
           if (data.youCanEnter) {
-            console.log("congrats");
             let whichPlayerAmI = data.whichPlayerIsShe;
 
             let welcomeMessage =
@@ -112,8 +113,6 @@ export default class Lobby extends React.Component {
               `${data.room[`${whichPlayerAmI}`].username}` +
               "</strong>" +
               ", it's awesome you're here!";
-
-            console.log("data.room", data.room);
 
             this.setState({
               whichPlayerAmI,
@@ -228,6 +227,7 @@ export default class Lobby extends React.Component {
                 setStateCallback={this.setStateCallback}
                 photoSet={photoSet}
                 currentRoom={currentRoom}
+                stopWebcam={this.stopWebcam}
               />
             </div>
           </div>
@@ -242,16 +242,6 @@ export default class Lobby extends React.Component {
                     >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
                     <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
-                    {/* 
-                <button
-                  className={styles.buttons}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    this.joinRoom(1);
-                  }}
-                >
-                  ENTER ROOM 1
-                </button> */}
                   </div>
                 </div>
                 <div id="rightPanel" className={genStyles.rightPanel}>

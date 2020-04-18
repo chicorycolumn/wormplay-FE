@@ -14,7 +14,6 @@
 
 .playersDisplay {
   color: blue;
-  font-family: arial;
   font-weight: bold;
 }
 
@@ -56,7 +55,7 @@
 .bottombox {
   background-color: thistle;
   grid-row: 3;
-  border: black solid 1pt;
+
   height: 100%;
 }
 
@@ -97,7 +96,7 @@
 
 .emoLabel {
   margin: 0px;
-  font-size: 21pt;
+  font-size: 18pt;
 }
 
 .infoDisplayMessage {
@@ -166,7 +165,6 @@
 }
 
 .instructions {
-  font-family: arial;
   font-size: 13.5pt;
   margin: 15px;
   margin-top: 25px;

@@ -33,12 +33,12 @@ export const emotionRecFullFunction = (
     faceapi.nets.faceExpressionNet.loadFromUri("public/models"),
   ]).then(startVideo);
 
+  console.log("about to start video in eRec");
   function startVideo() {
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
         video.srcObject = stream;
-
         // video.srcObject.stop();
       },
       (err) => console.error(err)
@@ -219,6 +219,7 @@ export const emotionRecFullFunction = (
     console.log("inside ridEventListener");
     if (video.getEventListeners().play.length > 1) {
       video.removeEventListener("play", facialRecogitionFunction, true);
+      console.log("video in ERec", video);
     }
   }
 
