@@ -405,7 +405,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerup", function (event) {
-      this.setTint(0xff0000);
+      this.setTint(0xffbf00);
       this.y = originalBtnY;
       this.hasBeenPressed = true;
       this.scene.gameState.sendWord(
@@ -414,6 +414,7 @@ export default class MainScene extends Phaser.Scene {
         this.scene.game.react.state.socket,
         this.hasBeenPressed
       );
+      this.disableInteractive();
     });
 
     this.gameState.sendWord = function (
@@ -819,6 +820,12 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitText.setVisible(false);
 
     this.gameState.displayRounds = function (currentRounds) {
+      if (this.gameState.thisPlayerScore !== undefined) {
+        this.gameState.thisPlayerScore.destroy();
+      }
+      if (this.gameState.oppositionScore !== undefined) {
+        this.gameState.oppositionScore.destroy();
+      }
       this.gameState.thisPlayerScore = this.add.text(
         650,
         85,
@@ -833,7 +840,7 @@ export default class MainScene extends Phaser.Scene {
 
       this.gameState.oppositionScore = this.add.text(
         650,
-        160,
+        150,
         `${isP1 ? p2Name : p1Name}: ${
           isP1 ? currentRounds.p2 : currentRounds.p1
         }`,
@@ -846,6 +853,7 @@ export default class MainScene extends Phaser.Scene {
         }
       );
     }.bind(this);
+
     this.gameState.displayRounds(roundsWon);
   }
 
