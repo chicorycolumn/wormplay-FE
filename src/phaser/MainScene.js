@@ -469,9 +469,17 @@ export default class MainScene extends Phaser.Scene {
       strokeThickness: 5,
     };
 
-    const finalScoreStyle = {
+    const roundScoreStyle = {
       font: "45px Arial",
       color: "#cc0000",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 10,
+    };
+
+    const finalScoreStyle = {
+      font: "50px Arial",
+      color: "#ffef00",
       align: "center",
       stroke: "#000000",
       strokeThickness: 10,
@@ -548,39 +556,67 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
-        this.finalScoreText = scene.add.text(
+        this.roundWinnerText = scene.add.text(
           200,
           200,
           [
             `You win with ${scoreObj.currentPlayer.word}!`,
             `What a great word!`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
         const winner = isP1 === true ? "p1" : "p2";
         roundsWon[winner] += 1;
         socket.emit("update rounds", roundsWon);
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
-        this.finalScoreText = scene.add.text(
-          100,
+        this.roundWinnerText = scene.add.text(
+          150,
           200,
           [
-            `Oh no ${opponentName} won with ${scoreObj.opponent.word}!`,
+            `Oh no, ${opponentName} won with ${scoreObj.opponent.word}!`,
             `I hate that word!`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
       } else {
-        this.finalScoreText = scene.add.text(
+        this.roundWinnerText = scene.add.text(
           50,
           200,
           [
             `A drawer?!?! Now no-ones happy!`,
             `I think your word ${scoreObj.currentPlayer.word} was better`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
         socket.emit("update rounds", roundsWon);
+      }
+    };
+
+    this.gameState.showFinalWinner = function (amIWinner) {
+      // this.roundWinnerText.destroy(); -- sort this, not working
+
+      const thisPlayerName = isP1 ? p1Name : p2Name;
+      const opponentName = isP1 ? p2Name : p1Name;
+
+      this.newGameBtn.setVisible(true);
+      this.newGameText.setVisible(true);
+      this.quitBtn.setVisible(true);
+      this.quitText.setVisible(true);
+
+      if (amIWinner === true) {
+        this.gameState.finalWinnerText = scene.add.text(
+          200,
+          70,
+          [`Well Done ${thisPlayerName}!`, `You Won!`],
+          finalScoreStyle
+        );
+      } else {
+        this.gameState.finalWinnerText = scene.add.text(
+          200,
+          70,
+          [`Oh no ${opponentName} Won!`, `I'm sorry.`],
+          finalScoreStyle
+        );
       }
     };
 
@@ -621,14 +657,10 @@ export default class MainScene extends Phaser.Scene {
     this.game.react.state.socket.on("api error", function (error) {
       console.log("Error:", error.status, error.message);
       scene.gameState.errMessage = scene.add.text(
+        150,
         250,
-        250,
-        `OH NO! API ERROR: ${error.status} ${error.message}`,
-        {
-          font: "35px Arial",
-          color: "#f00000",
-          align: "center",
-        }
+        [`OH NO! API ERROR:`, `${error.status} ${error.message}`],
+        roundScoreStyle
       );
     });
 
@@ -650,15 +682,13 @@ export default class MainScene extends Phaser.Scene {
       scene.gameState.roundsWon = newRounds;
       scene.gameState.displayRounds(scene.gameState.roundsWon);
 
-      if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
-        console.log("WE HAVE A WINNER!!!");
-        // Socket emit "I won" - socket.emit + socket.broadcast.emit "game won" -> func showWinner()
-        scene.gameState.newGameBtn.setVisible(true);
-        scene.gameState.newGameText.setVisible(true);
-        scene.gameState.quitBtn.setVisible(true);
-        scene.gameState.quitText.setVisible(true);
+      if (newRounds.p1 === 3) {
+        const didIWin = isP1 ? true : false;
+        scene.gameState.showFinalWinner(didIWin);
+      } else if (newRounds.p2 === 3) {
+        const didIWin = isP1 ? false : true;
+        scene.gameState.showFinalWinner(didIWin);
       } else {
-        console.log("ELSE?");
         // Add countdown on screen
         scene.time.delayedCall(3000, function () {
           scene.scene.start("MainScene");
@@ -670,7 +700,7 @@ export default class MainScene extends Phaser.Scene {
       .sprite(300, 350, "blueButton1")
       .setInteractive();
     this.gameState.newGameBtn.setScale(0.8);
-    this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+    this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
       fontSize: "20px",
       fill: "#fff",
       align: "center",
@@ -684,7 +714,7 @@ export default class MainScene extends Phaser.Scene {
       "pointerdown",
       function (pointer) {
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -702,7 +732,7 @@ export default class MainScene extends Phaser.Scene {
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -743,7 +773,7 @@ export default class MainScene extends Phaser.Scene {
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
