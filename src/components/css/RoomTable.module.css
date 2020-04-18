@@ -9,6 +9,7 @@
   border-collapse: collapse;
   border: 3px solid #ddd;
   width: 100%;
+  overflow: scroll;
 }
 
 .rooms td,
@@ -35,4 +36,9 @@
   text-align: center;
   background-color: #4caf50;
   color: white;
+}
+
+.tableContainer {
+  overflow: scroll;
+  height: 378px;
 }

@@ -25,12 +25,14 @@ export default class Lobby extends React.Component {
       myUsername: "",
       iHavePermissionToEnterRoom: false, //DEVELOPMENT
       rooms: [],
+      newRoomName: "",
       currentRoom: {
         roomID: null,
         roomName: null,
         p1: { id: null, username: null },
         p2: { id: null, username: null },
       },
+      whichPlayerAmI: null,
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
@@ -123,66 +125,22 @@ export default class Lobby extends React.Component {
           }
         }
       });
-
-      this.state.socket.on("a player entered the game", (data) => {
-        //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
-        if (
-          (this.state.whichPlayerAmI === "p1" &&
-            data.enteringPlayerID !== this.state.playersDetails.p2.id) ||
-          (this.state.whichPlayerAmI === "p2" &&
-            data.enteringPlayerID !== this.state.playersDetails.p1.id)
-        ) {
-          console.log("inside socket.on a player entered the game");
-          const { playersDetails } = data;
-
-          let infoDisplay = document.getElementById("infoDisplay");
-
-          let newLi = document.createElement("li");
-          newLi.style.margin = "8px";
-          newLi.innerHTML =
-            "Look out! Haha, cos " +
-            "<strong>" +
-            `${data.enteringPlayerUsername}` +
-            "</strong>" +
-            "'s here!";
-          infoDisplay.appendChild(newLi);
-
-          this.setState({
-            playersDetails,
-          });
-        }
-      });
-
-      this.state.socket.on("a player left the game", (data) => {
-        //A check, so that we only fire this fxn once per exiting player. To avert the MFIR problem.
-        if (
-          (this.state.whichPlayerAmI === "p1" &&
-            data.leavingPlayerID === this.state.playersDetails.p2.id) ||
-          (this.state.whichPlayerAmI === "p2" &&
-            data.leavingPlayerID === this.state.playersDetails.p1.id)
-        ) {
-          console.log("inside socket.on a player left the game");
-          const { playersDetails } = data;
-
-          let infoDisplay = document.getElementById("infoDisplay");
-
-          let newLi = document.createElement("li");
-          newLi.style.margin = "8px";
-          newLi.innerHTML =
-            "Woah! Looks like " +
-            "<strong>" +
-            `${data.leavingPlayerUsername}` +
-            "</strong>" +
-            " bodged off!";
-          infoDisplay.appendChild(newLi);
-
-          this.setState({
-            playersDetails,
-          });
-        }
-      });
     }
   }
+
+  handleInput = (input) => {
+    console.log("handling input");
+    const { newRoomName } = this.state;
+    this.setState({ newRoomName: input });
+    // this.state.socket.emit("create room", { roomName: newRoomName });
+  };
+
+  createNewRoom = () => {
+    console.log("increateroom");
+    console.log(this.state.newRoomName, "new room name");
+    const { newRoomName } = this.state;
+    this.state.socket.emit("create room", { roomName: newRoomName });
+  };
 
   render() {
     const {
@@ -241,6 +199,25 @@ export default class Lobby extends React.Component {
                       className={styles.heading}
                     >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
 
+                    <h2 id="title">🐛 Create your own room... 🐛</h2>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        this.createNewRoom();
+                      }}
+                    >
+                      <label>
+                        New room name:{" "}
+                        <input
+                          value={this.state.newRoomName}
+                          type="text"
+                          onChange={(event) => {
+                            this.handleInput(event.target.value);
+                          }}
+                        />
+                        <button type="submit">Create room</button>
+                      </label>
+                    </form>
                     <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
                   </div>
                 </div>

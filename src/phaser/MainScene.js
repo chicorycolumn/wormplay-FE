@@ -407,23 +407,10 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.submitBtn.on("pointerup", function (event) {
       this.setTint(0xffbf00);
       this.y = originalBtnY;
-      this.hasBeenPressed = true;
-      this.scene.gameState.sendWord(
-        this.scene.gameState.text,
-        this.scene.gameState.wormWordArr,
-        this.scene.game.react.state.socket,
-        this.hasBeenPressed
-      );
-      this.disableInteractive();
-    });
 
-    this.gameState.sendWord = function (
-      allLettersObj,
-      wormWordArr,
-      socket,
-      submitBtnPressed
-    ) {
-      let wordArr = wormWordArr.map((el) => (el = " "));
+      let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
+      let allLettersObj = this.scene.gameState.text;
+
       for (const letter in allLettersObj) {
         if (allLettersObj[letter].onSegment !== null) {
           const bodyIndex = isP1
@@ -432,6 +419,17 @@ export default class MainScene extends Phaser.Scene {
           wordArr[bodyIndex] = allLettersObj[letter].text;
         }
       }
+      if (!wordArr.every((letter) => letter === " ")) {
+        this.hasBeenPressed = true;
+        this.scene.gameState.sendWord(
+          wordArr,
+          this.scene.game.react.state.socket,
+          this.hasBeenPressed
+        );
+      }
+    });
+
+    this.gameState.sendWord = function (wordArr, socket, submitBtnPressed) {
       if (submitBtnPressed === true) {
         const firstSpace = wordArr.indexOf(" ");
         if (firstSpace !== -1) {
@@ -505,7 +503,11 @@ export default class MainScene extends Phaser.Scene {
           this.scoreText = scene.add.text(
             300,
             400,
-            [`You said ${scoreObj.word}!`, `That's ${scoreObj.points} points!`],
+            [
+              `You said ${scoreObj.word}!`,
+              `${scoreObj.pointsArray.join(" + ")}`,
+              `makes ${scoreObj.points} points!`,
+            ],
             scoreStyle
           );
         }

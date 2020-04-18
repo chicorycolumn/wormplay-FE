@@ -25,10 +25,6 @@ export default class App extends React.Component {
       loginField: "",
       myUsername: "",
       isRoomFull: false, //This should be setStated when a player exits a room back into the lobby, I think. ~Chris
-      playersDetails: {
-        p1: { username: null, id: null, score: 0 }, //change all back to null after CSS work
-        p2: { username: null, id: null, score: 0, tag: "from app.jsx" }, //change all back to null after CSS work
-      },
       welcomeMessage: "",
       emoObj: [
         { name: "happy", action: "rush" },
@@ -38,7 +34,7 @@ export default class App extends React.Component {
       ],
       currentEmotion: { name: null, src: null },
 
-      currentRoomIAmIn: null,
+      // currentRoomIAmIn: null,
       rooms: [],
     };
     this.setStateCallback = this.setStateCallback.bind(this);
@@ -58,19 +54,6 @@ export default class App extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.welcomeMessage) {
-      let infoDisplay = document.getElementById("infoDisplay");
-
-      if (infoDisplay) {
-        let newLi = document.createElement("li");
-        newLi.style.margin = "8px";
-        newLi.innerHTML = this.state.welcomeMessage;
-        infoDisplay.appendChild(newLi);
-      }
-
-      this.setState({ welcomeMessage: "" });
-    }
-
     //*************** I MAY MOVE THIS TO LOBBY LATER ~Chris */
     // if (
     //   prevState.currentEmotion.name !== this.state.currentEmotion.name &&
@@ -102,7 +85,6 @@ export default class App extends React.Component {
     const {
       isRoomFull,
       whichPlayerAmI,
-      playersDetails,
       socket,
       myUsername,
       rooms,
@@ -119,12 +101,7 @@ export default class App extends React.Component {
       <div id="largeContainer" className={genStyles.largeContainer}>
         {this.state.amILoggedIn ? (
           <div>
-            <Lobby
-              socket={socket}
-              playersDetails={playersDetails}
-              myUsername={myUsername}
-              rooms={rooms}
-            />
+            <Lobby socket={socket} myUsername={myUsername} rooms={rooms} />
           </div>
         ) : isRoomFull ? (
           <p
