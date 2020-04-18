@@ -39,8 +39,8 @@
   background-color: #b3ff99;
   width: 800px;
   height: 600px;
-
-  overflow: auto;
+  /* overflow:scroll; */
+  /* overflow:auto; */
 }
 .rightPanel {
   /* background-color: aquamarine; */

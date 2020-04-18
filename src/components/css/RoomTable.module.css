@@ -37,3 +37,8 @@
   background-color: #4caf50;
   color: white;
 }
+
+.tableContainer {
+  overflow: scroll;
+  height: 378px;
+}

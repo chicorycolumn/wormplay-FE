@@ -49,13 +49,15 @@ class RoomTable extends Component {
     return (
       <div>
         <h2 id="title">🐛 or pick a room you'd like to join 🐛</h2>
-        <table className={styles.rooms}>
-          <tbody>
-            {" "}
-            {this.renderTableHeader(this.props)}{" "}
-            {this.renderTableData(this.props)}
-          </tbody>
-        </table>
+        <div className={styles.tableContainer}>
+          <table className={styles.rooms}>
+            <tbody>
+              {" "}
+              {this.renderTableHeader(this.props)}{" "}
+              {this.renderTableData(this.props)}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
