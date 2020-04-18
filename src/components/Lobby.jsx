@@ -25,6 +25,7 @@ export default class Lobby extends React.Component {
       myUsername: "",
       iHavePermissionToEnterRoom: false, //DEVELOPMENT
       rooms: [],
+      newRoomName: "",
       currentRoom: {
         roomID: null,
         roomName: null,
@@ -127,6 +128,20 @@ export default class Lobby extends React.Component {
     }
   }
 
+  handleInput = (input) => {
+    console.log("handling input");
+    const { newRoomName } = this.state;
+    this.setState({ newRoomName: input });
+    // this.state.socket.emit("create room", { roomName: newRoomName });
+  };
+
+  createNewRoom = () => {
+    console.log("increateroom");
+    console.log(this.state.newRoomName, "new room name");
+    const { newRoomName } = this.state;
+    this.state.socket.emit("create room", { roomName: newRoomName });
+  };
+
   render() {
     const {
       socket,
@@ -180,10 +195,42 @@ export default class Lobby extends React.Component {
               <div id="georgine" className={genStyles.georgine}>
                 <div id="leftPanel" className={genStyles.leftPanel}>
                   <div>
-                    <h1
-                      className={styles.heading}
-                    >{`${greeting} ${this.state.myUsername}, and welcome to the Wormplay lobby!`}</h1>
+                    <h1 className={styles.heading}>
+                      {`${greeting} ${this.state.myUsername}!`}
+                      <br /> {`Welcome to the Wormplay lobby.`}
+                    </h1>
 
+                    <h2 id="title">🐛 Join a room, or create your own! 🐛</h2>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        this.createNewRoom();
+                      }}
+                    >
+                      <label>
+                        <input
+                          className={styles.newRoomField}
+                          value={this.state.newRoomName}
+                          maxlength="12"
+                          autocomplete="off"
+                          type="text"
+                          placeholder="New room name (optional)"
+                          onChange={(event) => {
+                            this.handleInput(event.target.value);
+                          }}
+                        />
+                        <button
+                          className={`${styles.newRoomButton} ${styles.tooltip}`}
+                          type="submit"
+                        >
+                          ✔️
+                          <span className={styles.tooltiptext}>
+                            Create room!
+                          </span>
+                        </button>
+                      </label>
+                    </form>
+                    <br />
                     <RoomTable rooms={rooms} joinRoom={this.joinRoom} />
                   </div>
                 </div>

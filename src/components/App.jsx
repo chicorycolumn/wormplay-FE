@@ -15,7 +15,7 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      amILoggedIn: false, //DEVELOPMENT
+      amILoggedIn: false,
       socket: null, //Just FYI, this gets setStated as the socket from props from index.js. ~Chris
       message: "",
       whichPlayerAmI: null, //Remember to switch this back to null when I exit a room back into the lobby. To avoid the MFIR (Multiple Firing In React) problem. ~Chris
@@ -49,8 +49,10 @@ export default class App extends React.Component {
   componentDidMount() {
     this.setState({
       socket: this.props.socket,
-      amILoggedIn: this.props.amILoggedIn,
     });
+    if (this.props.goStraightToLobby) {
+      this.props.socket.emit("login", { developmentCheat: true });
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -75,7 +77,8 @@ export default class App extends React.Component {
     if (this.state.socket) {
       if (!this.state.amILoggedIn) {
         this.state.socket.on("connectionReply", (data) => {
-          this.setState({ amILoggedIn: true, rooms: data.rooms });
+          const { rooms, myUsername } = data;
+          this.setState({ amILoggedIn: true, rooms, myUsername });
         });
       }
     }
@@ -117,7 +120,7 @@ export default class App extends React.Component {
                 if (this.state.loginField.length) {
                   const myUsername = this.state.loginField;
                   this.state.socket.emit("login", { username: myUsername });
-                  this.setState({ myUsername, loginField: "" });
+                  this.setState({ loginField: "" });
                 }
               }}
             >

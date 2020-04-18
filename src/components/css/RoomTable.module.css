@@ -6,8 +6,9 @@
 .rooms {
   text-align: center;
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
+  /* border-collapse: collapse; */
   border: 3px solid #ddd;
+  border-top: none;
   width: 100%;
 }
 
@@ -15,6 +16,7 @@
 .rooms th {
   border: 1px solid #ddd;
   padding: 8px;
+  top: 0;
 }
 
 .rooms tr:nth-child(even) {
@@ -34,5 +36,16 @@
   padding-bottom: 12px;
   text-align: center;
   background-color: #4caf50;
+  /* border-top: #4caf50 solid 10px; */
   color: white;
+  position: sticky;
+}
+
+.rooms tr {
+}
+
+.tableContainer {
+  height: 378px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }

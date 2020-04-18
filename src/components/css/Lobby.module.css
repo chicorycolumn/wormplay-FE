@@ -1,9 +1,81 @@
 .heading {
-  color: forestgreen;
+  color: #196719;
   text-align: center;
 }
 
 .buttons {
   height: 50px;
   width: 150px;
+}
+
+.newRoomButton {
+  width: 47.5px;
+  position: relative;
+  font-size: 14pt;
+  height: 47.5px;
+  background-color: white;
+  border: green solid 2pt;
+  box-shadow: 2.5px 2.5px 1.25px grey;
+}
+
+.newRoomField {
+  width: 220px;
+  height: 40px;
+  background-color: white;
+  border: green solid 2pt;
+  box-shadow: 2.5px 2.5px 1.25px grey;
+  position: relative;
+  /* left: 380px;
+  top: 240px; */
+  border: green solid 2pt;
+  font-size: 12pt;
+  text-align: center;
+}
+
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #4caf50;
+  font-weight: bold;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #4caf50;
+  font-weight: bold;
+}
+
+::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /* border-bottom: 1px dotted green; */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #228b22;
+  color: #fff;
+  text-align: center;
+  /* padding: px 0; */
+  padding: 10px 0px 10px 0px;
+  border-radius: 6px;
+  left: 110%;
+  top: 0%;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+  opacity: 60%;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }

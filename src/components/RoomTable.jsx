@@ -38,7 +38,7 @@ class RoomTable extends Component {
   };
 
   renderTableHeader = (props) => {
-    let headers = ["Room name", "Room ID", "Player 1", "Player 2"];
+    let headers = ["Room name", "Room ID", "Player 1", "Player 2", " "];
 
     return headers.map((name) => {
       return <th>{name.toUpperCase()}</th>;
@@ -48,14 +48,15 @@ class RoomTable extends Component {
   render() {
     return (
       <div>
-        <h2 id="title">🐛 Pick a room you'd like to join 🐛</h2>
-        <table className={styles.rooms}>
-          <tbody>
-            {" "}
-            {this.renderTableHeader(this.props)}{" "}
-            {this.renderTableData(this.props)}
-          </tbody>
-        </table>
+        <div className={styles.tableContainer}>
+          <table className={styles.rooms}>
+            <tbody>
+              {" "}
+              {this.renderTableHeader(this.props)}{" "}
+              {this.renderTableData(this.props)}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
