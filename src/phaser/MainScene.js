@@ -57,6 +57,7 @@ export default class MainScene extends Phaser.Scene {
       timer: { p1: 0, p2: 0 },
       roundTimer: 30,
       usingMyFace: false,
+      awaitingApi: false,
     };
   }
 
@@ -661,11 +662,12 @@ export default class MainScene extends Phaser.Scene {
           ease: "Power 2",
         });
       });
+      this.awaitingApi = false;
       if (
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
       ) {
-        scene.time.delayedCall(2000, this.showRoundWinner, [
+        scene.time.delayedCall(1000, this.showRoundWinner, [
           this.scores,
           opponentName,
         ]);
@@ -674,7 +676,9 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
-      this.countDown.paused = true;
+      scene.gameState.countDown.paused = true;
+      scene.gameState.timerText.destroy();
+
       if (scoreObj.currentPlayer === undefined) {
         scoreObj.currentPlayer = { points: 0, word: "" };
       }
@@ -683,7 +687,7 @@ export default class MainScene extends Phaser.Scene {
       }
 
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
-        this.roundWinnerText = scene.add.text(
+        scene.gameState.roundWinnerText = scene.add.text(
           200,
           200,
           [
@@ -696,7 +700,7 @@ export default class MainScene extends Phaser.Scene {
         roundsWon[winner] += 1;
         socket.emit("update rounds", roundsWon);
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
-        this.roundWinnerText = scene.add.text(
+        scene.gameState.roundWinnerText = scene.add.text(
           150,
           200,
           [
@@ -706,7 +710,7 @@ export default class MainScene extends Phaser.Scene {
           roundScoreStyle
         );
       } else {
-        this.roundWinnerText = scene.add.text(
+        scene.gameState.roundWinnerText = scene.add.text(
           50,
           200,
           [
@@ -723,7 +727,6 @@ export default class MainScene extends Phaser.Scene {
       if (this.roundWinnerText !== undefined) {
         this.roundWinnerText.destroy();
       }
-      this.countDown.paused = true;
 
       const thisPlayerName = isP1 ? p1Name : p2Name;
       const opponentName = isP1 ? p2Name : p1Name;
@@ -827,6 +830,10 @@ export default class MainScene extends Phaser.Scene {
     });
 
     socket.on("You submitted", function () {
+      scene.gameState.awaitingApi = true;
+      if (scene.gameState.submitText !== undefined) {
+        scene.gameState.submitText.destroy();
+      }
       scene.gameState.submitText = scene.add.text(
         150,
         100,
@@ -854,7 +861,11 @@ export default class MainScene extends Phaser.Scene {
     });
 
     socket.on("opponent submitted", function (opponentInfo) {
-      scene.gameState.warningText = scene.add.text(
+      scene.gameState.awaitingApi = true;
+      if (scene.gameState.submitText !== undefined) {
+        scene.gameState.submitText.destroy();
+      }
+      scene.gameState.submitText = scene.add.text(
         150,
         100,
         [`${opponentInfo.username} submitted a word!`, `Hurry!`],
@@ -872,7 +883,7 @@ export default class MainScene extends Phaser.Scene {
       }
       scene.time.delayedCall(1500, function () {
         scene.tweens.add({
-          targets: scene.gameState.warningText,
+          targets: scene.gameState.submitText,
           alpha: 0,
           duration: 500,
           ease: "Power 2",
@@ -1312,14 +1323,16 @@ export default class MainScene extends Phaser.Scene {
         }
       }
     }
+
     if (this.gameState.roundTimer === 0) {
+      scene.gameState.countDown.paused = true;
       this.gameState.roundTimer = -1;
-      this.gameState.timerText.destroy();
-      this.gameState.countDown.reset();
-      this.gameState.showRoundWinner(
-        this.gameState.scores,
-        isP1 ? p2Name : p1Name
-      );
+      if (this.gameState.awaitingApi === false) {
+        this.gameState.showRoundWinner(
+          this.gameState.scores,
+          isP1 ? p2Name : p1Name
+        );
+      }
     }
   }
 
