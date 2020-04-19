@@ -18,9 +18,9 @@ export default class PhaserGame extends Phaser.Game {
       height: 600,
       physics: {
         default: "arcade",
-        arcade: {
-          debug: true,
-        },
+        // arcade: {
+        //   debug: true,
+        // },
       },
       // scene: [MainScene, OptionsScene, TitleScene],
     };

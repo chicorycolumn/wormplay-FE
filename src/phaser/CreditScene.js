@@ -63,7 +63,7 @@ export default class CreditsScene extends Phaser.Scene {
       delay: 1000,
       onComplete: function () {
         this.madeByText.destroy;
-        this.scene.start("Title");
+        this.scene.start("MainScene");
       }.bind(this),
     });
     this.imageTween = this.tweens.add({
