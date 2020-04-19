@@ -20,6 +20,8 @@ import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
 import { vowelArray, consonantArray } from "../refObjs.js";
 
+console.log(p1HeadSad.toDataURL("image/png"));
+
 //****************************************** */
 //Hey James! We now have access to any photos were taken
 //with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
@@ -1217,7 +1219,7 @@ export default class MainScene extends Phaser.Scene {
       opponent6.y = p2Body6.y - 28;
 
       if (timer.p1 > 0) {
-        timer.p1 -= 1;
+        timer.p1 -= 0.25;
         p1HeadHappy.setVisible(false);
         p1HeadShocked.setVisible(true);
         p1HeadShocked.x = head.x;
@@ -1242,7 +1244,7 @@ export default class MainScene extends Phaser.Scene {
       opponent6.y = body6.y - 28;
 
       if (timer.p2 > 0) {
-        timer.p2 -= 1;
+        timer.p2 -= 0.25;
         p2HeadHappy.setVisible(false);
         p2HeadShocked.setVisible(true);
         p2HeadShocked.x = p2Head.x;

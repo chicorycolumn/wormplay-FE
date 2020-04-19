@@ -204,6 +204,7 @@ export const emotionRecFullFunction = (
           );
 
           var data = canvasPhoto.toDataURL("image/png");
+          console.log("canvas photo", data);
 
           const id_canvasPhoto = document.getElementById("canvasPhoto");
           id_canvasPhoto.setAttribute("src", data);
