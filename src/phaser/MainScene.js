@@ -7,21 +7,25 @@ import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
 import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
 import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
 import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
+
 import { playerFaces } from "../../public/emotion-rec";
-import body from "../assets/body-resized.png";
+// import body from "../assets/body-resized.png";
+
+import body from "../assets/rainbowbody.png";
+import body2 from "../assets/bluebodyresized.png";
+
 import p2Head from "../assets/p2-head-smaller.png";
-import background from "../assets/whitehouse.png";
+import background from "../assets/background.jpg";
 import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
+import { vowelArray, consonantArray } from "../refObjs.js";
 
 //****************************************** */
 //Hey James! We now have access to any photos were taken
 //with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
 //****************************************** */
-
-import { vowelArray, consonantArray } from "../refObjs.js";
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
@@ -34,6 +38,10 @@ let p1Name = null;
 let p2Name = null;
 let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
 let scene;
+let lobbyBtnIsDepressed = false;
+let setStateCallback = () => {
+  console.log("Haven't set SSC fxn in MainScene yet.");
+};
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -52,10 +60,15 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
+    // console.log(this.game.react.state);
+
     scene = this; // scene variable makes 'this' available anywhere within the game
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
+    setStateCallback = this.game.react.state.setStateCallback;
+
+    // console.log(setStateCallback);
 
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
@@ -100,7 +113,13 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.wantsNewGame = { p1: false, p2: false };
     this.load.image("head", body);
     this.load.image("body", body);
+
     this.load.image("p2Head", body);
+
+    this.load.image("body2", body2);
+    this.load.image("p2Head", p2HeadHappy);
+    this.load.image("p2HeadShocked", p2HeadShocked);
+
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
     this.load.image("blueButton2", blueButton2);
@@ -121,21 +140,27 @@ export default class MainScene extends Phaser.Scene {
     }
 
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
+    // https://www.vecteezy.com/free-vector/grass >> Grass Vectors by Vecteezy
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
     bg.displayWidth = this.sys.game.config.width;
 
-    this.gameState.body6 = this.physics.add.image(400, 125, "body");
+    this.gameState.body6 = this.physics.add.image(400, 125, "body2");
     this.gameState.body6.index = 5;
-    this.gameState.body5 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body5 = this.physics.add.image(400, 125, "body2");
     this.gameState.body5.index = 4;
-    this.gameState.body4 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body4 = this.physics.add.image(400, 125, "body2");
     this.gameState.body4.index = 3;
-    this.gameState.body3 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body3 = this.physics.add.image(400, 125, "body2");
     this.gameState.body3.index = 2;
-    this.gameState.body2 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body2 = this.physics.add.image(400, 125, "body2");
     this.gameState.body2.index = 1;
-    this.gameState.body1 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body1 = this.physics.add.image(400, 125, "body2");
     this.gameState.body1.index = 0;
 
     this.gameState.head = this.physics.add.image(400, 125, "head");
@@ -241,7 +266,7 @@ export default class MainScene extends Phaser.Scene {
     };
 
     Object.keys(letterTileSpecifications).forEach((n) => {
-      let num = parseInt(n);
+      let num = parseInt(n, 10);
       const char = Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
@@ -292,8 +317,8 @@ export default class MainScene extends Phaser.Scene {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
-            console.log(this.gameState[objectKey]);
-            console.log(this.gameState[objectKey].hasLetter);
+            // console.log(this.gameState[objectKey]);
+            // console.log(this.gameState[objectKey].hasLetter);
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -344,7 +369,7 @@ export default class MainScene extends Phaser.Scene {
 
       thisLetter.on("dragend", function (pointer) {
         this.clearTint();
-        console.log(this);
+        // console.log(this);
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
@@ -371,7 +396,7 @@ export default class MainScene extends Phaser.Scene {
                 /p2Body\d/g.test(objectKey) === true &&
                 this.scene.gameState[objectKey].hasLetter === false
               ) {
-                console.log(this.scene.gameState[objectKey]);
+                // console.log(this.scene.gameState[objectKey]);
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
               }
@@ -429,31 +454,55 @@ export default class MainScene extends Phaser.Scene {
     });
     Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
 
+    //THIS WAS PREVENTING THE LOBBY BUTTON FROM WORKING
+    // this.lobbyBtn.on(
+    //   "pointerdown",
+    //   function (pointer) {
+    //     this.lobbyBtn = this.add
+    //       .sprite(750, 585, "blueButton2")
+    //       .setInteractive();
+    //     this.lobbyBtn.setScale(0.5);
+    //     this.lobbyText = this.add.text(0, 0, "Lobby", {
+    //       fontSize: "20px",
+    //       fill: "#fff",
+    //     });
+    //     Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+    //   }.bind(this)
+    // );
+
     this.lobbyBtn.on(
-      "pointerdown",
+      "pointerup",
       function (pointer) {
-        this.lobbyBtn = this.add
-          .sprite(750, 585, "blueButton2")
-          .setInteractive();
-        this.lobbyBtn.setScale(0.5);
-        this.lobbyText = this.add.text(0, 0, "Lobby", {
+        this.lobbyText.destroy();
+        this.lobbyBtn.tint = 0x0000b3;
+        this.lobbyText = this.add.text(0, 0, "Sure?", {
           fontSize: "20px",
           fill: "#fff",
         });
         Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
-      }.bind(this)
-    );
 
-    this.menuButton.on(
-      "pointerup",
-      function (pointer) {
-        // GO TO LOBBY
+        if (!lobbyBtnIsDepressed) {
+          lobbyBtnIsDepressed = true;
+          setTimeout(() => {
+            this.lobbyText.destroy();
+            this.lobbyBtn.tint = 0xffffff;
+            this.lobbyText = this.add.text(0, 0, "Lobby", {
+              fontSize: "20px",
+              fill: "#fff",
+            });
+            Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+          }, 2500);
+        } else {
+          this.sys.game.destroy(true);
+          socket.emit("quitRoom");
+          setStateCallback("iHavePermissionToEnterRoom", false);
+        }
       }.bind(this)
     );
 
     //adding menu button functionality, on click will take you to title
     this.menuButton.on(
-      "pointerdown",
+      "pointerup",
       function (pointer) {
         this.scene.start("Title");
       }.bind(this)
@@ -476,7 +525,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerup", function (event) {
-      this.setTint(0xff0000);
+      this.setTint(0xffbf00);
       this.y = originalBtnY;
 
       let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
@@ -508,7 +557,7 @@ export default class MainScene extends Phaser.Scene {
         }
         const submittedWord = wordArr.join("");
         socket.emit("worm word submitted", submittedWord);
-      } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
+      }
     };
 
     this.model = this.sys.game.globals.model;
@@ -538,7 +587,7 @@ export default class MainScene extends Phaser.Scene {
       strokeThickness: 5,
     };
 
-    const finalScoreStyle = {
+    const roundScoreStyle = {
       font: "45px Arial",
       color: "#cc0000",
       align: "center",
@@ -546,20 +595,32 @@ export default class MainScene extends Phaser.Scene {
       strokeThickness: 10,
     };
 
+    const finalScoreStyle = {
+      font: "50px Arial",
+      color: "#ffef00",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 10,
+    };
+
     this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
       const opponentName = isP1 === true ? p2Name : p1Name;
+      if (this.scoreText !== undefined) {
+        this.scoreText.destroy();
+      }
+
       if (isCurrentPlayer === true) {
         this.scores.currentPlayer = scoreObj;
 
         if (scoreObj.isValid === false) {
-          this.scores.currentPlayerText = scene.add.text(
+          this.scoreText = scene.add.text(
             250,
             400,
             [`Oh no! ${scoreObj.word} isn't a word!`, `You get no points!`],
             scoreStyle
           );
         } else {
-          this.scores.currentPlayerText = scene.add.text(
+          this.scoreText = scene.add.text(
             300,
             400,
             [
@@ -573,7 +634,7 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.scores.opponent = scoreObj;
         if (scoreObj.isValid === false) {
-          this.scores.opponentText = scene.add.text(
+          this.scoreText = scene.add.text(
             200,
             400,
             [
@@ -583,7 +644,7 @@ export default class MainScene extends Phaser.Scene {
             scoreStyle
           );
         } else {
-          this.scores.opponentText = scene.add.text(
+          this.scoreText = scene.add.text(
             250,
             400,
             [
@@ -594,6 +655,15 @@ export default class MainScene extends Phaser.Scene {
           );
         }
       }
+      // Fades out player scores after 3 second
+      scene.time.delayedCall(2500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.scoreText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
       if (
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
@@ -608,39 +678,67 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
-        this.finalScoreText = scene.add.text(
+        this.roundWinnerText = scene.add.text(
           200,
           200,
           [
             `You win with ${scoreObj.currentPlayer.word}!`,
             `What a great word!`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
         const winner = isP1 === true ? "p1" : "p2";
         roundsWon[winner] += 1;
         socket.emit("update rounds", roundsWon);
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
-        this.finalScoreText = scene.add.text(
-          100,
+        this.roundWinnerText = scene.add.text(
+          150,
           200,
           [
-            `Oh no ${opponentName} won with ${scoreObj.opponent.word}!`,
+            `Oh no, ${opponentName} won with ${scoreObj.opponent.word}!`,
             `I hate that word!`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
       } else {
-        this.finalScoreText = scene.add.text(
+        this.roundWinnerText = scene.add.text(
           50,
           200,
           [
             `A drawer?!?! Now no-ones happy!`,
             `I think your word ${scoreObj.currentPlayer.word} was better`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
         socket.emit("update rounds", roundsWon);
+      }
+    };
+
+    this.gameState.showFinalWinner = function (amIWinner) {
+      // this.roundWinnerText.destroy(); -- sort this, not working
+
+      const thisPlayerName = isP1 ? p1Name : p2Name;
+      const opponentName = isP1 ? p2Name : p1Name;
+
+      this.newGameBtn.setVisible(true);
+      this.newGameText.setVisible(true);
+      this.quitBtn.setVisible(true);
+      this.quitText.setVisible(true);
+
+      if (amIWinner === true) {
+        this.gameState.finalWinnerText = scene.add.text(
+          200,
+          70,
+          [`Well Done ${thisPlayerName}!`, `You Won!`],
+          finalScoreStyle
+        );
+      } else {
+        this.gameState.finalWinnerText = scene.add.text(
+          200,
+          70,
+          [`Oh no ${opponentName} Won!`, `I'm sorry.`],
+          finalScoreStyle
+        );
       }
     };
 
@@ -681,14 +779,10 @@ export default class MainScene extends Phaser.Scene {
     this.game.react.state.socket.on("api error", function (error) {
       console.log("Error:", error.status, error.message);
       scene.gameState.errMessage = scene.add.text(
+        150,
         250,
-        250,
-        `OH NO! API ERROR: ${error.status} ${error.message}`,
-        {
-          font: "35px Arial",
-          color: "#f00000",
-          align: "center",
-        }
+        [`OH NO! API ERROR:`, `${error.status} ${error.message}`],
+        roundScoreStyle
       );
     });
 
@@ -710,15 +804,13 @@ export default class MainScene extends Phaser.Scene {
       scene.gameState.roundsWon = newRounds;
       scene.gameState.displayRounds(scene.gameState.roundsWon);
 
-      if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
-        console.log("WE HAVE A WINNER!!!");
-        // Socket emit "I won" - socket.emit + socket.broadcast.emit "game won" -> func showWinner()
-        scene.gameState.newGameBtn.setVisible(true);
-        scene.gameState.newGameText.setVisible(true);
-        scene.gameState.quitBtn.setVisible(true);
-        scene.gameState.quitText.setVisible(true);
+      if (newRounds.p1 === 3) {
+        const didIWin = isP1 ? true : false;
+        scene.gameState.showFinalWinner(didIWin);
+      } else if (newRounds.p2 === 3) {
+        const didIWin = isP1 ? false : true;
+        scene.gameState.showFinalWinner(didIWin);
       } else {
-        console.log("ELSE?");
         // Add countdown on screen
         scene.time.delayedCall(3000, function () {
           scene.scene.start("MainScene");
@@ -730,7 +822,7 @@ export default class MainScene extends Phaser.Scene {
       .sprite(300, 350, "blueButton1")
       .setInteractive();
     this.gameState.newGameBtn.setScale(0.8);
-    this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+    this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
       fontSize: "20px",
       fill: "#fff",
       align: "center",
@@ -744,7 +836,7 @@ export default class MainScene extends Phaser.Scene {
       "pointerdown",
       function (pointer) {
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -762,7 +854,7 @@ export default class MainScene extends Phaser.Scene {
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -803,7 +895,7 @@ export default class MainScene extends Phaser.Scene {
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -880,6 +972,12 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitText.setVisible(false);
 
     this.gameState.displayRounds = function (currentRounds) {
+      if (this.gameState.thisPlayerScore !== undefined) {
+        this.gameState.thisPlayerScore.destroy();
+      }
+      if (this.gameState.oppositionScore !== undefined) {
+        this.gameState.oppositionScore.destroy();
+      }
       this.gameState.thisPlayerScore = this.add.text(
         650,
         85,
@@ -894,7 +992,7 @@ export default class MainScene extends Phaser.Scene {
 
       this.gameState.oppositionScore = this.add.text(
         650,
-        160,
+        150,
         `${isP1 ? p2Name : p1Name}: ${
           isP1 ? currentRounds.p2 : currentRounds.p1
         }`,
@@ -907,6 +1005,7 @@ export default class MainScene extends Phaser.Scene {
         }
       );
     }.bind(this);
+
     this.gameState.displayRounds(roundsWon);
   }
 
@@ -1003,39 +1102,6 @@ export default class MainScene extends Phaser.Scene {
     }
     p1HeadHappy.x = head.x;
     p1HeadHappy.y = head.y;
-
-    // Fades out player scores after 3 seconds
-    if (this.gameState.scores.currentPlayerText !== undefined) {
-      this.time.delayedCall(
-        2500,
-        function () {
-          this.tweens.add({
-            targets: this.gameState.scores.currentPlayerText,
-            alpha: 0,
-            duration: 500,
-            ease: "Power 2",
-          });
-        },
-        null,
-        this
-      );
-    }
-
-    if (this.gameState.scores.opponentText !== undefined) {
-      this.time.delayedCall(
-        2500,
-        function () {
-          this.tweens.add({
-            targets: this.gameState.scores.opponentText,
-            alpha: 0,
-            duration: 500,
-            ease: "Power 2",
-          });
-        },
-        null,
-        this
-      );
-    }
 
     if (p2Head.count === 0) {
       p2Head.xDest = Math.floor(Math.random() * 800);

@@ -44,6 +44,7 @@
 }
 .rightPanel {
   /* background-color: aquamarine; */
+  /* border: cyan solid 5pt; */
   height: 600px;
   width: 400px;
 }

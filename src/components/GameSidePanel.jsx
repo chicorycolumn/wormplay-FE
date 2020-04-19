@@ -64,7 +64,7 @@ export default class GameSidePanel extends React.Component {
         "<strong>" +
         this.props.myUsername +
         "</strong>" +
-        " just entered!";
+        " (that's you) just entered!";
 
       infoDisplay.appendChild(newLi);
     }
@@ -72,7 +72,7 @@ export default class GameSidePanel extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.socket) {
-      this.state.socket.on("a player entered the game", (data) => {
+      this.state.socket.on("a player entered your game", (data) => {
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
           (this.state.socket.id === this.state.currentRoom.p1.id &&
@@ -80,7 +80,7 @@ export default class GameSidePanel extends React.Component {
           (this.state.socket.id === this.state.currentRoom.p2.id &&
             data.enteringPlayerID !== this.state.currentRoom.p1.id)
         ) {
-          console.log("inside socket.on a player entered the game");
+          console.log("inside socket.on a player entered your game");
           const { currentRoom } = data;
 
           let infoDisplay = document.getElementById("infoDisplay");
@@ -101,7 +101,7 @@ export default class GameSidePanel extends React.Component {
         }
       });
 
-      this.state.socket.on("a player left the game", (data) => {
+      this.state.socket.on("a player left your game", (data) => {
         //A check, so that we only fire this fxn once per exiting player. To avert the MFIR problem.
         if (
           (this.state.socket.id === this.state.currentRoom.p1.id &&
@@ -109,7 +109,7 @@ export default class GameSidePanel extends React.Component {
           (this.state.socket.id === this.state.currentRoom.p2.id &&
             data.leavingPlayerID === this.state.currentRoom.p1.id)
         ) {
-          console.log("inside socket.on a player left the game");
+          console.log("inside socket.on a player left your game");
           const { currentRoom } = data;
 
           let infoDisplay = document.getElementById("infoDisplay");
@@ -180,6 +180,9 @@ export default class GameSidePanel extends React.Component {
 
         <div className={styles.midbox}>
           <div>
+            <p
+              className={styles.roomsDisplay}
+            >{`Room: ${this.state.currentRoom.roomName}`}</p>
             <div className={styles.playerNamesBox}>
               <p className={styles.playersDisplay}>{`Player 1: ${
                 currentRoom.p1.username ? currentRoom.p1.username : "waiting..."

@@ -35,6 +35,6 @@ export default class PhaserGame extends Phaser.Game {
     this.scene.add("Preloader", PreloaderScene);
     this.scene.add("Credits", CreditScene);
     this.scene.add("Boot", BootScene);
-    this.scene.start("Boot");
+    this.scene.start("MainScene");
   }
 }
