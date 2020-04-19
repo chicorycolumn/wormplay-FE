@@ -7,8 +7,13 @@ import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
 import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
 import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
 import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
+
+import { playerFaces } from "../../public/emotion-rec";
+// import body from "../assets/body-resized.png";
+
 import body from "../assets/rainbowbody.png";
 import body2 from "../assets/bluebodyresized.png";
+
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/background.jpg";
 import blueButton1 from "../assets/ui/blue_button02.png";
@@ -50,6 +55,7 @@ export default class MainScene extends Phaser.Scene {
       wantsNewGame: null,
       roundsWon: { p1: 0, p2: 0 },
       timer: { p1: 0, p2: 0 },
+      usingMyFace: false,
     };
   }
 
@@ -67,14 +73,53 @@ export default class MainScene extends Phaser.Scene {
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
     this.gameState.scores = {}; // Resets scores every <round></round> ***************
-
+    console.log(playerFaces);
+    if (
+      playerFaces.happyFace === null ||
+      playerFaces.sadFace === null ||
+      playerFaces.angryFace === null ||
+      playerFaces.shockedFace === null
+    ) {
+      this.load.image("p1HeadHappy", p1HeadHappy);
+      this.load.image("p1HeadShocked", p1HeadShocked);
+      this.load.image("p1HeadAngry", p1HeadAngry);
+      this.load.image("p1HeadSad", p1HeadSad);
+      this.load.image("p2HeadHappy", p2HeadHappy);
+      this.load.image("p2HeadShocked", p2HeadShocked);
+      this.load.image("p2HeadAngry", p2HeadAngry);
+      this.load.image("p2HeadSad", p2HeadSad);
+    } else {
+      this.gameState.usingMyFace = true;
+      if (isP1 === true) {
+        this.textures.addBase64("p1HeadHappy", playerFaces.happyFace);
+        this.textures.addBase64("p1HeadShocked", playerFaces.shockedFace);
+        this.textures.addBase64("p1HeadAngry", playerFaces.angryFace);
+        this.textures.addBase64("p1HeadSad", playerFaces.sadFace);
+        this.load.image("p2HeadHappy", p2HeadHappy);
+        this.load.image("p2HeadShocked", p2HeadShocked);
+        this.load.image("p2HeadAngry", p2HeadAngry);
+        this.load.image("p2HeadSad", p2HeadSad);
+      } else if (isP2 === true) {
+        this.load.image("p1HeadHappy", p1HeadHappy);
+        this.load.image("p1HeadShocked", p1HeadShocked);
+        this.load.image("p1HeadAngry", p1HeadAngry);
+        this.load.image("p1HeadSad", p1HeadSad);
+        this.textures.addBase64("p2HeadHappy", playerFaces.happyFace);
+        this.textures.addBase64("p2HeadShocked", playerFaces.shockedFace);
+        this.textures.addBase64("p2HeadAngry", playerFaces.angryFace);
+        this.textures.addBase64("p2HeadSad", playerFaces.sadFace);
+      }
+    }
     this.gameState.wantsNewGame = { p1: false, p2: false };
-    this.load.image("head", p1HeadHappy);
-    this.load.image("p1HeadShocked", p1HeadShocked);
+    this.load.image("head", body);
     this.load.image("body", body);
+
+    this.load.image("p2Head", body);
+
     this.load.image("body2", body2);
     this.load.image("p2Head", p2HeadHappy);
     this.load.image("p2HeadShocked", p2HeadShocked);
+
     this.load.image("background", background);
     this.load.image("blueButton1", blueButton1);
     this.load.image("blueButton2", blueButton2);
@@ -119,8 +164,14 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.body1.index = 0;
 
     this.gameState.head = this.physics.add.image(400, 125, "head");
+    this.gameState.head.setVisible(false);
+    this.gameState.p1HeadHappy = this.add.image(400, 125, "p1HeadHappy");
     this.gameState.p1HeadShocked = this.add.image(400, 125, "p1HeadShocked");
     this.gameState.p1HeadShocked.setVisible(false);
+    this.gameState.p1HeadSad = this.add.image(400, 125, "p1HeadSad");
+    this.gameState.p1HeadSad.setVisible(false);
+    this.gameState.p1HeadAngry = this.add.image(400, 125, "p1HeadAngry");
+    this.gameState.p1HeadAngry.setVisible(false);
 
     this.gameState.p2Body6 = this.physics.add.image(600, 300, "body");
     this.gameState.p2Body6.index = 5;
@@ -134,9 +185,38 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2Body2.index = 1;
     this.gameState.p2Body1 = this.physics.add.image(600, 300, "body");
     this.gameState.p2Body1.index = 0;
+
     this.gameState.p2Head = this.physics.add.image(600, 300, "p2Head");
+    this.gameState.p2Head.setVisible(false);
+    this.gameState.p2HeadHappy = this.add.image(600, 300, "p2HeadHappy");
     this.gameState.p2HeadShocked = this.add.image(600, 300, "p2HeadShocked");
     this.gameState.p2HeadShocked.setVisible(false);
+    this.gameState.p2HeadSad = this.add.image(600, 300, "p2HeadSad");
+    this.gameState.p2HeadSad.setVisible(false);
+    this.gameState.p2HeadAngry = this.add.image(600, 300, "p2HeadAngry");
+    this.gameState.p2HeadAngry.setVisible(false);
+
+    if (usingMyFace === true) {
+      if (isP1 === true) {
+        this.gameState.p1HeadHappy.displayWidth(48);
+        this.gameState.p1HeadHappy.displayHeight(48);
+        this.gameState.p1HeadShocked.displayWidth(48);
+        this.gameState.p1HeadShocked.displayHeight(48);
+        this.gameState.p1HeadSad.displayWidth(48);
+        this.gameState.p1HeadSad.displayHeight(48);
+        this.gameState.p1HeadAngry.displayWidth(48);
+        this.gameState.p1HeadAngry.displayHeight(48);
+      } else if (isP2 === true) {
+        this.gameState.p2HeadHappy.displayWidth(48);
+        this.gameState.p2HeadHappy.displayHeight(48);
+        this.gameState.p2HeadShocked.displayWidth(48);
+        this.gameState.p2HeadShocked.displayHeight(48);
+        this.gameState.p2HeadSad.displayWidth(48);
+        this.gameState.p2HeadSad.displayHeight(48);
+        this.gameState.p2HeadAngry.displayWidth(48);
+        this.gameState.p2HeadAngry.displayHeight(48);
+      }
+    }
 
     //variables for destination
     this.gameState.head.xDest = 400;
@@ -933,6 +1013,9 @@ export default class MainScene extends Phaser.Scene {
     const {
       head,
       p1HeadShocked,
+      p1HeadHappy,
+      p1HeadAngry,
+      p1HeadSad,
       timer,
       body1,
       body2,
@@ -942,7 +1025,10 @@ export default class MainScene extends Phaser.Scene {
       body6,
       text,
       p2Head,
+      p2HeadHappy,
       p2HeadShocked,
+      p2HeadSad,
+      P2HeadAngry,
       p2Body1,
       p2Body2,
       p2Body3,
@@ -1014,6 +1100,8 @@ export default class MainScene extends Phaser.Scene {
     if (head.count > 0) {
       head.count--;
     }
+    p1HeadHappy.x = head.x;
+    p1HeadHappy.y = head.y;
 
     if (p2Head.count === 0) {
       p2Head.xDest = Math.floor(Math.random() * 800);
@@ -1057,6 +1145,8 @@ export default class MainScene extends Phaser.Scene {
     if (p2Head.count > 0) {
       p2Head.count--;
     }
+    p2HeadHappy.x = p2Head.x;
+    p2HeadHappy.y = p2Head.y;
 
     if (isP1 === true) {
       opponent1.x = p2Body1.x - 28;
@@ -1074,12 +1164,12 @@ export default class MainScene extends Phaser.Scene {
 
       if (timer.p1 > 0) {
         timer.p1 -= 1;
-        head.setVisible(false);
+        p1HeadHappy.setVisible(false);
         p1HeadShocked.setVisible(true);
         p1HeadShocked.x = head.x;
         p1HeadShocked.y = head.y;
         if (timer.p1 === 0) {
-          head.setVisible(true);
+          p1HeadHappy.setVisible(true);
           p1HeadShocked.setVisible(false);
         }
       }
@@ -1099,12 +1189,12 @@ export default class MainScene extends Phaser.Scene {
 
       if (timer.p2 > 0) {
         timer.p2 -= 1;
-        p2Head.setVisible(false);
+        p2HeadHappy.setVisible(false);
         p2HeadShocked.setVisible(true);
         p2HeadShocked.x = p2Head.x;
         p2HeadShocked.y = p2Head.y;
         if (timer.p2 === 0) {
-          p2Head.setVisible(true);
+          p2HeadHappy.setVisible(true);
           p2HeadShocked.setVisible(false);
         }
       }
