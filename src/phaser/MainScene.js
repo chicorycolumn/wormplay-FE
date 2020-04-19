@@ -7,9 +7,10 @@ import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
 import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
 import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
 import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
-import body from "../assets/body-resized.png";
+import body from "../assets/rainbowbody.png";
+import body2 from "../assets/bluebodyresized.png";
 import p2Head from "../assets/p2-head-smaller.png";
-import background from "../assets/whitehouse.png";
+import background from "../assets/background.jpg";
 import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
@@ -71,6 +72,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("head", p1HeadHappy);
     this.load.image("p1HeadShocked", p1HeadShocked);
     this.load.image("body", body);
+    this.load.image("body2", body2);
     this.load.image("p2Head", p2HeadHappy);
     this.load.image("p2HeadShocked", p2HeadShocked);
     this.load.image("background", background);
@@ -93,22 +95,29 @@ export default class MainScene extends Phaser.Scene {
     }
 
     //adding a background image, the 400 & 300 are the scale so no need to change that when we update the image
+    // https://www.vecteezy.com/free-vector/grass >> Grass Vectors by Vecteezy
     let bg = this.add.image(400, 300, "background");
     bg.displayHeight = this.sys.game.config.height;
     bg.displayWidth = this.sys.game.config.width;
 
-    this.gameState.body6 = this.physics.add.image(400, 125, "body");
+    this.gameState.body6 = this.physics.add.image(400, 125, "body2");
     this.gameState.body6.index = 5;
-    this.gameState.body5 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body5 = this.physics.add.image(400, 125, "body2");
     this.gameState.body5.index = 4;
-    this.gameState.body4 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body4 = this.physics.add.image(400, 125, "body2");
     this.gameState.body4.index = 3;
-    this.gameState.body3 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body3 = this.physics.add.image(400, 125, "body2");
     this.gameState.body3.index = 2;
-    this.gameState.body2 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body2 = this.physics.add.image(400, 125, "body2");
     this.gameState.body2.index = 1;
-    this.gameState.body1 = this.physics.add.image(400, 125, "body");
+
+    this.gameState.body1 = this.physics.add.image(400, 125, "body2");
     this.gameState.body1.index = 0;
+
     this.gameState.head = this.physics.add.image(400, 125, "head");
     this.gameState.p1HeadShocked = this.add.image(400, 125, "p1HeadShocked");
     this.gameState.p1HeadShocked.setVisible(false);
