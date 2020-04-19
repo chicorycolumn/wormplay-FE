@@ -13,8 +13,6 @@ import { playerFaces } from "../../public/emotion-rec";
 
 import body from "../assets/rainbowbody.png";
 import body2 from "../assets/bluebodyresized.png";
-
-import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/background.jpg";
 import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
@@ -114,8 +112,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("head", body);
     this.load.image("body", body);
 
-    this.load.image("p2Head", body);
-
+    this.load.image("p2Head", body2);
     this.load.image("body2", body2);
     this.load.image("p2Head", p2HeadHappy);
     this.load.image("p2HeadShocked", p2HeadShocked);
@@ -198,23 +195,17 @@ export default class MainScene extends Phaser.Scene {
 
     if (this.gameState.usingMyFace === true) {
       if (isP1 === true) {
-        this.gameState.p1HeadHappy.displayWidth(48);
-        this.gameState.p1HeadHappy.displayHeight(48);
-        this.gameState.p1HeadShocked.displayWidth(48);
-        this.gameState.p1HeadShocked.displayHeight(48);
-        this.gameState.p1HeadSad.displayWidth(48);
-        this.gameState.p1HeadSad.displayHeight(48);
-        this.gameState.p1HeadAngry.displayWidth(48);
-        this.gameState.p1HeadAngry.displayHeight(48);
+        this.gameState.head.setVisible(true);
+        this.gameState.p1HeadHappy.setDisplaySize(48, 48);
+        this.gameState.p1HeadShocked.setDisplaySize(48, 48);
+        this.gameState.p1HeadSad.setDisplaySize(48, 48);
+        this.gameState.p1HeadAngry.setDisplaySize(48, 48);
       } else if (isP2 === true) {
-        this.gameState.p2HeadHappy.displayWidth(48);
-        this.gameState.p2HeadHappy.displayHeight(48);
-        this.gameState.p2HeadShocked.displayWidth(48);
-        this.gameState.p2HeadShocked.displayHeight(48);
-        this.gameState.p2HeadSad.displayWidth(48);
-        this.gameState.p2HeadSad.displayHeight(48);
-        this.gameState.p2HeadAngry.displayWidth(48);
-        this.gameState.p2HeadAngry.displayHeight(48);
+        this.gameState.p2Head.setVisible(true);
+        this.gameState.p2HeadHappy.setDisplaySize(48, 48);
+        this.gameState.p2HeadShocked.setDisplaySize(48, 48);
+        this.gameState.p2HeadSad.setDisplaySize(48, 48);
+        this.gameState.p2HeadAngry.setDisplaySize(48, 48);
       }
     }
 
