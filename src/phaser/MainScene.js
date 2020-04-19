@@ -196,7 +196,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2HeadAngry = this.add.image(600, 300, "p2HeadAngry");
     this.gameState.p2HeadAngry.setVisible(false);
 
-    if (usingMyFace === true) {
+    if (this.gameState.usingMyFace === true) {
       if (isP1 === true) {
         this.gameState.p1HeadHappy.displayWidth(48);
         this.gameState.p1HeadHappy.displayHeight(48);
