@@ -6,6 +6,7 @@ export default class LobbySidePanel extends React.Component {
   constructor() {
     super();
     this.state = {
+      trivialVariable: "oo",
       photoSet: {
         happy: { src: null },
         angry: { src: null },
@@ -55,15 +56,32 @@ export default class LobbySidePanel extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
-    //   this.setState({ currentEmotion: this.props.currentEmotion });
-    // }
-    // if (
-    //   this.state.currentRoom.p1.id !== this.props.currentRoom.p1.id ||
-    //   this.state.currentRoom.p2.id !== this.props.currentRoom.p2.id
-    // ) {
-    //   this.setState({ currentRoom: this.props.currentRoom });
-    // }
+    if (this.state.socket) {
+      //********************** */
+      let cb = this.setStateCallbackToSidePanel;
+
+      this.state.socket.on("image", function (info) {
+        console.log(">>>image");
+        for (let i = 0; i < 1; i++) {
+          if (info.image) {
+            // console.log("cb", cb);
+            console.log(info.buffer);
+            var img = new Image();
+            img.src = "data:image/jpeg;base64," + info.buffer;
+            var ctx = document.getElementById("testCanvas").getContext("2d");
+
+            setTimeout(() => {
+              ctx.drawImage(img, 0, 0);
+              console.log("bounced image", img);
+            }, 3000);
+
+            // cb("trivialVariable", "boo");
+          }
+        }
+      });
+      //********************** */
+    }
+
     if (this.state.myUsername !== this.props.myUsername) {
       this.setState({ myUsername: this.props.myUsername });
     }
@@ -121,6 +139,17 @@ export default class LobbySidePanel extends React.Component {
         <div className={styles.midboxLong}>
           <div>
             <p className={styles.instructions}>
+              {/* ********************* */}
+              <canvas id="testCanvas"></canvas>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  socket.emit("send me image");
+                }}
+              >
+                IMAGE
+              </button>
+              {/* ********************* */}
               Pull a face and we'll capture your emotion! This is optional and{" "}
               <strong>personalises</strong> your worm!
               <br />
