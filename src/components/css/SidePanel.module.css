@@ -186,3 +186,42 @@
   margin: 15px;
   margin-top: 15px;
 }
+
+.chatButton {
+  width: 47.5px;
+  /* position: relative; */
+  font-size: 14pt;
+  height: 48px;
+  background-color: white;
+  border: green solid 2pt;
+  box-shadow: 2.5px 2.5px 1.25px grey;
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+}
+
+.chatButton:active {
+  transform: translateY(2px);
+  box-shadow: 0px 0px 1.25px black;
+}
+
+.chatField {
+  width: 295px;
+  height: 40px;
+  background-color: white;
+  border: green solid 2pt;
+  box-shadow: 2.5px 2.5px 1.25px grey;
+  position: relative;
+  /* left: 380px;
+  top: 240px; */
+  border: green solid 2pt;
+  font-size: 12pt;
+  text-align: left;
+}
+
+.chatFormHolder {
+  /* border: slateblue solid 2pt; */
+  position: relative;
+  bottom: -152px;
+  left: -1px;
+}

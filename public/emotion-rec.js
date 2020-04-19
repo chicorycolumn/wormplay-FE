@@ -208,7 +208,7 @@ export const emotionRecFullFunction = (
           });
         }
       }
-    }, 350);
+    }, 200);
   }
 
   if (video.getEventListeners().play.length < 2) {
