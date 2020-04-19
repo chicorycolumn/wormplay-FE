@@ -20,6 +20,15 @@ export default class CreditsScene extends Phaser.Scene {
         fill: "#fff",
       }
     );
+    this.imageText = this.add.text(
+      0,
+      0,
+      "Background image credits: Vecteezy.com",
+      {
+        fontSize: "18px",
+        fill: "#fff",
+      }
+    );
     this.zone = this.add.zone(
       config.width / 2,
       config.height / 2,
@@ -29,9 +38,11 @@ export default class CreditsScene extends Phaser.Scene {
 
     Phaser.Display.Align.In.Center(this.creditsText, this.zone);
 
+    Phaser.Display.Align.In.Center(this.imageText, this.zone);
     Phaser.Display.Align.In.Center(this.madeByText, this.zone);
 
     this.madeByText.setY(1000);
+    this.imageText.setY(500);
 
     this.creditsTween = this.tweens.add({
       targets: this.creditsText,
@@ -51,9 +62,19 @@ export default class CreditsScene extends Phaser.Scene {
       duration: 8000,
       delay: 1000,
       onComplete: function () {
-        this.madeByTween.destroy;
+        this.madeByText.destroy;
         this.scene.start("Title");
       }.bind(this),
+    });
+    this.imageTween = this.tweens.add({
+      targets: this.imageText,
+      y: -200,
+      ease: "Power1",
+      duration: 3000,
+      delay: 2000,
+      onComplete: function () {
+        this.destroy;
+      },
     });
   }
 }
