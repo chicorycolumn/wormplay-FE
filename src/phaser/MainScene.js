@@ -53,8 +53,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    // console.log(this.game.react.state);
-
     scene = this; // scene variable makes 'this' available anywhere within the game
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
@@ -280,7 +278,7 @@ export default class MainScene extends Phaser.Scene {
 
       thisLetter.on("dragend", function (pointer) {
         this.clearTint();
-        // console.log(this);
+
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
@@ -616,7 +614,7 @@ export default class MainScene extends Phaser.Scene {
           50,
           200,
           [
-            `A drawer?!?! Now no-ones happy!`,
+            `A draw?!?! Now no-ones happy!`,
             `I think your word ${scoreObj.currentPlayer.word} was better`,
           ],
           roundScoreStyle
@@ -626,7 +624,7 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showFinalWinner = function (amIWinner) {
-      // this.roundWinnerText.destroy(); -- sort this, not working
+      this.roundWinnerText.destroy();
 
       const thisPlayerName = isP1 ? p1Name : p2Name;
       const opponentName = isP1 ? p2Name : p1Name;
@@ -637,17 +635,17 @@ export default class MainScene extends Phaser.Scene {
       this.quitText.setVisible(true);
 
       if (amIWinner === true) {
-        this.gameState.finalWinnerText = scene.add.text(
-          200,
+        this.finalWinnerText = scene.add.text(
+          90,
           70,
           [`Well Done ${thisPlayerName}!`, `You Won!`],
           finalScoreStyle
         );
       } else {
-        this.gameState.finalWinnerText = scene.add.text(
-          200,
+        this.finalWinnerText = scene.add.text(
+          100,
           70,
-          [`Oh no ${opponentName} Won!`, `I'm sorry.`],
+          [`Oh no ${opponentName} Won!`, `I'm sorry. :(`],
           finalScoreStyle
         );
       }
