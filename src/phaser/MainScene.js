@@ -799,10 +799,10 @@ export default class MainScene extends Phaser.Scene {
 
     socket.on("new game request", function (opponentInfo) {
       scene.gameState.wantsNewGame[opponentInfo.player] = true;
-      scene.gameState.newGameText = scene.add.text(
+      scene.gameState.rematchText = scene.add.text(
         100,
         400,
-        `Uh oh! ${opponentInfo.name} wants a re-match. Do you?`,
+        [`Uh oh! ${opponentInfo.name} wants a re-match.`, `Do you?`],
         scoreStyle
       );
     });
@@ -817,13 +817,23 @@ export default class MainScene extends Phaser.Scene {
 
       if (newRounds.p1 === 3) {
         const didIWin = isP1 ? true : false;
-        scene.gameState.showFinalWinner(didIWin);
+        scene.time.delayedCall(
+          2000,
+          scene.gameState.showFinalWinner,
+          [didIWin],
+          scene.gameState
+        );
       } else if (newRounds.p2 === 3) {
         const didIWin = isP1 ? false : true;
-        scene.gameState.showFinalWinner(didIWin);
+        scene.time.delayedCall(
+          2000,
+          scene.gameState.showFinalWinner,
+          [didIWin],
+          scene.gameState
+        );
       } else {
         // Add countdown on screen
-        scene.time.delayedCall(3000, function () {
+        scene.time.delayedCall(2000, function () {
           scene.scene.start("MainScene");
         });
       }
@@ -908,6 +918,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.newGameBtn.on(
       "pointerdown",
       function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton2");
         this.gameState.newGameBtn.setScale(0.8);
         this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
@@ -955,8 +966,8 @@ export default class MainScene extends Phaser.Scene {
             name: isP1 === true ? p1Name : p2Name,
             player: isP1 === true ? "p1" : "p2",
           });
-          scene.gameState.newGameText = scene.add.text(
-            150,
+          scene.gameState.rematchText = scene.add.text(
+            100,
             400,
             [
               `You asked ${isP1 === true ? p2Name : p1Name} for a re-match!`,
@@ -1046,10 +1057,16 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.displayRounds = function (currentRounds) {
       if (this.gameState.thisPlayerScore !== undefined) {
-        this.gameState.thisPlayerScore.destroy();
+        this.gameState.thisPlayerScore.setText(
+          `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
+        );
       }
       if (this.gameState.oppositionScore !== undefined) {
-        this.gameState.oppositionScore.destroy();
+        this.gameState.oppositionScore.setText(
+          `${isP1 ? p2Name : p1Name}: ${
+            isP1 ? currentRounds.p2 : currentRounds.p1
+          }`
+        );
       }
       this.gameState.thisPlayerScore = this.add.text(
         650,
