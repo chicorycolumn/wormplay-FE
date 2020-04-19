@@ -438,6 +438,9 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.submitBtn.on("pointerup", function (event) {
       this.clearTint();
       this.y = originalBtnY;
+      if (scene.gameState.roundTimer > 6) {
+        scene.gameState.roundTimer = 6;
+      }
 
       let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
       let allLettersObj = this.scene.gameState.text;
@@ -620,7 +623,7 @@ export default class MainScene extends Phaser.Scene {
         );
       } else {
         this.roundWinnerText = scene.add.text(
-          25,
+          50,
           200,
           [
             `A draw?!?! Now no-ones happy!`,
@@ -933,7 +936,7 @@ export default class MainScene extends Phaser.Scene {
       return `0:${formattedSeconds}`;
     };
 
-    this.gameState.timeText = this.add.text(
+    this.gameState.timerText = this.add.text(
       555,
       25,
       this.gameState.formatTime(this.gameState.roundTimer),
@@ -948,7 +951,26 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.decrementTimer = function () {
       this.roundTimer -= 1;
-      this.timeText.setText(this.formatTime(this.roundTimer));
+      this.timerText.setText(this.formatTime(this.roundTimer));
+      if (this.roundTimer === 5) {
+        this.timerText
+          .setStyle({
+            fontSize: "40px",
+            color: "#dd0000",
+            stroke: "orange",
+            strokeThickness: 5,
+            fontFamily: "Arial",
+          })
+          .setX(375)
+          .setY(200);
+      }
+      if (this.roundTimer < 6) {
+        this.timerText.setFontSize(
+          Number(this.timerText.style.fontSize.slice(0, 2)) + 10
+        );
+        this.timerText.x -= 10;
+        this.timerText.y -= 4;
+      }
     };
 
     this.gameState.countDown = this.time.addEvent({
@@ -1141,6 +1163,7 @@ export default class MainScene extends Phaser.Scene {
     }
     if (this.gameState.roundTimer === 0) {
       this.gameState.roundTimer = -1;
+      this.gameState.timerText.destroy();
       this.gameState.countDown.reset();
       this.gameState.showRoundWinner(
         this.gameState.scores,
