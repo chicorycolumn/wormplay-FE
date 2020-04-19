@@ -49,6 +49,7 @@ export default class MainScene extends Phaser.Scene {
       wantsNewGame: null,
       roundsWon: { p1: 0, p2: 0 },
       timer: { p1: 0, p2: 0 },
+      roundTimer: 30,
     };
   }
 
@@ -66,6 +67,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.scores = {}; // Resets scores every <round></round> ***************
 
     this.gameState.wantsNewGame = { p1: false, p2: false };
+    this.gameState.roundTimer = 30; // resets timer after every round
     this.load.image("head", p1HeadHappy);
     this.load.image("p1HeadShocked", p1HeadShocked);
     this.load.image("body", body);
@@ -424,7 +426,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerout", function (event) {
-      this.setTint(0xffbf00);
+      this.clearTint();
       this.y = originalBtnY;
     });
 
@@ -434,7 +436,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerup", function (event) {
-      this.setTint(0xffbf00);
+      this.clearTint();
       this.y = originalBtnY;
 
       let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
@@ -586,6 +588,13 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
+      if (scoreObj.currentPlayer === undefined) {
+        scoreObj.currentPlayer = { points: 0, word: "" };
+      }
+      if (scoreObj.opponent === undefined) {
+        scoreObj.opponent = { points: 0, word: "" };
+      }
+
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
         this.roundWinnerText = scene.add.text(
           200,
@@ -611,7 +620,7 @@ export default class MainScene extends Phaser.Scene {
         );
       } else {
         this.roundWinnerText = scene.add.text(
-          50,
+          25,
           200,
           [
             `A draw?!?! Now no-ones happy!`,
@@ -916,6 +925,38 @@ export default class MainScene extends Phaser.Scene {
     }.bind(this);
 
     this.gameState.displayRounds(roundsWon);
+
+    this.gameState.formatTime = function (seconds) {
+      // Adds left zeros to seconds
+      const formattedSeconds = seconds.toString().padStart(2, "0");
+      // Returns formatted time
+      return `0:${formattedSeconds}`;
+    };
+
+    this.gameState.timeText = this.add.text(
+      555,
+      25,
+      this.gameState.formatTime(this.gameState.roundTimer),
+      {
+        fontSize: "40px",
+        color: "yellow",
+        stroke: "black",
+        strokeThickness: 3,
+        fontFamily: "Arial",
+      }
+    );
+
+    this.gameState.decrementTimer = function () {
+      this.roundTimer -= 1;
+      this.timeText.setText(this.formatTime(this.roundTimer));
+    };
+
+    this.gameState.countDown = this.time.addEvent({
+      delay: 1000,
+      callback: this.gameState.decrementTimer,
+      callbackScope: this.gameState,
+      loop: true,
+    });
   }
 
   update() {
@@ -1097,6 +1138,14 @@ export default class MainScene extends Phaser.Scene {
           p2HeadShocked.setVisible(false);
         }
       }
+    }
+    if (this.gameState.roundTimer === 0) {
+      this.gameState.roundTimer = -1;
+      this.gameState.countDown.reset();
+      this.gameState.showRoundWinner(
+        this.gameState.scores,
+        isP1 ? p2Name : p1Name
+      );
     }
   }
 
