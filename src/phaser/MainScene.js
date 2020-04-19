@@ -170,7 +170,7 @@ export default class MainScene extends Phaser.Scene {
     };
 
     Object.keys(letterTileSpecifications).forEach((n) => {
-      let num = parseInt(n);
+      let num = parseInt(n, 10);
       const char = Phaser.Math.RND.pick(num < 5 ? vowelArray : consonantArray);
       this.gameState.text[`letter${num}`] = this.add.text(
         letterTileSpecifications[num].x,
@@ -405,7 +405,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerup", function (event) {
-      this.setTint(0xff0000);
+      this.setTint(0xffbf00);
       this.y = originalBtnY;
 
       let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
@@ -437,7 +437,7 @@ export default class MainScene extends Phaser.Scene {
         }
         const submittedWord = wordArr.join("");
         socket.emit("worm word submitted", submittedWord);
-      } // else: For sending letters-on-worm info to other players (on overlap line 151?) }
+      }
     };
 
     this.model = this.sys.game.globals.model;
@@ -467,7 +467,7 @@ export default class MainScene extends Phaser.Scene {
       strokeThickness: 5,
     };
 
-    const finalScoreStyle = {
+    const roundScoreStyle = {
       font: "45px Arial",
       color: "#cc0000",
       align: "center",
@@ -475,20 +475,32 @@ export default class MainScene extends Phaser.Scene {
       strokeThickness: 10,
     };
 
+    const finalScoreStyle = {
+      font: "50px Arial",
+      color: "#ffef00",
+      align: "center",
+      stroke: "#000000",
+      strokeThickness: 10,
+    };
+
     this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
       const opponentName = isP1 === true ? p2Name : p1Name;
+      if (this.scoreText !== undefined) {
+        this.scoreText.destroy();
+      }
+
       if (isCurrentPlayer === true) {
         this.scores.currentPlayer = scoreObj;
 
         if (scoreObj.isValid === false) {
-          this.scores.currentPlayerText = scene.add.text(
+          this.scoreText = scene.add.text(
             250,
             400,
             [`Oh no! ${scoreObj.word} isn't a word!`, `You get no points!`],
             scoreStyle
           );
         } else {
-          this.scores.currentPlayerText = scene.add.text(
+          this.scoreText = scene.add.text(
             300,
             400,
             [
@@ -502,7 +514,7 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.scores.opponent = scoreObj;
         if (scoreObj.isValid === false) {
-          this.scores.opponentText = scene.add.text(
+          this.scoreText = scene.add.text(
             200,
             400,
             [
@@ -512,7 +524,7 @@ export default class MainScene extends Phaser.Scene {
             scoreStyle
           );
         } else {
-          this.scores.opponentText = scene.add.text(
+          this.scoreText = scene.add.text(
             250,
             400,
             [
@@ -523,6 +535,15 @@ export default class MainScene extends Phaser.Scene {
           );
         }
       }
+      // Fades out player scores after 3 second
+      scene.time.delayedCall(2500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.scoreText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
       if (
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
@@ -537,39 +558,67 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
-        this.finalScoreText = scene.add.text(
+        this.roundWinnerText = scene.add.text(
           200,
           200,
           [
             `You win with ${scoreObj.currentPlayer.word}!`,
             `What a great word!`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
         const winner = isP1 === true ? "p1" : "p2";
         roundsWon[winner] += 1;
         socket.emit("update rounds", roundsWon);
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
-        this.finalScoreText = scene.add.text(
-          100,
+        this.roundWinnerText = scene.add.text(
+          150,
           200,
           [
-            `Oh no ${opponentName} won with ${scoreObj.opponent.word}!`,
+            `Oh no, ${opponentName} won with ${scoreObj.opponent.word}!`,
             `I hate that word!`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
       } else {
-        this.finalScoreText = scene.add.text(
+        this.roundWinnerText = scene.add.text(
           50,
           200,
           [
             `A drawer?!?! Now no-ones happy!`,
             `I think your word ${scoreObj.currentPlayer.word} was better`,
           ],
-          finalScoreStyle
+          roundScoreStyle
         );
         socket.emit("update rounds", roundsWon);
+      }
+    };
+
+    this.gameState.showFinalWinner = function (amIWinner) {
+      // this.roundWinnerText.destroy(); -- sort this, not working
+
+      const thisPlayerName = isP1 ? p1Name : p2Name;
+      const opponentName = isP1 ? p2Name : p1Name;
+
+      this.newGameBtn.setVisible(true);
+      this.newGameText.setVisible(true);
+      this.quitBtn.setVisible(true);
+      this.quitText.setVisible(true);
+
+      if (amIWinner === true) {
+        this.gameState.finalWinnerText = scene.add.text(
+          200,
+          70,
+          [`Well Done ${thisPlayerName}!`, `You Won!`],
+          finalScoreStyle
+        );
+      } else {
+        this.gameState.finalWinnerText = scene.add.text(
+          200,
+          70,
+          [`Oh no ${opponentName} Won!`, `I'm sorry.`],
+          finalScoreStyle
+        );
       }
     };
 
@@ -610,14 +659,10 @@ export default class MainScene extends Phaser.Scene {
     this.game.react.state.socket.on("api error", function (error) {
       console.log("Error:", error.status, error.message);
       scene.gameState.errMessage = scene.add.text(
+        150,
         250,
-        250,
-        `OH NO! API ERROR: ${error.status} ${error.message}`,
-        {
-          font: "35px Arial",
-          color: "#f00000",
-          align: "center",
-        }
+        [`OH NO! API ERROR:`, `${error.status} ${error.message}`],
+        roundScoreStyle
       );
     });
 
@@ -639,15 +684,13 @@ export default class MainScene extends Phaser.Scene {
       scene.gameState.roundsWon = newRounds;
       scene.gameState.displayRounds(scene.gameState.roundsWon);
 
-      if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
-        console.log("WE HAVE A WINNER!!!");
-        // Socket emit "I won" - socket.emit + socket.broadcast.emit "game won" -> func showWinner()
-        scene.gameState.newGameBtn.setVisible(true);
-        scene.gameState.newGameText.setVisible(true);
-        scene.gameState.quitBtn.setVisible(true);
-        scene.gameState.quitText.setVisible(true);
+      if (newRounds.p1 === 3) {
+        const didIWin = isP1 ? true : false;
+        scene.gameState.showFinalWinner(didIWin);
+      } else if (newRounds.p2 === 3) {
+        const didIWin = isP1 ? false : true;
+        scene.gameState.showFinalWinner(didIWin);
       } else {
-        console.log("ELSE?");
         // Add countdown on screen
         scene.time.delayedCall(3000, function () {
           scene.scene.start("MainScene");
@@ -659,7 +702,7 @@ export default class MainScene extends Phaser.Scene {
       .sprite(300, 350, "blueButton1")
       .setInteractive();
     this.gameState.newGameBtn.setScale(0.8);
-    this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+    this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
       fontSize: "20px",
       fill: "#fff",
       align: "center",
@@ -673,7 +716,7 @@ export default class MainScene extends Phaser.Scene {
       "pointerdown",
       function (pointer) {
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -691,7 +734,7 @@ export default class MainScene extends Phaser.Scene {
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -732,7 +775,7 @@ export default class MainScene extends Phaser.Scene {
         this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton1");
 
         this.gameState.newGameBtn.setScale(0.8);
-        this.gameState.newGameText = this.add.text(0, 0, "New Game", {
+        this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
           fill: "#fff",
           align: "center",
@@ -809,6 +852,12 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitText.setVisible(false);
 
     this.gameState.displayRounds = function (currentRounds) {
+      if (this.gameState.thisPlayerScore !== undefined) {
+        this.gameState.thisPlayerScore.destroy();
+      }
+      if (this.gameState.oppositionScore !== undefined) {
+        this.gameState.oppositionScore.destroy();
+      }
       this.gameState.thisPlayerScore = this.add.text(
         650,
         85,
@@ -823,7 +872,7 @@ export default class MainScene extends Phaser.Scene {
 
       this.gameState.oppositionScore = this.add.text(
         650,
-        160,
+        150,
         `${isP1 ? p2Name : p1Name}: ${
           isP1 ? currentRounds.p2 : currentRounds.p1
         }`,
@@ -836,6 +885,7 @@ export default class MainScene extends Phaser.Scene {
         }
       );
     }.bind(this);
+
     this.gameState.displayRounds(roundsWon);
   }
 
@@ -923,39 +973,6 @@ export default class MainScene extends Phaser.Scene {
     this.physics.moveTo(body6, body5.x, body5.y, 60, 750, 750);
     if (head.count > 0) {
       head.count--;
-    }
-
-    // Fades out player scores after 3 seconds
-    if (this.gameState.scores.currentPlayerText !== undefined) {
-      this.time.delayedCall(
-        2500,
-        function () {
-          this.tweens.add({
-            targets: this.gameState.scores.currentPlayerText,
-            alpha: 0,
-            duration: 500,
-            ease: "Power 2",
-          });
-        },
-        null,
-        this
-      );
-    }
-
-    if (this.gameState.scores.opponentText !== undefined) {
-      this.time.delayedCall(
-        2500,
-        function () {
-          this.tweens.add({
-            targets: this.gameState.scores.opponentText,
-            alpha: 0,
-            duration: 500,
-            ease: "Power 2",
-          });
-        },
-        null,
-        this
-      );
     }
 
     if (p2Head.count === 0) {
