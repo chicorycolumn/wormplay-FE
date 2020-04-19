@@ -6,6 +6,7 @@ export default class GameSidePanel extends React.Component {
   constructor() {
     super();
     this.state = {
+      chatTimestamp: 0,
       photoSet: {
         happy: { src: null },
         angry: { src: null },
@@ -70,8 +71,28 @@ export default class GameSidePanel extends React.Component {
     }
   }
 
+  sendChat = (msg) => {
+    console.log("sending", msg, this.state.currentRoom.roomID);
+    this.state.socket.emit("clientSentChat", {
+      msg,
+      roomID: this.state.currentRoom.roomID,
+    });
+  };
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state.socket) {
+      this.state.socket.on("serverSentChat", (data) => {
+        console.log("received", data.msg);
+        if (this.state.chatTimestamp !== data.chatTimestamp) {
+          this.setState({ chatTimestamp: data.chatTimestamp });
+          let infoDisplay = document.getElementById("infoDisplay");
+          let newLi = document.createElement("li");
+          newLi.style.margin = "8px";
+          newLi.innerHTML = `${data.msg}`;
+          infoDisplay.appendChild(newLi);
+        }
+      });
+
       this.state.socket.on("a player entered your game", (data) => {
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
@@ -194,9 +215,30 @@ export default class GameSidePanel extends React.Component {
 
             <ul id="infoDisplay" className={styles.infoDisplay}></ul>
           </div>
+          <div className={styles.chatFormHolder}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                let msg = this.state.chatInput;
+                this.sendChat(msg);
+                this.setState({ chatInput: "" });
+              }}
+            >
+              <input
+                className={styles.chatField}
+                value={this.state.chatInput}
+                maxLength="35"
+                onChange={(e) => {
+                  this.setState({ chatInput: e.target.value });
+                }}
+              ></input>
+              <button type="submit" className={styles.chatButton}>
+                🐛
+              </button>
+            </form>
+          </div>
         </div>
-        <div className={styles.bottombox}>
-          {currentRoom.p1.username !== null &&
+        {/* {currentRoom.p1.username !== null &&
           currentRoom.p2.username !== null ? (
             <div>
               <p>{currentRoom.p1.username + ": " + currentRoom.p1.score}</p>
@@ -204,8 +246,7 @@ export default class GameSidePanel extends React.Component {
             </div>
           ) : (
             "waiting..."
-          )}
-        </div>
+          )} */}
       </div>
     );
   }

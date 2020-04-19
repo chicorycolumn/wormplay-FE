@@ -18,9 +18,9 @@ export default class PhaserGame extends Phaser.Game {
       height: 600,
       physics: {
         default: "arcade",
-        arcade: {
-          debug: true,
-        },
+        // arcade: {
+        //   debug: true,
+        // },
       },
       // scene: [MainScene, OptionsScene, TitleScene],
     };
@@ -35,6 +35,6 @@ export default class PhaserGame extends Phaser.Game {
     this.scene.add("Preloader", PreloaderScene);
     this.scene.add("Credits", CreditScene);
     this.scene.add("Boot", BootScene);
-    this.scene.start("Boot");
+    this.scene.start("MainScene");
   }
 }
