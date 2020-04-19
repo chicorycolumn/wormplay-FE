@@ -41,6 +41,21 @@ export default class GameSidePanel extends React.Component {
     this.setState(newState);
   };
 
+  removeFirstChildIfOverflowing = (element) => {
+    if (this.isOverflown(element)) {
+      element.removeChild(element.firstElementChild);
+    }
+  };
+
+  isOverflown = (element) => {
+    if (element) {
+      return (
+        element.scrollHeight > element.clientHeight ||
+        element.scrollWidth > element.clientWidth
+      );
+    }
+  };
+
   componentDidMount() {
     let {
       socket,
@@ -68,6 +83,7 @@ export default class GameSidePanel extends React.Component {
         " (that's you) just entered!";
 
       infoDisplay.appendChild(newLi);
+      this.removeFirstChildIfOverflowing(infoDisplay);
     }
   }
 
@@ -82,14 +98,21 @@ export default class GameSidePanel extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.state.socket) {
       this.state.socket.on("serverSentChat", (data) => {
+        let infoDisplay = document.getElementById("infoDisplay");
         console.log("received", data.msg);
         if (this.state.chatTimestamp !== data.chatTimestamp) {
           this.setState({ chatTimestamp: data.chatTimestamp });
-          let infoDisplay = document.getElementById("infoDisplay");
           let newLi = document.createElement("li");
-          newLi.style.margin = "8px";
-          newLi.innerHTML = `${data.msg}`;
+          newLi.innerHTML =
+            `<p class="${
+              data.sendingPlayerID === this.state.socket.id
+                ? styles.yourChat
+                : styles.herChat
+            }">` +
+            `${data.msg}` +
+            "</p>";
           infoDisplay.appendChild(newLi);
+          this.removeFirstChildIfOverflowing(infoDisplay);
         }
       });
 
@@ -115,6 +138,7 @@ export default class GameSidePanel extends React.Component {
             "</strong>" +
             "'s here!";
           infoDisplay.appendChild(newLi);
+          this.removeFirstChildIfOverflowing(infoDisplay);
 
           this.setState({
             currentRoom,
@@ -144,6 +168,7 @@ export default class GameSidePanel extends React.Component {
             "</strong>" +
             " bodged off!";
           infoDisplay.appendChild(newLi);
+          this.removeFirstChildIfOverflowing(infoDisplay);
 
           this.setState({
             currentRoom,
@@ -178,12 +203,20 @@ export default class GameSidePanel extends React.Component {
     return (
       <div className={styles.rightPanelDisplay}>
         <div className={styles.topbox}>
-          <div className={styles.emojiHolder}>
+          <div className={styles.inGameInstructions}>
+            <h2>Worms away!</h2>
+            Drop letters onto your opponent's worm, and when you've made a word,
+            click submit!
+            <br />
+            <br />
+            Words are spelled from <strong>head to tail</strong>.
+            <br />
+            <br />
+            Good luck, and good worm!
+          </div>
+          {/* <div className={styles.emojiHolder}>
             {Object.keys(photoSet).map((label) => {
               return (
-                //*********** JAMES this is where I tried to set the webcam photo sources as
-                //pictures in the game sidebar, though I didn't spend much time finding out
-                //how to set source, so currently they don't display. *********************/
                 <div className={styles.emoHolder} id={`${emoObj.name}Holder`}>
                   <img
                     src={photoSet[label].src}
@@ -196,10 +229,10 @@ export default class GameSidePanel extends React.Component {
                 </div>
               );
             })}
-          </div>
+          </div> */}
         </div>
 
-        <div className={styles.midbox}>
+        <div className={styles.midboxLobby}>
           <div>
             <p
               className={styles.roomsDisplay}
@@ -219,9 +252,11 @@ export default class GameSidePanel extends React.Component {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                let msg = this.state.chatInput;
-                this.sendChat(msg);
-                this.setState({ chatInput: "" });
+                if (this.state.chatInput) {
+                  let msg = this.state.chatInput;
+                  this.sendChat(msg);
+                  this.setState({ chatInput: "" });
+                }
               }}
             >
               <input
