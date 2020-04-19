@@ -1,5 +1,11 @@
 import "geteventlisteners";
 
+export const playerFaces = {
+  happyFace: null,
+  sadFace: null,
+  angryFace: null,
+  shockedFace: null,
+};
 export const emotionRecFullFunction = (
   setStateCallback,
   setStateCallbackToSidePanel
@@ -82,7 +88,7 @@ export const emotionRecFullFunction = (
             name: "sad",
             data: sad,
             // display: document.getElementById("sadDisplay"),
-            threshold: 0.4,
+            threshold: 0.2,
             bars: document.getElementById(`sadBars`),
           },
 
@@ -202,6 +208,16 @@ export const emotionRecFullFunction = (
           const id_canvasPhoto = document.getElementById("canvasPhoto");
           id_canvasPhoto.setAttribute("src", data);
           id_canvasPhoto.setAttribute("label", currentEmotion);
+
+          if (emotionDuration.happy === 5) {
+            playerFaces.happyFace = data;
+          } else if (emotionDuration.sad === 5) {
+            playerFaces.sadFace = data;
+          } else if (emotionDuration.angry === 5) {
+            playerFaces.angryFace = data;
+          } else if (emotionDuration.surprised === 5) {
+            playerFaces.shockedFace = data;
+          }
 
           setStateCallback(`${currentEmotion}Data`, {
             src: data,
