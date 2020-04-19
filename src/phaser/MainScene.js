@@ -477,13 +477,15 @@ export default class MainScene extends Phaser.Scene {
           setTimeout(() => {
             this.lobbyText.destroy();
             this.lobbyBtn.tint = 0xffffff;
-            this.lobbyText = this.add.text(0, 0, "Lobby", {
+            this.lobbyText = this.add.text(0, 0, "Quit", {
               fontSize: "20px",
               fill: "#fff",
             });
             Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+            lobbyBtnIsDepressed = false;
           }, 2500);
         } else {
+          lobbyBtnIsDepressed = false;
           this.sys.game.destroy(true);
           socket.emit("quitRoom");
           setStateCallback("iHavePermissionToEnterRoom", false);
