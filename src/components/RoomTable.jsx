@@ -11,31 +11,33 @@ class RoomTable extends Component {
 
   renderTableData = (props) => {
     const { joinRoom, rooms } = props;
-    return rooms.map((room, index) => {
-      const { roomID, roomName } = room;
-      return (
-        <tr key={room.roomID}>
-          <td>{roomName}</td>
-          <td>{roomID}</td>
-          <td>{room.p1.username}</td>
-          <td>{room.p2.username}</td>
-          <td>
-            {(room.p1.username === null || room.p2.username === null) && (
-              <button
-                className={styles.joinRoomButton}
-                value={roomID}
-                onClick={(e) => {
-                  e.preventDefault();
-                  joinRoom(e.target.value);
-                }}
-              >
-                Join
-              </button>
-            )}
-          </td>
-        </tr>
-      );
-    });
+    return rooms
+      .sort((a, b) => a.roomID - b.roomID)
+      .map((room, index) => {
+        const { roomID, roomName } = room;
+        return (
+          <tr key={room.roomID}>
+            <td>{roomName}</td>
+            <td>{roomID}</td>
+            <td>{room.p1.username}</td>
+            <td>{room.p2.username}</td>
+            <td>
+              {(room.p1.username === null || room.p2.username === null) && (
+                <button
+                  className={styles.joinRoomButton}
+                  value={roomID}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    joinRoom(e.target.value);
+                  }}
+                >
+                  Join
+                </button>
+              )}
+            </td>
+          </tr>
+        );
+      });
   };
 
   renderTableHeader = (props) => {
