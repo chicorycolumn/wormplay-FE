@@ -3,8 +3,8 @@
 }
 
 .loginField {
-  height: 30px;
-  width: 270px;
+  height: 40px;
+  width: 220px;
   background-color: lightgoldenrodyellow;
   position: relative;
   /* left: 380px;
@@ -16,13 +16,20 @@
 
 .loginSubmitButton {
   height: 50px;
-  width: 180px;
+  width: 165px;
   background-color: lightgoldenrodyellow;
   border: green solid 1pt;
   position: relative;
   font-size: 14pt;
   /* top: 100%;
   right: 200%; */
+  box-shadow: 2.5px 2.5px 1.25px grey;
+  cursor: pointer;
+}
+
+.loginSubmitButton:active {
+  transform: translateY(2px);
+  box-shadow: 0px 0px 1.25px black;
 }
 
 .appleGraphic {
@@ -35,10 +42,10 @@
   position: absolute;
   width: 250px;
   /* border: yellow solid 5pt; */
-  top: 34.5%;
-  left: 32.5%;
+  top: 35.5%;
+  left: 33%;
   text-align: left;
-  height: 265px;
+  height: 260px;
 
   display: flex;
   flex-direction: column;
@@ -57,6 +64,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-size: 15pt;
 }
 
 /* Hide the browser's default checkbox */

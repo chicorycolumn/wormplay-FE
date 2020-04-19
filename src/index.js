@@ -4,9 +4,9 @@ import App from "./components/App.jsx";
 import Lobby from "./components/Lobby.jsx";
 import socketIOClient from "socket.io-client";
 
-let shouldEndpointBeHeroku = true; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
+let shouldEndpointBeHeroku = false; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
 
-let amILoggedIn = false; //USE THIS TO SKIP STRAIGHT TO LOBBY, BYPASSING LOGIN.
+let goStraightToLobby = false; //USE THIS TO SKIP STRAIGHT TO LOBBY, BYPASSING LOGIN.
 
 let goStraightToRoomOne = false; //USE THIS TO SKIP STRAIGHT TO GAME, BYPASSING LOGIN AND LOBBY.
 //                              THOUGH SOME FXNS MAY NOT WORK AS EXPECTED.
@@ -25,6 +25,6 @@ if (goStraightToRoomOne) {
   );
 } else
   ReactDOM.render(
-    <App socket={socket} amILoggedIn={amILoggedIn} />,
+    <App socket={socket} goStraightToLobby={goStraightToLobby} />,
     document.getElementById("mainBody")
   );

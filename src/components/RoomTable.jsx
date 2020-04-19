@@ -11,34 +11,37 @@ class RoomTable extends Component {
 
   renderTableData = (props) => {
     const { joinRoom, rooms } = props;
-    return rooms.map((room, index) => {
-      const { roomID, roomName } = room;
-      return (
-        <tr key={room.roomID}>
-          <td>{roomName}</td>
-          <td>{roomID}</td>
-          <td>{room.p1.username}</td>
-          <td>{room.p2.username}</td>
-          <td>
-            {(room.p1.username === null || room.p2.username === null) && (
-              <button
-                value={roomID}
-                onClick={(e) => {
-                  e.preventDefault();
-                  joinRoom(e.target.value);
-                }}
-              >
-                Join
-              </button>
-            )}
-          </td>
-        </tr>
-      );
-    });
+    return rooms
+      .sort((a, b) => a.roomID - b.roomID)
+      .map((room, index) => {
+        const { roomID, roomName } = room;
+        return (
+          <tr key={room.roomID}>
+            <td>{roomName}</td>
+            <td>{roomID}</td>
+            <td>{room.p1.username}</td>
+            <td>{room.p2.username}</td>
+            <td>
+              {(room.p1.username === null || room.p2.username === null) && (
+                <button
+                  className={styles.joinRoomButton}
+                  value={roomID}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    joinRoom(e.target.value);
+                  }}
+                >
+                  Join
+                </button>
+              )}
+            </td>
+          </tr>
+        );
+      });
   };
 
   renderTableHeader = (props) => {
-    let headers = ["Room name", "Room ID", "Player 1", "Player 2"];
+    let headers = ["Room name", "Room ID", "Player 1", "Player 2", " "];
 
     return headers.map((name) => {
       return <th>{name.toUpperCase()}</th>;
@@ -48,7 +51,6 @@ class RoomTable extends Component {
   render() {
     return (
       <div>
-        <h2 id="title">🐛 or pick a room you'd like to join 🐛</h2>
         <div className={styles.tableContainer}>
           <table className={styles.rooms}>
             <tbody>

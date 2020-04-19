@@ -108,7 +108,9 @@ export default class LobbySidePanel extends React.Component {
                       id={`${emoObj.name}Image`}
                     />
                     <p className={styles.emoLabel} id={`${emoObj.name}Action`}>
-                      {emoObj.name.toUpperCase()}
+                      {emoObj.name.toUpperCase() === "SURPRISED"
+                        ? "SHOCKED"
+                        : emoObj.name.toUpperCase()}
                     </p>
                   </div>
                 );

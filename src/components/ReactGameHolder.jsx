@@ -25,6 +25,9 @@ export default class ReactGame extends Component {
       },
       isP1: false,
       isP2: false,
+      setStateCallback: () => {
+        console.log("Haven't set SSC fxn in ReactGameHolder yet.");
+      },
     };
   }
 
@@ -37,6 +40,7 @@ export default class ReactGame extends Component {
       isP2: this.props.socket.id === this.props.currentRoom.p2.id,
       currentEmotion: this.props.currentEmotion,
       photoSet: this.props.photoSet,
+      setStateCallback: this.props.setStateCallback,
     });
   }
 
