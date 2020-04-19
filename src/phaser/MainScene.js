@@ -36,7 +36,7 @@ let isP1 = false;
 let isP2 = false;
 let p1Name = null;
 let p2Name = null;
-let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
+let shouldIBotherPlayingMusic = true; //TOGGLE DURING DEVELOPMENT
 let scene;
 let lobbyBtnIsDepressed = false;
 let setStateCallback = () => {
@@ -126,7 +126,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("checkedBox", checkedBox);
     this.load.image("box", box);
     if (shouldIBotherPlayingMusic) {
-      this.load.audio("bgMusic", ["src/assets/wiggle.mp3"]);
+      this.load.audio("bgMusic", ["src/assets/bgmusic.mp3"]);
     }
   }
 
@@ -439,7 +439,7 @@ export default class MainScene extends Phaser.Scene {
     //adding a menu button & setting interactive
     this.menuButton = this.add.sprite(50, 585, "blueButton1").setInteractive();
     this.menuButton.setScale(0.5);
-    this.menuText = this.add.text(0, 0, "Menu", {
+    this.menuText = this.add.text(0, 0, "Credits", {
       fontSize: "20px",
       fill: "#fff",
     });
@@ -504,7 +504,7 @@ export default class MainScene extends Phaser.Scene {
     this.menuButton.on(
       "pointerup",
       function (pointer) {
-        this.scene.start("Title");
+        this.scene.start("Credits");
       }.bind(this)
     );
 
