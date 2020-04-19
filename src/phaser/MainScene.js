@@ -55,13 +55,12 @@ export default class MainScene extends Phaser.Scene {
       wantsNewGame: null,
       roundsWon: { p1: 0, p2: 0 },
       timer: { p1: 0, p2: 0 },
+      roundTimer: 30,
       usingMyFace: false,
     };
   }
 
   preload() {
-    // console.log(this.game.react.state);
-
     scene = this; // scene variable makes 'this' available anywhere within the game
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
@@ -111,6 +110,7 @@ export default class MainScene extends Phaser.Scene {
       }
     }
     this.gameState.wantsNewGame = { p1: false, p2: false };
+    this.gameState.roundTimer = 30; // resets timer after every round
     this.load.image("head", body);
     this.load.image("body", body);
 
@@ -369,7 +369,7 @@ export default class MainScene extends Phaser.Scene {
 
       thisLetter.on("dragend", function (pointer) {
         this.clearTint();
-        // console.log(this);
+
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
@@ -515,7 +515,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerout", function (event) {
-      this.setTint(0xffbf00);
+      this.clearTint();
       this.y = originalBtnY;
     });
 
@@ -525,7 +525,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.submitBtn.on("pointerup", function (event) {
-      this.setTint(0xffbf00);
+      this.clearTint();
       this.y = originalBtnY;
 
       let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
@@ -546,6 +546,9 @@ export default class MainScene extends Phaser.Scene {
           this.scene.game.react.state.socket,
           this.hasBeenPressed
         );
+        if (scene.gameState.roundTimer > 6) {
+          scene.gameState.roundTimer = 6;
+        }
       }
     });
 
@@ -673,6 +676,14 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
+      this.countDown.paused = true;
+      if (scoreObj.currentPlayer === undefined) {
+        scoreObj.currentPlayer = { points: 0, word: "" };
+      }
+      if (scoreObj.opponent === undefined) {
+        scoreObj.opponent = { points: 0, word: "" };
+      }
+
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
         this.roundWinnerText = scene.add.text(
           200,
@@ -701,7 +712,7 @@ export default class MainScene extends Phaser.Scene {
           50,
           200,
           [
-            `A drawer?!?! Now no-ones happy!`,
+            `A draw?!?! Now no-ones happy!`,
             `I think your word ${scoreObj.currentPlayer.word} was better`,
           ],
           roundScoreStyle
@@ -711,7 +722,10 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showFinalWinner = function (amIWinner) {
-      // this.roundWinnerText.destroy(); -- sort this, not working
+      if (this.roundWinnerText !== undefined) {
+        this.roundWinnerText.destroy();
+      }
+      this.countDown.paused = true;
 
       const thisPlayerName = isP1 ? p1Name : p2Name;
       const opponentName = isP1 ? p2Name : p1Name;
@@ -722,17 +736,17 @@ export default class MainScene extends Phaser.Scene {
       this.quitText.setVisible(true);
 
       if (amIWinner === true) {
-        this.gameState.finalWinnerText = scene.add.text(
-          200,
-          70,
+        this.finalWinnerText = scene.add.text(
+          100,
+          100,
           [`Well Done ${thisPlayerName}!`, `You Won!`],
           finalScoreStyle
         );
       } else {
-        this.gameState.finalWinnerText = scene.add.text(
-          200,
-          70,
-          [`Oh no ${opponentName} Won!`, `I'm sorry.`],
+        this.finalWinnerText = scene.add.text(
+          100,
+          100,
+          [`Oh no ${opponentName} Won!`, `I'm sorry. :(`],
           finalScoreStyle
         );
       }
@@ -1003,6 +1017,57 @@ export default class MainScene extends Phaser.Scene {
     }.bind(this);
 
     this.gameState.displayRounds(roundsWon);
+
+    this.gameState.formatTime = function (seconds) {
+      // Adds left zeros to seconds
+      const formattedSeconds = seconds.toString().padStart(2, "0");
+      // Returns formatted time
+      return `0:${formattedSeconds}`;
+    };
+
+    this.gameState.timerText = this.add.text(
+      555,
+      25,
+      this.gameState.formatTime(this.gameState.roundTimer),
+      {
+        fontSize: "40px",
+        color: "yellow",
+        stroke: "black",
+        strokeThickness: 3,
+        fontFamily: "Arial",
+      }
+    );
+
+    this.gameState.decrementTimer = function () {
+      this.roundTimer -= 1;
+      this.timerText.setText(this.formatTime(this.roundTimer));
+      if (this.roundTimer === 5) {
+        this.timerText
+          .setStyle({
+            fontSize: "40px",
+            color: "#dd0000",
+            stroke: "orange",
+            strokeThickness: 5,
+            fontFamily: "Arial",
+          })
+          .setX(375)
+          .setY(200);
+      }
+      if (this.roundTimer < 6) {
+        this.timerText.setFontSize(
+          Number(this.timerText.style.fontSize.slice(0, 2)) + 10
+        );
+        this.timerText.x -= 10;
+        this.timerText.y -= 4;
+      }
+    };
+
+    this.gameState.countDown = this.time.addEvent({
+      delay: 1000,
+      callback: this.gameState.decrementTimer,
+      callbackScope: this.gameState,
+      loop: true,
+    });
   }
 
   update() {
@@ -1194,6 +1259,15 @@ export default class MainScene extends Phaser.Scene {
           p2HeadShocked.setVisible(false);
         }
       }
+    }
+    if (this.gameState.roundTimer === 0) {
+      this.gameState.roundTimer = -1;
+      this.gameState.timerText.destroy();
+      this.gameState.countDown.reset();
+      this.gameState.showRoundWinner(
+        this.gameState.scores,
+        isP1 ? p2Name : p1Name
+      );
     }
   }
 
