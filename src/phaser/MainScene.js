@@ -438,9 +438,6 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.submitBtn.on("pointerup", function (event) {
       this.clearTint();
       this.y = originalBtnY;
-      if (scene.gameState.roundTimer > 6) {
-        scene.gameState.roundTimer = 6;
-      }
 
       let wordArr = this.scene.gameState.wormWordArr.map((el) => (el = " "));
       let allLettersObj = this.scene.gameState.text;
@@ -460,6 +457,9 @@ export default class MainScene extends Phaser.Scene {
           this.scene.game.react.state.socket,
           this.hasBeenPressed
         );
+        if (scene.gameState.roundTimer > 6) {
+          scene.gameState.roundTimer = 6;
+        }
       }
     });
 
@@ -591,6 +591,7 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
+      this.countDown.paused = true;
       if (scoreObj.currentPlayer === undefined) {
         scoreObj.currentPlayer = { points: 0, word: "" };
       }
@@ -636,7 +637,10 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showFinalWinner = function (amIWinner) {
-      this.roundWinnerText.destroy();
+      if (this.roundWinnerText !== undefined) {
+        this.roundWinnerText.destroy();
+      }
+      this.countDown.paused = true;
 
       const thisPlayerName = isP1 ? p1Name : p2Name;
       const opponentName = isP1 ? p2Name : p1Name;
@@ -648,15 +652,15 @@ export default class MainScene extends Phaser.Scene {
 
       if (amIWinner === true) {
         this.finalWinnerText = scene.add.text(
-          90,
-          70,
+          100,
+          100,
           [`Well Done ${thisPlayerName}!`, `You Won!`],
           finalScoreStyle
         );
       } else {
         this.finalWinnerText = scene.add.text(
           100,
-          70,
+          100,
           [`Oh no ${opponentName} Won!`, `I'm sorry. :(`],
           finalScoreStyle
         );
