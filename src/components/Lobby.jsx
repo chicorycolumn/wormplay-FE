@@ -23,7 +23,7 @@ export default class Lobby extends React.Component {
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       socket: null,
       myUsername: "",
-      iHavePermissionToEnterRoom: false, //DEVELOPMENT
+      iHavePermissionToEnterRoom: false,
       rooms: [],
       newRoomName: "",
       currentRoom: {
@@ -161,7 +161,7 @@ export default class Lobby extends React.Component {
       angry: angryData,
       surprised: surprisedData,
     };
-
+    console.log("###", iHavePermissionToEnterRoom);
     return (
       <div>
         {this.state.iHavePermissionToEnterRoom &&
@@ -174,6 +174,7 @@ export default class Lobby extends React.Component {
                   myUsername={myUsername}
                   photoSet={photoSet}
                   currentRoom={currentRoom}
+                  setStateCallback={this.setStateCallback}
                 />
               </div>
             </div>
@@ -195,12 +196,15 @@ export default class Lobby extends React.Component {
               <div id="georgine" className={genStyles.georgine}>
                 <div id="leftPanel" className={genStyles.leftPanel}>
                   <div>
-                    <h1 className={styles.heading}>
-                      {`${greeting} ${this.state.myUsername}!`}
-                      <br /> {`Welcome to the Wormplay lobby.`}
-                    </h1>
+                    <h1 className={styles.heading}>{`${greeting} `}</h1>
+                    <h1
+                      className={styles.heading2}
+                    >{`${this.state.myUsername}`}</h1>
+                    <h1 className={styles.heading}>{`!`}</h1>
 
-                    <h2 id="title">🐛 Join a room, or create your own! 🐛</h2>
+                    <h2 id="title" className={styles.lobbySubheading}>
+                      🐛 Join a room, or create your own! 🐛
+                    </h2>
                     <form
                       onSubmit={(event) => {
                         event.preventDefault();
@@ -214,7 +218,7 @@ export default class Lobby extends React.Component {
                           maxlength="12"
                           autocomplete="off"
                           type="text"
-                          placeholder="New room name (optional)"
+                          placeholder="New room (name optional)"
                           onChange={(event) => {
                             this.handleInput(event.target.value);
                           }}
@@ -223,7 +227,8 @@ export default class Lobby extends React.Component {
                           className={`${styles.newRoomButton} ${styles.tooltip}`}
                           type="submit"
                         >
-                          ✔️
+                          {/* ✔️ */}
+                          🦋
                           <span className={styles.tooltiptext}>
                             Create room!
                           </span>

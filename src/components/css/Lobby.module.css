@@ -1,6 +1,17 @@
 .heading {
   color: #196719;
   text-align: center;
+  display: inline;
+  position: relative;
+  top: 15px;
+}
+
+.heading2 {
+  color: black;
+  text-align: center;
+  display: inline;
+  position: relative;
+  top: 15px;
 }
 
 .buttons {
@@ -8,14 +19,27 @@
   width: 150px;
 }
 
+.lobbySubheading {
+  color: #196719;
+  position: relative;
+  top: 5px;
+}
+
 .newRoomButton {
   width: 47.5px;
-  position: relative;
+  /* position: relative; */
   font-size: 14pt;
-  height: 47.5px;
+  height: 48px;
   background-color: white;
   border: green solid 2pt;
   box-shadow: 2.5px 2.5px 1.25px grey;
+  cursor: pointer;
+  top: 0.5px;
+}
+
+.newRoomButton:active {
+  transform: translateY(2px);
+  box-shadow: 0px 0px 1.25px black;
 }
 
 .newRoomField {
@@ -53,7 +77,7 @@
 
 .tooltip {
   position: relative;
-  display: inline-block;
+  /* display: inline-block; */
   /* border-bottom: 1px dotted green; */
 }
 

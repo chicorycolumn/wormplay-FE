@@ -133,14 +133,15 @@ export default class App extends React.Component {
                 onChange={(e) => {
                   this.setState({ loginField: e.target.value });
                 }}
-                placeholder="Welcome! Please enter your name..."
+                placeholder="Your name here!"
               ></input>
               <button className={styles.loginSubmitButton} type="submit">
                 Let's worm!
               </button>
               <label className={styles.container}>
-                I accept that worms are beautiful misunderstood creatures.
-                (optional)
+                {/* <p className={styles.disclaimer}> */}I accept that worms are
+                beautiful misunderstood creatures. (optional)
+                {/* </p> */}
                 <input type="checkbox" className={styles.checkbox} />
                 <span className={styles.checkmark}></span>
               </label>

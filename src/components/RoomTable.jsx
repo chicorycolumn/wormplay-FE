@@ -22,6 +22,7 @@ class RoomTable extends Component {
           <td>
             {(room.p1.username === null || room.p2.username === null) && (
               <button
+                className={styles.joinRoomButton}
                 value={roomID}
                 onClick={(e) => {
                   e.preventDefault();

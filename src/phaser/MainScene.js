@@ -7,7 +7,6 @@ import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
 import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
 import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
 import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
-
 import body from "../assets/body-resized.png";
 import p2Head from "../assets/p2-head-smaller.png";
 import background from "../assets/whitehouse.png";
@@ -15,13 +14,12 @@ import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
+import { vowelArray, consonantArray } from "../refObjs.js";
 
 //****************************************** */
 //Hey James! We now have access to any photos were taken
 //with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
 //****************************************** */
-
-import { vowelArray, consonantArray } from "../refObjs.js";
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
@@ -34,6 +32,10 @@ let p1Name = null;
 let p2Name = null;
 let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
 let scene;
+let lobbyBtnIsDepressed = false;
+let setStateCallback = () => {
+  console.log("Haven't set SSC fxn in MainScene yet.");
+};
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -51,10 +53,15 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
+    // console.log(this.game.react.state);
+
     scene = this; // scene variable makes 'this' available anywhere within the game
     socket = this.game.react.state.socket;
     isP1 = this.game.react.state.isP1;
     isP2 = this.game.react.state.isP2;
+    setStateCallback = this.game.react.state.setStateCallback;
+
+    // console.log(setStateCallback);
 
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
@@ -221,8 +228,8 @@ export default class MainScene extends Phaser.Scene {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
-            console.log(this.gameState[objectKey]);
-            console.log(this.gameState[objectKey].hasLetter);
+            // console.log(this.gameState[objectKey]);
+            // console.log(this.gameState[objectKey].hasLetter);
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -273,7 +280,7 @@ export default class MainScene extends Phaser.Scene {
 
       thisLetter.on("dragend", function (pointer) {
         this.clearTint();
-        console.log(this);
+        // console.log(this);
         if (this.onSegment === null) {
           this.x = startX;
           this.y = startY;
@@ -300,7 +307,7 @@ export default class MainScene extends Phaser.Scene {
                 /p2Body\d/g.test(objectKey) === true &&
                 this.scene.gameState[objectKey].hasLetter === false
               ) {
-                console.log(this.scene.gameState[objectKey]);
+                // console.log(this.scene.gameState[objectKey]);
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
               }
@@ -358,31 +365,55 @@ export default class MainScene extends Phaser.Scene {
     });
     Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
 
+    //THIS WAS PREVENTING THE LOBBY BUTTON FROM WORKING
+    // this.lobbyBtn.on(
+    //   "pointerdown",
+    //   function (pointer) {
+    //     this.lobbyBtn = this.add
+    //       .sprite(750, 585, "blueButton2")
+    //       .setInteractive();
+    //     this.lobbyBtn.setScale(0.5);
+    //     this.lobbyText = this.add.text(0, 0, "Lobby", {
+    //       fontSize: "20px",
+    //       fill: "#fff",
+    //     });
+    //     Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+    //   }.bind(this)
+    // );
+
     this.lobbyBtn.on(
-      "pointerdown",
+      "pointerup",
       function (pointer) {
-        this.lobbyBtn = this.add
-          .sprite(750, 585, "blueButton2")
-          .setInteractive();
-        this.lobbyBtn.setScale(0.5);
-        this.lobbyText = this.add.text(0, 0, "Lobby", {
+        this.lobbyText.destroy();
+        this.lobbyBtn.tint = 0x0000b3;
+        this.lobbyText = this.add.text(0, 0, "Sure?", {
           fontSize: "20px",
           fill: "#fff",
         });
         Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
-      }.bind(this)
-    );
 
-    this.menuButton.on(
-      "pointerup",
-      function (pointer) {
-        // GO TO LOBBY
+        if (!lobbyBtnIsDepressed) {
+          lobbyBtnIsDepressed = true;
+          setTimeout(() => {
+            this.lobbyText.destroy();
+            this.lobbyBtn.tint = 0xffffff;
+            this.lobbyText = this.add.text(0, 0, "Lobby", {
+              fontSize: "20px",
+              fill: "#fff",
+            });
+            Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+          }, 2500);
+        } else {
+          this.sys.game.destroy(true);
+          socket.emit("quitRoom");
+          setStateCallback("iHavePermissionToEnterRoom", false);
+        }
       }.bind(this)
     );
 
     //adding menu button functionality, on click will take you to title
     this.menuButton.on(
-      "pointerdown",
+      "pointerup",
       function (pointer) {
         this.scene.start("Title");
       }.bind(this)
