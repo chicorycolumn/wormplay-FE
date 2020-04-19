@@ -448,7 +448,7 @@ export default class MainScene extends Phaser.Scene {
     // Permanent quit button
     this.lobbyBtn = this.add.sprite(750, 585, "blueButton1").setInteractive();
     this.lobbyBtn.setScale(0.5);
-    this.lobbyText = this.add.text(0, 0, "Lobby", {
+    this.lobbyText = this.add.text(0, 0, "Quit", {
       fontSize: "20px",
       fill: "#fff",
     });
@@ -551,11 +551,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.sendWord = function (wordArr, socket, submitBtnPressed) {
       if (submitBtnPressed === true) {
-        const firstSpace = wordArr.indexOf(" ");
-        if (firstSpace !== -1) {
-          wordArr = wordArr.slice(0, firstSpace);
-        }
-        const submittedWord = wordArr.join("");
+        const submittedWord = wordArr.filter((char) => char !== " ").join("");
         socket.emit("worm word submitted", submittedWord);
       }
     };
