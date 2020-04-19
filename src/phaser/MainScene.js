@@ -541,14 +541,12 @@ export default class MainScene extends Phaser.Scene {
       }
       if (!wordArr.every((letter) => letter === " ")) {
         this.hasBeenPressed = true;
+        socket.emit("I submitted", { username: isP1 ? p1Name : p2Name });
         this.scene.gameState.sendWord(
           wordArr,
           this.scene.game.react.state.socket,
           this.hasBeenPressed
         );
-        if (scene.gameState.roundTimer > 6) {
-          scene.gameState.roundTimer = 6;
-        }
       }
     });
 
@@ -826,6 +824,60 @@ export default class MainScene extends Phaser.Scene {
           scene.scene.start("MainScene");
         });
       }
+    });
+
+    socket.on("You submitted", function () {
+      scene.gameState.submitText = scene.add.text(
+        150,
+        100,
+        `Nice! Just checking your word...`,
+        {
+          fontSize: "30px",
+          color: "orange",
+          strokeThickness: 3,
+          stroke: "black",
+          fontFamily: "Arial",
+          align: "center",
+        }
+      );
+      if (scene.gameState.roundTimer > 6) {
+        scene.gameState.roundTimer = 6;
+      }
+      scene.time.delayedCall(1500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.submitText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
+    });
+
+    socket.on("opponent submitted", function (opponentInfo) {
+      scene.gameState.warningText = scene.add.text(
+        150,
+        100,
+        [`${opponentInfo.username} submitted a word!`, `Hurry!`],
+        {
+          fontSize: "30px",
+          color: "orange",
+          strokeThickness: 3,
+          stroke: "black",
+          fontFamily: "Arial",
+          align: "center",
+        }
+      );
+      if (scene.gameState.roundTimer > 6) {
+        scene.gameState.roundTimer = 6;
+      }
+      scene.time.delayedCall(1500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.warningText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
     });
 
     this.gameState.newGameBtn = this.add
