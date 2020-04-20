@@ -1046,6 +1046,24 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitBtn.setVisible(false);
     this.gameState.quitText.setVisible(false);
 
+    if (p1Name !== this.game.react.state.currentRoom.p1.username) {
+      console.log(
+        "UPDATE#############",
+        p1Name,
+        this.game.react.state.currentRoom.p1.username
+      );
+      p1Name = this.game.react.state.currentRoom.p1.username;
+    }
+
+    if (p2Name !== this.game.react.state.currentRoom.p2.username) {
+      console.log(
+        "UPDATE#############",
+        p2Name,
+        this.game.react.state.currentRoom.p2.username
+      );
+      p2Name = this.game.react.state.currentRoom.p2.username;
+    }
+
     this.gameState.thisPlayerScore = this.add.text(
       5,
       85,
@@ -1057,7 +1075,6 @@ export default class MainScene extends Phaser.Scene {
         fontFamily: "Arial",
       }
     );
-
     this.gameState.oppositionScore = this.add.text(
       5,
       150,
@@ -1070,15 +1087,16 @@ export default class MainScene extends Phaser.Scene {
         fontFamily: "Arial",
       }
     );
-
     this.gameState.updateRounds = function (currentRounds) {
       this.gameState.thisPlayerScore.setText(
         `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
       );
 
       this.gameState.oppositionScore.setText(
+        /////////////////////////////////////////
         `${isP1 ? p2Name : p1Name}: ${
-          isP1 ? currentRounds.p2 : currentRounds.p1
+          ///////////////////////////////////////////////
+          isP1 ? currentRounds.p2 : currentRounds.p1 /////////////////////////////////
         }`
       );
     }.bind(this);
@@ -1137,8 +1155,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    opponentName = isP1 === true ? p2Name : p1Name; // chris, p2Name is null!
-    console.log("opponentName is ", opponentName);
+    opponentName = isP1 === true ? p2Name : p1Name;
 
     const {
       head,
@@ -1193,9 +1210,7 @@ export default class MainScene extends Phaser.Scene {
         this.game.react.state.currentRoom.p2.username
       );
       p2Name = this.game.react.state.currentRoom.p2.username;
-      console.log(p2Name);
     }
-    console.log(this.game.react.state.currentRoom);
 
     // Starts the game when a 2nd player enters
     if (
@@ -1222,7 +1237,7 @@ export default class MainScene extends Phaser.Scene {
       });
     }
 
-    console.log("players are ", p1Name, p2Name);
+    // console.log("players are ", p1Name, p2Name);
 
     // Fix letters to body parts
     for (const letter in text) {

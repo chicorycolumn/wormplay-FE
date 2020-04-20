@@ -136,11 +136,11 @@ export default class LobbySidePanel extends React.Component {
           </div>
         </div>
 
-        <div className={styles.midboxLong}>
+        <div className={styles.midboxLobby}>
           <div>
             <p className={styles.instructions}>
               {/* ********************* */}
-              <canvas id="testCanvas"></canvas>
+              {/* <canvas id="testCanvas"></canvas>
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -148,7 +148,7 @@ export default class LobbySidePanel extends React.Component {
                 }}
               >
                 IMAGE
-              </button>
+              </button> */}
               {/* ********************* */}
               Pull a face and we'll capture your emotion! This is optional and{" "}
               <strong>personalises</strong> your worm!
