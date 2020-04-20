@@ -1087,6 +1087,7 @@ export default class MainScene extends Phaser.Scene {
       p2Body4,
       p2Body5,
       p2Body6,
+      roundsWon,
     } = this.gameState;
     const {
       opponent1,
@@ -1200,6 +1201,23 @@ export default class MainScene extends Phaser.Scene {
     p2HeadHappy.x = p2Head.x;
     p2HeadHappy.y = p2Head.y;
 
+    if (roundsWon.p1 < roundsWon.p2) {
+      p1HeadHappy.setVisible(false);
+      p1HeadSad.setVisible(true);
+      p1HeadSad.x = head.x;
+      p1HeadSad.y = head.y;
+    } else if (roundsWon.p1 > roundsWon.p2) {
+      p2HeadHappy.setVisible(false);
+      p2HeadSad.setVisible(true);
+      p2HeadSad.x = p2Head.x;
+      p2HeadSad.y = p2Head.y;
+    } else if (roundsWon.p1 === roundsWon.p2) {
+      p1HeadHappy.setVisible(true);
+      p2HeadHappy.setVisible(true);
+      p1HeadSad.setVisible(false);
+      p2HeadSad.setVisible(false);
+    }
+
     if (isP1 === true) {
       opponent1.x = p2Body1.x - 28;
       opponent1.y = p2Body1.y - 28;
@@ -1216,49 +1234,69 @@ export default class MainScene extends Phaser.Scene {
 
       if (timer.p1 > 0) {
         timer.p1 -= 1;
-        p1HeadHappy.setVisible(false);
+        if (roundsWon.p1 < roundsWon.p2) {
+          p1HeadSad.setVisible(false);
+        } else {
+          p1HeadHappy.setVisible(false);
+        }
+
         p1HeadShocked.setVisible(true);
         p1HeadShocked.x = head.x;
         p1HeadShocked.y = head.y;
         if (timer.p1 === 0) {
-          p1HeadHappy.setVisible(true);
-          p1HeadShocked.setVisible(false);
+          if (timer.p1 > 0) {
+            timer.p1 -= 1;
+            if (roundsWon.p1 < roundsWon.p2) {
+              p1HeadSad.setVisible(true);
+            } else {
+              p1HeadHappy.setVisible(true);
+            }
+            p1HeadShocked.setVisible(false);
+          }
         }
-      }
-    } else if (isP2 === true) {
-      opponent1.x = body1.x - 28;
-      opponent1.y = body1.y - 28;
-      opponent2.x = body2.x - 28;
-      opponent2.y = body2.y - 28;
-      opponent3.x = body3.x - 28;
-      opponent3.y = body3.y - 28;
-      opponent4.x = body4.x - 28;
-      opponent4.y = body4.y - 28;
-      opponent5.x = body5.x - 28;
-      opponent5.y = body5.y - 28;
-      opponent6.x = body6.x - 28;
-      opponent6.y = body6.y - 28;
+      } else if (isP2 === true) {
+        opponent1.x = body1.x - 28;
+        opponent1.y = body1.y - 28;
+        opponent2.x = body2.x - 28;
+        opponent2.y = body2.y - 28;
+        opponent3.x = body3.x - 28;
+        opponent3.y = body3.y - 28;
+        opponent4.x = body4.x - 28;
+        opponent4.y = body4.y - 28;
+        opponent5.x = body5.x - 28;
+        opponent5.y = body5.y - 28;
+        opponent6.x = body6.x - 28;
+        opponent6.y = body6.y - 28;
 
-      if (timer.p2 > 0) {
-        timer.p2 -= 1;
-        p2HeadHappy.setVisible(false);
-        p2HeadShocked.setVisible(true);
-        p2HeadShocked.x = p2Head.x;
-        p2HeadShocked.y = p2Head.y;
-        if (timer.p2 === 0) {
-          p2HeadHappy.setVisible(true);
-          p2HeadShocked.setVisible(false);
+        if (timer.p2 > 0) {
+          timer.p2 -= 1;
+          if (roundsWon.p1 < roundsWon.p2) {
+            p2HeadSad.setVisible(false);
+          } else {
+            p2HeadHappy.setVisible(false);
+          }
+          p2HeadShocked.setVisible(true);
+          p2HeadShocked.x = p2Head.x;
+          p2HeadShocked.y = p2Head.y;
+          if (timer.p2 === 0) {
+            if (roundsWon.p1 < roundsWon.p2) {
+              p2HeadSad.setVisible(true);
+            } else {
+              p2HeadHappy.setVisible(true);
+            }
+            p2HeadShocked.setVisible(false);
+          }
         }
       }
-    }
-    if (this.gameState.roundTimer === 0) {
-      this.gameState.roundTimer = -1;
-      this.gameState.timerText.destroy();
-      this.gameState.countDown.reset();
-      this.gameState.showRoundWinner(
-        this.gameState.scores,
-        isP1 ? p2Name : p1Name
-      );
+      if (this.gameState.roundTimer === 0) {
+        this.gameState.roundTimer = -1;
+        this.gameState.timerText.destroy();
+        this.gameState.countDown.reset();
+        this.gameState.showRoundWinner(
+          this.gameState.scores,
+          isP1 ? p2Name : p1Name
+        );
+      }
     }
   }
 
