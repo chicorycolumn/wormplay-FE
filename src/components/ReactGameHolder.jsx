@@ -45,6 +45,9 @@ export default class ReactGame extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // console.log("CDU of RGH, state", this.state.currentRoom);
+    // console.log("CDU of RGH, props", this.props.currentRoom);
+
     if (this.state.socket) {
       this.state.socket.on("a player entered your game", (data) => {
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
@@ -62,6 +65,10 @@ export default class ReactGame extends Component {
           this.setState({
             currentRoom,
           });
+
+          //set state of lobby with new currentRoom
+          this.props.setStateCallback("currentRoom", currentRoom);
+
           setTimeout(() => {
             console.log(
               "REACTGAMEHOLDER this.state.currentRoom",
@@ -81,11 +88,17 @@ export default class ReactGame extends Component {
     }
 
     if (
-      (!this.state.currentRoom.p1.id && this.props.currentRoom.p1.id) ||
-      (!this.state.currentRoom.p2.id && this.props.currentRoom.p2.id)
+      this.state.currentRoom.p1.id !== this.props.currentRoom.p1.id ||
+      this.state.currentRoom.p2.id !== this.props.currentRoom.p2.id
     ) {
       this.setState({ currentRoom: this.props.currentRoom });
     }
+    // if ( //Chris Mon 20th
+    //   (!this.state.currentRoom.p1.id && this.props.currentRoom.p1.id) ||
+    //   (!this.state.currentRoom.p2.id && this.props.currentRoom.p2.id)
+    // ) {
+    //   this.setState({ currentRoom: this.props.currentRoom });
+    // }
   }
 
   //   shouldComponentUpdate() {return false}

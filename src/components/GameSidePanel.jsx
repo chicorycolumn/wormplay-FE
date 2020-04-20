@@ -143,6 +143,8 @@ export default class GameSidePanel extends React.Component {
           this.setState({
             currentRoom,
           });
+
+          this.props.setStateCallback("currentRoom", currentRoom);
         }
       });
 
@@ -169,6 +171,8 @@ export default class GameSidePanel extends React.Component {
             " bodged off!";
           infoDisplay.appendChild(newLi);
           this.removeFirstChildIfOverflowing(infoDisplay);
+
+          this.props.setStateCallback("currentRoom", currentRoom);
 
           this.setState({
             currentRoom,
