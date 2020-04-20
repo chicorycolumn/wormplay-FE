@@ -788,6 +788,28 @@ export default class MainScene extends Phaser.Scene {
       );
     });
 
+    socket.on("start the game", function () {
+      scene.gameState.startText = scene.add.text(300, 200, "GO!", {
+        fontSize: "50px",
+        color: "#28bb24",
+        stroke: "white",
+        strokeThickness: 3,
+        fontFamily: "Arial",
+      });
+
+      scene.gameState.updateRounds(scene.gameState.roundsWon);
+      scene.gameState.submitBtn.setInteractive();
+      for (const letter in scene.gameState.text) {
+        scene.input.setDraggable(scene.gameState.text[letter]);
+      }
+      scene.gameState.countDown.paused = false;
+      scene.gameState.gameStarted = true;
+
+      scene.time.delayedCall(1000, function () {
+        scene.gameState.startText.destroy();
+      });
+    });
+
     socket.on("new game request", function (opponentInfo) {
       scene.gameState.wantsNewGame[opponentInfo.player] = true;
       scene.gameState.rematchText = scene.add.text(
@@ -1134,11 +1156,17 @@ export default class MainScene extends Phaser.Scene {
       loop: true,
       paused: true,
     });
+
+    this.gameState.gameStarted = false;
+    if (p1Name !== null && p2Name !== null) {
+      socket.emit("both players ready", {
+        roomID: this.game.react.state.currentRoom.roomID,
+      });
+    }
   }
 
   update() {
     opponentName = isP1 === true ? p2Name : p1Name; // chris, p2Name is null!
-    console.log("opponentName is ", opponentName);
 
     const {
       head,
@@ -1178,38 +1206,11 @@ export default class MainScene extends Phaser.Scene {
 
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.currentRoom.p1.username) {
-      console.log(
-        "UPDATE#############",
-        p1Name,
-        this.game.react.state.currentRoom.p1.username
-      );
       p1Name = this.game.react.state.currentRoom.p1.username;
     }
 
     if (p2Name !== this.game.react.state.currentRoom.p2.username) {
-      console.log(
-        "UPDATE#############",
-        p2Name,
-        this.game.react.state.currentRoom.p2.username
-      );
       p2Name = this.game.react.state.currentRoom.p2.username;
-      console.log(p2Name);
-    }
-    console.log(this.game.react.state.currentRoom);
-
-    // Starts the game when a 2nd player enters
-    if (
-      p1Name !== null &&
-      p2Name !== null &&
-      this.gameState.gameStarted === false
-    ) {
-      this.gameState.updateRounds(this.gameState.roundsWon);
-      this.gameState.submitBtn.setInteractive();
-      for (const letter in this.gameState.text) {
-        this.input.setDraggable(this.gameState.text[letter]);
-      }
-      this.gameState.countDown.paused = false;
-      this.gameState.gameStarted = true;
     }
 
     // Restarts the game if a player leaves
@@ -1221,8 +1222,6 @@ export default class MainScene extends Phaser.Scene {
         scene.scene.start("MainScene");
       });
     }
-
-    console.log("players are ", p1Name, p2Name);
 
     // Fix letters to body parts
     for (const letter in text) {
