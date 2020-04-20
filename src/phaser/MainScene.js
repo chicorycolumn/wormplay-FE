@@ -810,13 +810,15 @@ export default class MainScene extends Phaser.Scene {
     });
 
     socket.on("start the game", function () {
-      scene.gameState.startText = scene.add.text(300, 200, "GO!", {
-        fontSize: "50px",
-        color: "#28bb24",
-        stroke: "white",
-        strokeThickness: 3,
-        fontFamily: "Arial",
-      });
+      if (scene.gameState.countDown.paused === false) {
+        scene.gameState.startText = scene.add.text(300, 200, "GO!", {
+          fontSize: "50px",
+          color: "#28bb24",
+          stroke: "white",
+          strokeThickness: 3,
+          fontFamily: "Arial",
+        });
+      }
 
       scene.gameState.updateRounds(scene.gameState.roundsWon);
       scene.gameState.submitBtn.setInteractive();
