@@ -41,40 +41,57 @@ export default class CreditsScene extends Phaser.Scene {
     Phaser.Display.Align.In.Center(this.imageText, this.zone);
     Phaser.Display.Align.In.Center(this.madeByText, this.zone);
 
-    this.madeByText.setY(1000);
-    this.imageText.setY(500);
+    this.creditsText.setY(70);
+    this.madeByText.setY(200);
+    this.imageText.setY(280);
 
-    this.creditsTween = this.tweens.add({
-      targets: this.creditsText,
-      y: -100,
-      ease: "Power1",
-      duration: 3000,
-      delay: 1000,
-      onComplete: function () {
-        this.destroy;
-      },
+    this.menuButton = this.add.sprite(110, 570, "blueButton1").setInteractive();
+
+    this.menuText = this.add.text(0, 0, "Back to game", {
+      fontSize: "20px",
+      fill: "#fff",
     });
+    Phaser.Display.Align.In.Center(this.menuText, this.menuButton);
 
-    this.madeByTween = this.tweens.add({
-      targets: this.madeByText,
-      y: -300,
-      ease: "Power1",
-      duration: 8000,
-      delay: 1000,
-      onComplete: function () {
-        this.madeByText.destroy;
+    this.menuButton.on(
+      "pointerup",
+      function (pointer) {
         this.scene.start("MainScene");
-      }.bind(this),
-    });
-    this.imageTween = this.tweens.add({
-      targets: this.imageText,
-      y: -200,
-      ease: "Power1",
-      duration: 3000,
-      delay: 2000,
-      onComplete: function () {
-        this.destroy;
-      },
-    });
+      }.bind(this)
+    );
+
+    //this is if you want the credits to auto scroll though and then go back to the game
+    // this.creditsTween = this.tweens.add({
+    //   targets: this.creditsText,
+    //   y: -100,
+    //   ease: "Power1",
+    //   duration: 3000,
+    //   delay: 1000,
+    //   onComplete: function () {
+    //     this.destroy;
+    //   },
+    // });
+
+    // this.madeByTween = this.tweens.add({
+    //   targets: this.madeByText,
+    //   y: -300,
+    //   ease: "Power1",
+    //   duration: 8000,
+    //   delay: 1000,
+    //   onComplete: function () {
+    //     this.madeByText.destroy;
+    //     this.scene.start("MainScene");
+    //   }.bind(this),
+    // });
+    // this.imageTween = this.tweens.add({
+    //   targets: this.imageText,
+    //   y: -200,
+    //   ease: "Power1",
+    //   duration: 3000,
+    //   delay: 2000,
+    //   onComplete: function () {
+    //     this.destroy;
+    //   },
+    // });
   }
 }

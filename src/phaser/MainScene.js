@@ -11,9 +11,9 @@ import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
 import { playerFaces } from "../../public/emotion-rec";
 // import body from "../assets/body-resized.png";
 
-import body from "../assets/rainbowbody.png";
+import body from "../assets/resizedpinkbody.png";
 import body2 from "../assets/bluebodyresized.png";
-import background from "../assets/background.jpg";
+import background from "../assets/background.png";
 import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
@@ -23,12 +23,13 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
 
+let opponentName = null;
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 let isP1 = false;
 let isP2 = false;
 let p1Name = null;
 let p2Name = null;
-let shouldIBotherPlayingMusic = true; //TOGGLE DURING DEVELOPMENT
+let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
 let scene;
 let lobbyBtnIsDepressed = false;
 let setStateCallback = () => {
@@ -50,7 +51,9 @@ export default class MainScene extends Phaser.Scene {
       roundTimer: 30,
       usingMyFace: false,
       awaitingApi: false,
+
       whoWon: { p1: null, p2: null },
+
     };
   }
 
@@ -227,8 +230,10 @@ export default class MainScene extends Phaser.Scene {
     const wordTileStyle = {
       font: "35px Arial",
       fill: "#007300",
+      // border: "solid",
       align: "center",
       padding: { top: 4 },
+      backgroundColor: "#F5ED91",
     };
 
     // create a text block for each part of the array
@@ -237,8 +242,8 @@ export default class MainScene extends Phaser.Scene {
       this.gameState.opponents[`opponent${n}`] = this.add.text(
         -50,
         -50,
-        char,
-        wordTileStyle
+        char
+        // wordTileStyle
       );
     });
 
@@ -311,8 +316,6 @@ export default class MainScene extends Phaser.Scene {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
-            // console.log(this.gameState[objectKey]);
-            // console.log(this.gameState[objectKey].hasLetter);
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -329,8 +332,6 @@ export default class MainScene extends Phaser.Scene {
 
       // Make letters draggable
       thisLetter.setInteractive();
-
-      this.input.setDraggable(thisLetter);
 
       thisLetter.on("dragstart", function (pointer) {
         this.body.enable = true;
@@ -393,7 +394,6 @@ export default class MainScene extends Phaser.Scene {
                 /p2Body\d/g.test(objectKey) === true &&
                 this.scene.gameState[objectKey].hasLetter === false
               ) {
-                // console.log(this.scene.gameState[objectKey]);
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
               }
@@ -429,9 +429,7 @@ export default class MainScene extends Phaser.Scene {
       padding: { top: 4, left: 8, right: 8 },
     };
 
-    this.gameState.submitBtn = this.add
-      .text(650, 25, "Submit", btnStyle)
-      .setInteractive();
+    this.gameState.submitBtn = this.add.text(650, 25, "Submit", btnStyle);
 
     //adding a menu button & setting interactive
     this.menuButton = this.add.sprite(50, 585, "blueButton1").setInteractive();
@@ -499,7 +497,7 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    //adding menu button functionality, on click will take you to title
+    //adding menu button functionality, on click will take you to credits
     this.menuButton.on(
       "pointerup",
       function (pointer) {
@@ -540,6 +538,9 @@ export default class MainScene extends Phaser.Scene {
       }
       if (!wordArr.every((letter) => letter === " ")) {
         this.hasBeenPressed = true;
+        console.log(
+          `Just so you know, p1Name is now ${p1Name} and p2Name is ${p2Name}`
+        );
         socket.emit("I submitted", { username: isP1 ? p1Name : p2Name });
         this.scene.gameState.sendWord(
           wordArr,
@@ -600,7 +601,8 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
-      const opponentName = isP1 === true ? p2Name : p1Name;
+      opponentName = isP1 === true ? p2Name : p1Name;
+      console.log("opponentName is ", opponentName);
       if (this.scoreText !== undefined) {
         this.scoreText.destroy();
       }
@@ -821,7 +823,7 @@ export default class MainScene extends Phaser.Scene {
 
     socket.on("set new rounds", function (newRounds) {
       scene.gameState.roundsWon = newRounds;
-      scene.gameState.displayRounds(scene.gameState.roundsWon);
+      scene.gameState.updateRounds(scene.gameState.roundsWon);
 
       if (newRounds.p1 === 3) {
         const didIWin = isP1 ? true : false;
@@ -1062,55 +1064,51 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitBtn.on(
       "pointerup",
       function (pointer) {
-        this.scene.start("Title");
+        this.sys.game.destroy(true);
+        socket.emit("quitRoom");
+        setStateCallback("iHavePermissionToEnterRoom", false);
       }.bind(this)
     );
 
     this.gameState.quitBtn.setVisible(false);
     this.gameState.quitText.setVisible(false);
 
-    this.gameState.displayRounds = function (currentRounds) {
-      if (this.gameState.thisPlayerScore !== undefined) {
-        this.gameState.thisPlayerScore.setText(
-          `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
-        );
+    this.gameState.thisPlayerScore = this.add.text(
+      5,
+      85,
+      `YOU: ${isP1 ? roundsWon.p1 : roundsWon.p2}`,
+      {
+        fontSize: "30px",
+        color: "blue",
+        strokeThickness: 3,
+        fontFamily: "Arial",
       }
-      if (this.gameState.oppositionScore !== undefined) {
-        this.gameState.oppositionScore.setText(
-          `${isP1 ? p2Name : p1Name}: ${
-            isP1 ? currentRounds.p2 : currentRounds.p1
-          }`
-        );
+    );
+
+    this.gameState.oppositionScore = this.add.text(
+      5,
+      150,
+      `Awaiting opponent...`,
+      {
+        fontSize: "30px",
+        color: "red",
+        stroke: "black",
+        strokeThickness: 3,
+        fontFamily: "Arial",
       }
-      this.gameState.thisPlayerScore = this.add.text(
-        650,
-        85,
-        `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`,
-        {
-          fontSize: "30px",
-          color: "blue",
-          strokeThickness: 3,
-          fontFamily: "Arial",
-        }
+    );
+
+    this.gameState.updateRounds = function (currentRounds) {
+      this.gameState.thisPlayerScore.setText(
+        `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
       );
 
-      this.gameState.oppositionScore = this.add.text(
-        650,
-        150,
+      this.gameState.oppositionScore.setText(
         `${isP1 ? p2Name : p1Name}: ${
           isP1 ? currentRounds.p2 : currentRounds.p1
-        }`,
-        {
-          fontSize: "30px",
-          color: "red",
-          stroke: "black",
-          strokeThickness: 3,
-          fontFamily: "Arial",
-        }
+        }`
       );
     }.bind(this);
-
-    this.gameState.displayRounds(roundsWon);
 
     this.gameState.formatTime = function (seconds) {
       // Adds left zeros to seconds
@@ -1161,10 +1159,14 @@ export default class MainScene extends Phaser.Scene {
       callback: this.gameState.decrementTimer,
       callbackScope: this.gameState,
       loop: true,
+      paused: true,
     });
   }
 
   update() {
+    opponentName = isP1 === true ? p2Name : p1Name; // chris, p2Name is null!
+    console.log("opponentName is ", opponentName);
+
     const {
       head,
       p1HeadShocked,
@@ -1204,12 +1206,51 @@ export default class MainScene extends Phaser.Scene {
 
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.currentRoom.p1.username) {
+      console.log(
+        "UPDATE#############",
+        p1Name,
+        this.game.react.state.currentRoom.p1.username
+      );
       p1Name = this.game.react.state.currentRoom.p1.username;
     }
 
     if (p2Name !== this.game.react.state.currentRoom.p2.username) {
+      console.log(
+        "UPDATE#############",
+        p2Name,
+        this.game.react.state.currentRoom.p2.username
+      );
       p2Name = this.game.react.state.currentRoom.p2.username;
+      console.log(p2Name);
     }
+    console.log(this.game.react.state.currentRoom);
+
+    // Starts the game when a 2nd player enters
+    if (
+      p1Name !== null &&
+      p2Name !== null &&
+      this.gameState.gameStarted === false
+    ) {
+      this.gameState.updateRounds(this.gameState.roundsWon);
+      this.gameState.submitBtn.setInteractive();
+      for (const letter in this.gameState.text) {
+        this.input.setDraggable(this.gameState.text[letter]);
+      }
+      this.gameState.countDown.paused = false;
+      this.gameState.gameStarted = true;
+    }
+
+    // Restarts the game if a player leaves
+    if (
+      this.gameState.gameStarted === true &&
+      (p1Name === null || p2Name === null)
+    ) {
+      this.time.delayedCall(2000, function () {
+        scene.scene.start("MainScene");
+      });
+    }
+
+    console.log("players are ", p1Name, p2Name);
 
     // Fix letters to body parts
     for (const letter in text) {
@@ -1373,6 +1414,7 @@ export default class MainScene extends Phaser.Scene {
           p1HeadShocked.setVisible(false);
         }
       }
+
     }
     if (timer.p2 > 0) {
       timer.p2 -= 1;
@@ -1392,6 +1434,7 @@ export default class MainScene extends Phaser.Scene {
         }
         p2HeadShocked.setVisible(false);
       }
+
     }
 
     if (this.gameState.roundTimer === 0) {
