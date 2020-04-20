@@ -550,10 +550,10 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.gameState.sendWord = function (wordArr, socket, submitBtnPressed) {
-      if (submitBtnPressed === true) {
-        const submittedWord = wordArr.filter((char) => char !== " ").join("");
-        socket.emit("worm word submitted", submittedWord);
-      }
+      // if (submitBtnPressed === true) {
+      const submittedWord = wordArr.filter((char) => char !== " ").join("");
+      socket.emit("worm word submitted", submittedWord);
+      // }
     };
 
     this.model = this.sys.game.globals.model;
@@ -677,6 +677,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
       scene.gameState.countDown.paused = true;
       scene.gameState.timerText.destroy();
+      scene.gameState.submitBtn.disableInteractive();
 
       if (scoreObj.currentPlayer === undefined) {
         scoreObj.currentPlayer = { points: 0, word: "" };
@@ -687,7 +688,7 @@ export default class MainScene extends Phaser.Scene {
 
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
         scene.gameState.roundWinnerText = scene.add.text(
-          200,
+          150,
           200,
           [
             `You win with ${scoreObj.currentPlayer.word}!`,
@@ -700,7 +701,7 @@ export default class MainScene extends Phaser.Scene {
         socket.emit("update rounds", roundsWon);
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
         scene.gameState.roundWinnerText = scene.add.text(
-          150,
+          100,
           200,
           [
             `Oh no, ${opponentName} won with ${scoreObj.opponent.word}!`,
@@ -913,7 +914,7 @@ export default class MainScene extends Phaser.Scene {
         scene.gameState.submitText.destroy();
       }
       scene.gameState.submitText = scene.add.text(
-        150,
+        100,
         100,
         [`${opponentInfo.username} submitted a word!`, `Hurry!`],
         {
