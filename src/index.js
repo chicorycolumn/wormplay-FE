@@ -4,7 +4,7 @@ import App from "./components/App.jsx";
 import Lobby from "./components/Lobby.jsx";
 import socketIOClient from "socket.io-client";
 
-let shouldEndpointBeHeroku = true; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
+let shouldEndpointBeHeroku = false; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
 
 let goStraightToLobby = false; //USE THIS TO SKIP STRAIGHT TO LOBBY, BYPASSING LOGIN.
 
