@@ -89,6 +89,8 @@ export default class Lobby extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+    // console.log("CDU of Lobby", this.state.currentRoom);
+    // console.log("CDU of Lobby, props", this.props.currentRoom);
     if (this.state.socket && this.state.goStraightToRoomOne) {
       this.state.socket.emit("joinRoom", { roomID: 1, developmentCheat: true });
     }
