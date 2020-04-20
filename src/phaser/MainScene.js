@@ -11,7 +11,7 @@ import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
 import { playerFaces } from "../../public/emotion-rec";
 // import body from "../assets/body-resized.png";
 
-import body from "../assets/rainbowbody.png";
+import body from "../assets/resizedpinkbody.png";
 import body2 from "../assets/bluebodyresized.png";
 import background from "../assets/background.jpg";
 import blueButton1 from "../assets/ui/blue_button02.png";
@@ -224,8 +224,10 @@ export default class MainScene extends Phaser.Scene {
     const wordTileStyle = {
       font: "35px Arial",
       fill: "#007300",
+      // border: "solid",
       align: "center",
       padding: { top: 4 },
+      backgroundColor: "#F5ED91",
     };
 
     // create a text block for each part of the array
@@ -234,8 +236,8 @@ export default class MainScene extends Phaser.Scene {
       this.gameState.opponents[`opponent${n}`] = this.add.text(
         -50,
         -50,
-        char,
-        wordTileStyle
+        char
+        // wordTileStyle
       );
     });
 
@@ -493,7 +495,7 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    //adding menu button functionality, on click will take you to title
+    //adding menu button functionality, on click will take you to credits
     this.menuButton.on(
       "pointerup",
       function (pointer) {
@@ -1040,7 +1042,9 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitBtn.on(
       "pointerup",
       function (pointer) {
-        this.scene.start("Title");
+        this.sys.game.destroy(true);
+        socket.emit("quitRoom");
+        setStateCallback("iHavePermissionToEnterRoom", false);
       }.bind(this)
     );
 
