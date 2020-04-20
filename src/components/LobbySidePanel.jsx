@@ -65,7 +65,7 @@ export default class LobbySidePanel extends React.Component {
         for (let i = 0; i < 1; i++) {
           if (info.image) {
             // console.log("cb", cb);
-            console.log(info.buffer);
+            // console.log(info.buffer);
             var img = new Image();
             img.src = "data:image/jpeg;base64," + info.buffer;
             var ctx = document.getElementById("testCanvas").getContext("2d");

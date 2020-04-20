@@ -8,6 +8,12 @@ export default class ReactGame extends Component {
   constructor() {
     super();
     this.state = {
+      opponentPlayerFaces: {
+        happyData: null,
+        sadData: null,
+        angryData: null,
+        shockedData: null,
+      },
       photoSet: {
         happy: { src: null },
         angry: { src: null },
@@ -50,6 +56,8 @@ export default class ReactGame extends Component {
 
     if (this.state.socket) {
       this.state.socket.on("a player entered your game", (data) => {
+        // console.log("OPPONENT FACES", data.enteringPlayerData.playerFaces);
+
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
           (this.state.socket.id === this.state.currentRoom.p1.id &&
@@ -64,6 +72,7 @@ export default class ReactGame extends Component {
 
           this.setState({
             currentRoom,
+            opponentPlayerFaces: data.enteringPlayerData.playerFaces,
           });
 
           //set state of lobby with new currentRoom

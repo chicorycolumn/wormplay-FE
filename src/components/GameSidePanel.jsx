@@ -88,7 +88,6 @@ export default class GameSidePanel extends React.Component {
   }
 
   sendChat = (msg) => {
-    console.log("sending", msg, this.state.currentRoom.roomID);
     this.state.socket.emit("clientSentChat", {
       msg,
       roomID: this.state.currentRoom.roomID,
@@ -99,7 +98,6 @@ export default class GameSidePanel extends React.Component {
     if (this.state.socket) {
       this.state.socket.on("serverSentChat", (data) => {
         let infoDisplay = document.getElementById("infoDisplay");
-        console.log("received", data.msg);
         if (this.state.chatTimestamp !== data.chatTimestamp) {
           this.setState({ chatTimestamp: data.chatTimestamp });
           let newLi = document.createElement("li");
@@ -125,6 +123,9 @@ export default class GameSidePanel extends React.Component {
             data.enteringPlayerID !== this.state.currentRoom.p1.id)
         ) {
           console.log("inside socket.on a player entered your game");
+
+          console.log("OPPONENT FACES", data.enteringPlayerData.playerFaces);
+
           const { currentRoom } = data;
 
           let infoDisplay = document.getElementById("infoDisplay");
