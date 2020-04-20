@@ -127,6 +127,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    p1Name = this.game.react.state.currentRoom.p1.username;
+    p2Name = this.game.react.state.currentRoom.p2.username;
     const {
       opponents,
       opponentsArr,
@@ -1140,9 +1142,15 @@ export default class MainScene extends Phaser.Scene {
         `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
       );
 
+      /////////////////We don't even enter this fxn after a player quits. Solving now... ~Chris
+      console.log("MS currentRoom", this.game.react.state.currentRoom);
       this.gameState.oppositionScore.setText(
         /////////////////////////////////////////
-        `${isP1 ? p2Name : p1Name}: ${
+        `${
+          isP1
+            ? this.game.react.state.currentRoom.p2.username
+            : this.game.react.state.currentRoom.p1.username
+        }: ${
           ///////////////////////////////////////////////
           isP1 ? currentRounds.p2 : currentRounds.p1 /////////////////////////////////
         }`
@@ -1210,6 +1218,25 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
+    //HAS A PLAYER JUST QUIT/DISCONNECTED IN MIDDLE OF GAME?
+    if (
+      (p1Name && !this.game.react.state.currentRoom.p1.id) ||
+      (p2Name && !this.game.react.state.currentRoom.p2.id)
+    ) {
+      scene.gameState.startText = scene.add.text(300, 200, "GAME ANNULLED!", {
+        fontSize: "50px",
+        color: "#28bb24",
+        stroke: "white",
+        strokeThickness: 3,
+        fontFamily: "Arial",
+      });
+      setTimeout(() => {
+        this.scene.start("MainScene");
+      }, 3000);
+    }
+
+    p1Name = this.game.react.state.currentRoom.p1.username;
+    p2Name = this.game.react.state.currentRoom.p2.username;
     opponentName = isP1 === true ? p2Name : p1Name;
 
     const {
