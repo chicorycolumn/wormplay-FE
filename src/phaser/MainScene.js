@@ -55,6 +55,7 @@ export default class MainScene extends Phaser.Scene {
       roundTimer: 30,
       usingMyFace: false,
       awaitingApi: false,
+      gameStarted: false,
     };
   }
 
@@ -424,7 +425,6 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.submitBtn = this.add.text(650, 25, "Submit", btnStyle);
-    // .setInteractive();
 
     //adding a menu button & setting interactive
     this.menuButton = this.add.sprite(50, 585, "blueButton1").setInteractive();
@@ -1180,6 +1180,31 @@ export default class MainScene extends Phaser.Scene {
 
     if (p2Name !== this.game.react.state.currentRoom.p2.username) {
       p2Name = this.game.react.state.currentRoom.p2.username;
+    }
+    console.log(this.game.react.state.currentRoom);
+
+    if (
+      p1Name !== null &&
+      p2Name !== null &&
+      this.gameState.gameStarted === false
+    ) {
+      console.log("AM I FIRING?");
+      this.gameState.updateRounds(this.gameState.roundsWon);
+      this.gameState.submitBtn.setInteractive();
+      for (const letter in this.gameState.text) {
+        this.input.setDraggable(this.gameState.text[letter]);
+      }
+      this.gameState.countDown.paused = false;
+      this.gameState.gameStarted = true;
+    }
+
+    if (
+      this.gameState.gameStarted === true &&
+      (p1Name === null || p2Name === null)
+    ) {
+      this.time.delayedCall(2000, function () {
+        scene.scene.start("MainScene");
+      });
     }
 
     // Fix letters to body parts
