@@ -328,8 +328,6 @@ export default class MainScene extends Phaser.Scene {
       // Make letters draggable
       thisLetter.setInteractive();
 
-      // this.input.setDraggable(thisLetter);
-
       thisLetter.on("dragstart", function (pointer) {
         this.body.enable = true;
         this.setTint(0xff0000);
@@ -1183,12 +1181,12 @@ export default class MainScene extends Phaser.Scene {
     }
     console.log(this.game.react.state.currentRoom);
 
+    // Starts the game when a 2nd player enters
     if (
       p1Name !== null &&
       p2Name !== null &&
       this.gameState.gameStarted === false
     ) {
-      console.log("AM I FIRING?");
       this.gameState.updateRounds(this.gameState.roundsWon);
       this.gameState.submitBtn.setInteractive();
       for (const letter in this.gameState.text) {
@@ -1198,6 +1196,7 @@ export default class MainScene extends Phaser.Scene {
       this.gameState.gameStarted = true;
     }
 
+    // Restarts the game if a player leaves
     if (
       this.gameState.gameStarted === true &&
       (p1Name === null || p2Name === null)
