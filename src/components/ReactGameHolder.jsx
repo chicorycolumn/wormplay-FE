@@ -45,6 +45,33 @@ export default class ReactGame extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (this.state.socket) {
+      this.state.socket.on("a player entered your game", (data) => {
+        //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
+        if (
+          (this.state.socket.id === this.state.currentRoom.p1.id &&
+            data.enteringPlayerID !== this.state.currentRoom.p2.id) ||
+          (this.state.socket.id === this.state.currentRoom.p2.id &&
+            data.enteringPlayerID !== this.state.currentRoom.p1.id)
+        ) {
+          console.log(
+            "REACTGAMEHOLDER inside socket.on a player entered your game"
+          );
+          const { currentRoom } = data;
+
+          this.setState({
+            currentRoom,
+          });
+          setTimeout(() => {
+            console.log(
+              "REACTGAMEHOLDER this.state.currentRoom",
+              this.state.currentRoom
+            );
+          }, 3000);
+        }
+      });
+    }
+
     if (
       Object.keys(this.state.photoSet).filter((emotion) => {
         this.state.photoSet[emotion].src !== this.props.photoSet[emotion].src;
@@ -54,8 +81,8 @@ export default class ReactGame extends Component {
     }
 
     if (
-      this.state.currentRoom.p1.id !== this.props.currentRoom.p1.id ||
-      this.state.currentRoom.p2.id !== this.props.currentRoom.p2.id
+      (!this.state.currentRoom.p1.id && this.props.currentRoom.p1.id) ||
+      (!this.state.currentRoom.p2.id && this.props.currentRoom.p2.id)
     ) {
       this.setState({ currentRoom: this.props.currentRoom });
     }
