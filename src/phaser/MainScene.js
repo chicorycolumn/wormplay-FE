@@ -28,12 +28,13 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
 //I (Chris) suggest that in this file we use the socket for all the in-game stuff.
 
+let opponentName = null;
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 let isP1 = false;
 let isP2 = false;
 let p1Name = null;
 let p2Name = null;
-let shouldIBotherPlayingMusic = true; //TOGGLE DURING DEVELOPMENT
+let shouldIBotherPlayingMusic = false; //TOGGLE DURING DEVELOPMENT
 let scene;
 let lobbyBtnIsDepressed = false;
 let setStateCallback = () => {
@@ -309,8 +310,6 @@ export default class MainScene extends Phaser.Scene {
             const bodyPart = this.gameState[objectKey];
             bodyPart.hasLetter = false;
             bodyPart.setInteractive();
-            // console.log(this.gameState[objectKey]);
-            // console.log(this.gameState[objectKey].hasLetter);
 
             this.physics.add.overlap(thisLetter, bodyPart, function () {
               if (
@@ -386,7 +385,6 @@ export default class MainScene extends Phaser.Scene {
                 /p2Body\d/g.test(objectKey) === true &&
                 this.scene.gameState[objectKey].hasLetter === false
               ) {
-                // console.log(this.scene.gameState[objectKey]);
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
               }
@@ -531,6 +529,9 @@ export default class MainScene extends Phaser.Scene {
       }
       if (!wordArr.every((letter) => letter === " ")) {
         this.hasBeenPressed = true;
+        console.log(
+          `Just so you know, p1Name is now ${p1Name} and p2Name is ${p2Name}`
+        );
         socket.emit("I submitted", { username: isP1 ? p1Name : p2Name });
         this.scene.gameState.sendWord(
           wordArr,
@@ -591,7 +592,8 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.displayScore = function (scoreObj, isCurrentPlayer) {
-      const opponentName = isP1 === true ? p2Name : p1Name;
+      opponentName = isP1 === true ? p2Name : p1Name;
+      console.log("opponentName is ", opponentName);
       if (this.scoreText !== undefined) {
         this.scoreText.destroy();
       }
@@ -1135,6 +1137,9 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
+    opponentName = isP1 === true ? p2Name : p1Name; // chris, p2Name is null!
+    console.log("opponentName is ", opponentName);
+
     const {
       head,
       p1HeadShocked,
@@ -1173,11 +1178,22 @@ export default class MainScene extends Phaser.Scene {
 
     // Update Player Name(s)
     if (p1Name !== this.game.react.state.currentRoom.p1.username) {
+      console.log(
+        "UPDATE#############",
+        p1Name,
+        this.game.react.state.currentRoom.p1.username
+      );
       p1Name = this.game.react.state.currentRoom.p1.username;
     }
 
     if (p2Name !== this.game.react.state.currentRoom.p2.username) {
+      console.log(
+        "UPDATE#############",
+        p2Name,
+        this.game.react.state.currentRoom.p2.username
+      );
       p2Name = this.game.react.state.currentRoom.p2.username;
+      console.log(p2Name);
     }
     console.log(this.game.react.state.currentRoom);
 
@@ -1205,6 +1221,8 @@ export default class MainScene extends Phaser.Scene {
         scene.scene.start("MainScene");
       });
     }
+
+    console.log("players are ", p1Name, p2Name);
 
     // Fix letters to body parts
     for (const letter in text) {
