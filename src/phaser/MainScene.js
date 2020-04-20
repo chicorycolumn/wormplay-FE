@@ -810,13 +810,17 @@ export default class MainScene extends Phaser.Scene {
     });
 
     socket.on("start the game", function () {
-      if (scene.gameState.countDown.paused === false) {
+      if (scene.gameState.countDown.paused === true) {
+        // Stops this firing multiple times
         scene.gameState.startText = scene.add.text(300, 200, "GO!", {
           fontSize: "50px",
           color: "#28bb24",
           stroke: "white",
           strokeThickness: 3,
           fontFamily: "Arial",
+        });
+        scene.time.delayedCall(1000, function () {
+          scene.gameState.startText.destroy();
         });
       }
 
@@ -827,10 +831,6 @@ export default class MainScene extends Phaser.Scene {
       }
       scene.gameState.countDown.paused = false;
       scene.gameState.gameStarted = true;
-
-      scene.time.delayedCall(1000, function () {
-        scene.gameState.startText.destroy();
-      });
     });
 
     socket.on("new game request", function (opponentInfo) {
