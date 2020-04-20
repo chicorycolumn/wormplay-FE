@@ -13,7 +13,7 @@ import { playerFaces } from "../../public/emotion-rec";
 
 import body from "../assets/resizedpinkbody.png";
 import body2 from "../assets/bluebodyresized.png";
-import background from "../assets/background.jpg";
+import background from "../assets/background.png";
 import blueButton1 from "../assets/ui/blue_button02.png";
 import blueButton2 from "../assets/ui/blue_button03.png";
 import checkedBox from "../assets/ui/blue_boxCheckmark.png";
