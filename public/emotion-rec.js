@@ -222,6 +222,10 @@ export const emotionRecFullFunction = (
           setStateCallback(`${currentEmotion}Data`, {
             src: data,
           });
+          setStateCallback(
+            "imageBufferToSend",
+            data.replace(/^data:image.+;base64,/, "")
+          );
         }
       }
     }, 200);

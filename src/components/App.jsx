@@ -99,7 +99,6 @@ export default class App extends React.Component {
         ul.removeChild(ul.childNodes[0]);
       }
     }
-
     return (
       <div id="largeContainer" className={genStyles.largeContainer}>
         {this.state.amILoggedIn ? (

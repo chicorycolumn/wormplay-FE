@@ -23,7 +23,6 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 //****************************************** */
 //Hey James! We now have access to any photos were taken
 //with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
-//****************************************** */
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
