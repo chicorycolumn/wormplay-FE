@@ -51,10 +51,11 @@ export default class MainScene extends Phaser.Scene {
       scores: {},
       wantsNewGame: null,
       roundsWon: { p1: 0, p2: 0 },
-      timer: { p1: 0, p2: 0 },
+      timer: { p1: 0, p2: 0, angryP1: 0, angryP2: 0 },
       roundTimer: 30,
       usingMyFace: false,
       awaitingApi: false,
+      whoWon: { p1: null, p2: null },
     };
   }
 
@@ -70,6 +71,7 @@ export default class MainScene extends Phaser.Scene {
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
     this.gameState.scores = {}; // Resets scores every <round></round> ***************
+    this.gameState.opponentsArr = [" ", " ", " ", " ", " ", " "];
     console.log(playerFaces);
     if (
       playerFaces.happyFace === null ||
@@ -128,7 +130,13 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const { opponents, opponentsArr, timer, roundsWon } = this.gameState;
+    const {
+      opponents,
+      opponentsArr,
+      timer,
+      roundsWon,
+      whoWon,
+    } = this.gameState;
 
     // Resets count of rounds won when in new game
     if (roundsWon.p1 === 3 || roundsWon.p2 === 3) {
@@ -379,6 +387,7 @@ export default class MainScene extends Phaser.Scene {
               ) {
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
+                timer.p2 = 20;
               }
             }
           } else if (isP2 === true) {
@@ -390,6 +399,7 @@ export default class MainScene extends Phaser.Scene {
                 // console.log(this.scene.gameState[objectKey]);
                 const index = this.scene.gameState[objectKey].index;
                 this.scene.gameState.wormWordArr.splice(index, 1, " ");
+                timer.p1 = 20;
               }
             }
           }
@@ -729,6 +739,11 @@ export default class MainScene extends Phaser.Scene {
       this.quitText.setVisible(true);
 
       if (amIWinner === true) {
+        if (isP1 === true) {
+          whoWon.p1 = true;
+        } else if (isP2 === true) {
+          whoWon.p2 = true;
+        }
         this.finalWinnerText = scene.add.text(
           100,
           100,
@@ -736,6 +751,11 @@ export default class MainScene extends Phaser.Scene {
           finalScoreStyle
         );
       } else {
+        if (isP1 === true) {
+          whoWon.p2 = true;
+        } else if (isP2 === true) {
+          whoWon.p1 = true;
+        }
         this.finalWinnerText = scene.add.text(
           100,
           100,
@@ -825,7 +845,13 @@ export default class MainScene extends Phaser.Scene {
         );
       } else {
         // Add countdown on screen
+
         scene.time.delayedCall(2000, function () {
+          opponentsArr.forEach((el, i) => {
+            opponentsArr[i] = " ";
+          });
+          whoWon.p1 = null;
+          whoWon.p2 = null;
           scene.scene.start("MainScene");
         });
       }
@@ -1161,7 +1187,7 @@ export default class MainScene extends Phaser.Scene {
       p2HeadHappy,
       p2HeadShocked,
       p2HeadSad,
-      P2HeadAngry,
+      p2HeadAngry,
       p2Body1,
       p2Body2,
       p2Body3,
@@ -1169,6 +1195,7 @@ export default class MainScene extends Phaser.Scene {
       p2Body5,
       p2Body6,
       roundsWon,
+      whoWon,
     } = this.gameState;
     const {
       opponent1,
@@ -1236,6 +1263,7 @@ export default class MainScene extends Phaser.Scene {
     }
     p1HeadHappy.x = head.x;
     p1HeadHappy.y = head.y;
+    p1HeadAngry.setVisible(false);
 
     if (p2Head.count === 0) {
       p2Head.xDest = Math.floor(Math.random() * 800);
@@ -1281,6 +1309,7 @@ export default class MainScene extends Phaser.Scene {
     }
     p2HeadHappy.x = p2Head.x;
     p2HeadHappy.y = p2Head.y;
+    p2HeadAngry.setVisible(false);
 
     if (roundsWon.p1 < roundsWon.p2) {
       p1HeadHappy.setVisible(false);
@@ -1369,7 +1398,6 @@ export default class MainScene extends Phaser.Scene {
           }
         }
       }
-
     }
 
     if (this.gameState.roundTimer === 0) {
@@ -1381,6 +1409,26 @@ export default class MainScene extends Phaser.Scene {
           isP1 ? p2Name : p1Name
         );
       }
+    }
+
+    if (whoWon.p1 === true) {
+      p1HeadHappy.setVisible(true);
+      p1HeadAngry.setVisible(false);
+      p1HeadSad.setVisible(false);
+      p1HeadShocked.setVisible(true);
+      p2HeadAngry.setVisible(true);
+      p2HeadHappy.setVisible(false);
+      p2HeadSad.setVisible(false);
+      p2HeadShocked.setVisible(false);
+    } else if (whoWon.p2 === true) {
+      p1HeadHappy.setVisible(false);
+      p1HeadAngry.setVisible(true);
+      p1HeadSad.setVisible(false);
+      p1HeadShocked.setVisible(true);
+      p2HeadAngry.setVisible(false);
+      p2HeadHappy.setVisible(true);
+      p2HeadSad.setVisible(false);
+      p2HeadShocked.setVisible(false);
     }
   }
 
