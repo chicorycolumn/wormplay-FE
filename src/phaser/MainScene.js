@@ -23,7 +23,6 @@ import { vowelArray, consonantArray } from "../refObjs.js";
 //****************************************** */
 //Hey James! We now have access to any photos were taken
 //with webcam as >>>>>this.game.react.state.photoSet<<<<<<<<
-//****************************************** */
 
 //You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
 //You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
@@ -55,6 +54,7 @@ export default class MainScene extends Phaser.Scene {
       timer: { p1: 0, p2: 0 },
       roundTimer: 30,
       usingMyFace: false,
+      awaitingApi: false,
     };
   }
 
@@ -477,13 +477,15 @@ export default class MainScene extends Phaser.Scene {
           setTimeout(() => {
             this.lobbyText.destroy();
             this.lobbyBtn.tint = 0xffffff;
-            this.lobbyText = this.add.text(0, 0, "Lobby", {
+            this.lobbyText = this.add.text(0, 0, "Quit", {
               fontSize: "20px",
               fill: "#fff",
             });
             Phaser.Display.Align.In.Center(this.lobbyText, this.lobbyBtn);
+            lobbyBtnIsDepressed = false;
           }, 2500);
         } else {
+          lobbyBtnIsDepressed = false;
           this.sys.game.destroy(true);
           socket.emit("quitRoom");
           setStateCallback("iHavePermissionToEnterRoom", false);
@@ -532,14 +534,12 @@ export default class MainScene extends Phaser.Scene {
       }
       if (!wordArr.every((letter) => letter === " ")) {
         this.hasBeenPressed = true;
+        socket.emit("I submitted", { username: isP1 ? p1Name : p2Name });
         this.scene.gameState.sendWord(
           wordArr,
           this.scene.game.react.state.socket,
           this.hasBeenPressed
         );
-        if (scene.gameState.roundTimer > 6) {
-          scene.gameState.roundTimer = 6;
-        }
       }
     });
 
@@ -654,11 +654,12 @@ export default class MainScene extends Phaser.Scene {
           ease: "Power 2",
         });
       });
+      this.awaitingApi = false;
       if (
         this.scores.currentPlayer !== undefined &&
         this.scores.opponent !== undefined
       ) {
-        scene.time.delayedCall(2000, this.showRoundWinner, [
+        scene.time.delayedCall(1000, this.showRoundWinner, [
           this.scores,
           opponentName,
         ]);
@@ -667,7 +668,9 @@ export default class MainScene extends Phaser.Scene {
     };
 
     this.gameState.showRoundWinner = function (scoreObj, opponentName) {
-      this.countDown.paused = true;
+      scene.gameState.countDown.paused = true;
+      scene.gameState.timerText.destroy();
+
       if (scoreObj.currentPlayer === undefined) {
         scoreObj.currentPlayer = { points: 0, word: "" };
       }
@@ -676,7 +679,7 @@ export default class MainScene extends Phaser.Scene {
       }
 
       if (scoreObj.currentPlayer.points > scoreObj.opponent.points) {
-        this.roundWinnerText = scene.add.text(
+        scene.gameState.roundWinnerText = scene.add.text(
           200,
           200,
           [
@@ -689,7 +692,7 @@ export default class MainScene extends Phaser.Scene {
         roundsWon[winner] += 1;
         socket.emit("update rounds", roundsWon);
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
-        this.roundWinnerText = scene.add.text(
+        scene.gameState.roundWinnerText = scene.add.text(
           150,
           200,
           [
@@ -699,7 +702,7 @@ export default class MainScene extends Phaser.Scene {
           roundScoreStyle
         );
       } else {
-        this.roundWinnerText = scene.add.text(
+        scene.gameState.roundWinnerText = scene.add.text(
           50,
           200,
           [
@@ -716,7 +719,6 @@ export default class MainScene extends Phaser.Scene {
       if (this.roundWinnerText !== undefined) {
         this.roundWinnerText.destroy();
       }
-      this.countDown.paused = true;
 
       const thisPlayerName = isP1 ? p1Name : p2Name;
       const opponentName = isP1 ? p2Name : p1Name;
@@ -789,10 +791,10 @@ export default class MainScene extends Phaser.Scene {
 
     socket.on("new game request", function (opponentInfo) {
       scene.gameState.wantsNewGame[opponentInfo.player] = true;
-      scene.gameState.newGameText = scene.add.text(
+      scene.gameState.rematchText = scene.add.text(
         100,
         400,
-        `Uh oh! ${opponentInfo.name} wants a re-match. Do you?`,
+        [`Uh oh! ${opponentInfo.name} wants a re-match.`, `Do you?`],
         scoreStyle
       );
     });
@@ -807,16 +809,88 @@ export default class MainScene extends Phaser.Scene {
 
       if (newRounds.p1 === 3) {
         const didIWin = isP1 ? true : false;
-        scene.gameState.showFinalWinner(didIWin);
+        scene.time.delayedCall(
+          2000,
+          scene.gameState.showFinalWinner,
+          [didIWin],
+          scene.gameState
+        );
       } else if (newRounds.p2 === 3) {
         const didIWin = isP1 ? false : true;
-        scene.gameState.showFinalWinner(didIWin);
+        scene.time.delayedCall(
+          2000,
+          scene.gameState.showFinalWinner,
+          [didIWin],
+          scene.gameState
+        );
       } else {
         // Add countdown on screen
-        scene.time.delayedCall(3000, function () {
+        scene.time.delayedCall(2000, function () {
           scene.scene.start("MainScene");
         });
       }
+    });
+
+    socket.on("You submitted", function () {
+      scene.gameState.awaitingApi = true;
+      if (scene.gameState.submitText !== undefined) {
+        scene.gameState.submitText.destroy();
+      }
+      scene.gameState.submitText = scene.add.text(
+        150,
+        100,
+        `Nice! Just checking your word...`,
+        {
+          fontSize: "30px",
+          color: "orange",
+          strokeThickness: 3,
+          stroke: "black",
+          fontFamily: "Arial",
+          align: "center",
+        }
+      );
+      if (scene.gameState.roundTimer > 6) {
+        scene.gameState.roundTimer = 6;
+      }
+      scene.time.delayedCall(1500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.submitText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
+    });
+
+    socket.on("opponent submitted", function (opponentInfo) {
+      scene.gameState.awaitingApi = true;
+      if (scene.gameState.submitText !== undefined) {
+        scene.gameState.submitText.destroy();
+      }
+      scene.gameState.submitText = scene.add.text(
+        150,
+        100,
+        [`${opponentInfo.username} submitted a word!`, `Hurry!`],
+        {
+          fontSize: "30px",
+          color: "orange",
+          strokeThickness: 3,
+          stroke: "black",
+          fontFamily: "Arial",
+          align: "center",
+        }
+      );
+      if (scene.gameState.roundTimer > 6) {
+        scene.gameState.roundTimer = 6;
+      }
+      scene.time.delayedCall(1500, function () {
+        scene.tweens.add({
+          targets: scene.gameState.submitText,
+          alpha: 0,
+          duration: 500,
+          ease: "Power 2",
+        });
+      });
     });
 
     this.gameState.newGameBtn = this.add
@@ -836,6 +910,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.newGameBtn.on(
       "pointerdown",
       function (pointer) {
+        this.gameState.newGameBtn = this.add.sprite(300, 350, "blueButton2");
         this.gameState.newGameBtn.setScale(0.8);
         this.gameState.newGameText = this.add.text(0, 0, "Rematch", {
           fontSize: "20px",
@@ -883,8 +958,8 @@ export default class MainScene extends Phaser.Scene {
             name: isP1 === true ? p1Name : p2Name,
             player: isP1 === true ? "p1" : "p2",
           });
-          scene.gameState.newGameText = scene.add.text(
-            150,
+          scene.gameState.rematchText = scene.add.text(
+            100,
             400,
             [
               `You asked ${isP1 === true ? p2Name : p1Name} for a re-match!`,
@@ -974,10 +1049,16 @@ export default class MainScene extends Phaser.Scene {
 
     this.gameState.displayRounds = function (currentRounds) {
       if (this.gameState.thisPlayerScore !== undefined) {
-        this.gameState.thisPlayerScore.destroy();
+        this.gameState.thisPlayerScore.setText(
+          `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
+        );
       }
       if (this.gameState.oppositionScore !== undefined) {
-        this.gameState.oppositionScore.destroy();
+        this.gameState.oppositionScore.setText(
+          `${isP1 ? p2Name : p1Name}: ${
+            isP1 ? currentRounds.p2 : currentRounds.p1
+          }`
+        );
       }
       this.gameState.thisPlayerScore = this.add.text(
         650,
@@ -1288,10 +1369,13 @@ export default class MainScene extends Phaser.Scene {
           }
         }
       }
-      if (this.gameState.roundTimer === 0) {
-        this.gameState.roundTimer = -1;
-        this.gameState.timerText.destroy();
-        this.gameState.countDown.reset();
+
+    }
+
+    if (this.gameState.roundTimer === 0) {
+      scene.gameState.countDown.paused = true;
+      this.gameState.roundTimer = -1;
+      if (this.gameState.awaitingApi === false) {
         this.gameState.showRoundWinner(
           this.gameState.scores,
           isP1 ? p2Name : p1Name

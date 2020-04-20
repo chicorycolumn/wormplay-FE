@@ -1,8 +1,33 @@
+.inGameInstructions {
+}
+
 .infoDisplay {
   color: blue;
   font-style: italic;
+  font-size: 14px;
   margin: 0px;
-  padding: 0px;
+  padding: 12px 0px 0px 0px;
+  /* border: white solid 2.5pt; */
+  height: 172px;
+  overflow: auto;
+}
+
+.infoDisplay > li {
+  list-style-type: none;
+}
+
+.yourChat {
+  color: black;
+  text-align: left;
+  margin: 1.5px 10px 1.5px 10px;
+  font-family: "Courier New";
+}
+
+.herChat {
+  color: green;
+  text-align: right;
+  margin: 1.5px 10px 1.5px 10px;
+  font-family: "Courier New";
 }
 
 .playerNamesBox {
@@ -10,12 +35,13 @@
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  /* border: firebrick solid 2.5pt; */
 }
 
 .roomsDisplay {
   color: black;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 22px;
   margin-top: 10px;
   margin-bottom: 0px;
 }
@@ -63,9 +89,12 @@
   grid-row: 2;
 }
 
-.midboxLong {
+.midboxLobby {
   background-color: yellow;
   grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .bottombox {
@@ -115,9 +144,9 @@
   font-size: 12pt;
 }
 
-.infoDisplayMessage {
+/* .infoDisplayMessage {
   font-family: "Lucida Sans";
-}
+} */
 
 /* .container {
     display: flex;
@@ -222,6 +251,8 @@
 .chatFormHolder {
   /* border: slateblue solid 2pt; */
   position: relative;
-  bottom: -152px;
+  bottom: 6px;
+  /* bottom: 16px; */
   left: -1px;
+  /* border: blue solid 0.5pt; */
 }

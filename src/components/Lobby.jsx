@@ -20,6 +20,7 @@ export default class Lobby extends React.Component {
       sadData: { src: null },
       angryData: { src: null },
       surprisedData: { src: null },
+      imageBufferToSend: null,
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       socket: null,
       myUsername: "",
@@ -93,6 +94,13 @@ export default class Lobby extends React.Component {
     }
 
     if (this.state.socket) {
+      if (prevState.imageBufferToSend !== this.state.imageBufferToSend) {
+        console.log("gonna send image buffer on", this.state.socket);
+        this.state.socket.emit("image from client", {
+          buf: this.state.imageBufferToSend,
+        });
+      }
+
       this.state.socket.on("connectionRefused", () => {
         console.log(`Oh no! The room was full or something.`);
       });
@@ -161,7 +169,6 @@ export default class Lobby extends React.Component {
       angry: angryData,
       surprised: surprisedData,
     };
-    console.log("###", iHavePermissionToEnterRoom);
     return (
       <div>
         {this.state.iHavePermissionToEnterRoom &&
@@ -241,7 +248,8 @@ export default class Lobby extends React.Component {
                 </div>
                 <div id="rightPanel" className={genStyles.rightPanel}>
                   <LobbySidePanel
-                    socket={socket}
+                    testVariable="hello"
+                    socket={socket || this.props.socket}
                     myUsername={myUsername}
                     iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                     setStateCallback={this.setStateCallback}
