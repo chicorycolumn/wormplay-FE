@@ -211,10 +211,13 @@ export default class GameSidePanel extends React.Component {
           <div className={styles.inGameInstructions}>
             <h2>Worms away!</h2>
             Drop letters onto your opponent's worm, and when you've made a word,
-            click submit!
+            click submit! <strong>Spaces between letters</strong> are okay!
             <br />
             <br />
             Words are spelled from <strong>head to tail</strong>.
+            <br />
+            <br />
+            Remember, no plurals! Worms <strong>can't count</strong>.
             <br />
             <br />
             Good luck, and good worm!
