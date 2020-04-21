@@ -14,7 +14,7 @@ export default class CreditsScene extends Phaser.Scene {
     this.madeByText = this.add.text(
       0,
       0,
-      "Created By: Chris, James, Nadia and Patrick",
+      "Created By:\nChris Matus,\nJames Johnson,\nNadia Rashad\nand Patrick Mackridge",
       {
         fontSize: "26px",
         fill: "#fff",
@@ -29,6 +29,16 @@ export default class CreditsScene extends Phaser.Scene {
         fill: "#fff",
       }
     );
+    this.musicText = this.add.text(
+      0,
+      0,
+      "Original 8 bit music created by Patrick Mackridge",
+      {
+        fontSize: "18px",
+        fill: "#fff",
+        align: "centre",
+      }
+    );
     this.zone = this.add.zone(
       config.width / 2,
       config.height / 2,
@@ -40,10 +50,16 @@ export default class CreditsScene extends Phaser.Scene {
 
     Phaser.Display.Align.In.Center(this.imageText, this.zone);
     Phaser.Display.Align.In.Center(this.madeByText, this.zone);
+    Phaser.Display.Align.In.Center(this.musicText, this.zone);
 
-    this.creditsText.setY(70);
+    this.creditsText.setY(130);
+    this.creditsText.setX(150);
     this.madeByText.setY(200);
-    this.imageText.setY(280);
+    this.madeByText.setX(150);
+    this.imageText.setY(400);
+    this.imageText.setX(150);
+    this.musicText.setY(440);
+    this.musicText.setX(150);
 
     this.menuButton = this.add.sprite(110, 570, "blueButton1").setInteractive();
 
@@ -55,7 +71,7 @@ export default class CreditsScene extends Phaser.Scene {
 
     this.menuButton.on(
       "pointerup",
-      function (pointer) {
+      function(pointer) {
         this.scene.start("MainScene");
       }.bind(this)
     );
