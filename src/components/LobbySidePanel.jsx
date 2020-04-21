@@ -7,12 +7,12 @@ export default class LobbySidePanel extends React.Component {
     super();
     this.state = {
       trivialVariable: "oo",
-      photoSet: {
-        happy: { src: null },
-        angry: { src: null },
-        sad: { src: null },
-        surprised: { src: null },
-      },
+      // photoSet: {
+      //   happy: { src: null },
+      //   angry: { src: null },
+      //   sad: { src: null },
+      //   surprised: { src: null },
+      // },
       socket: null,
       myUsername: "",
       iJustEnteredLobbyOrRoom: true,
@@ -102,7 +102,7 @@ export default class LobbySidePanel extends React.Component {
       currentRoom,
       myUsername,
       emoObj,
-      photoSet,
+      // photoSet,
     } = this.state;
 
     return (

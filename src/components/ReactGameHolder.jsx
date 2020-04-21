@@ -9,17 +9,17 @@ export default class ReactGame extends Component {
     super();
     this.state = {
       opponentPlayerFaces: {
-        happyData: null,
-        sadData: null,
-        angryData: null,
-        shockedData: null,
+        happyFace: null,
+        sadFace: null,
+        angryFace: null,
+        shockedFace: null,
       },
-      photoSet: {
-        happy: { src: null },
-        angry: { src: null },
-        sad: { src: null },
-        surprised: { src: null },
-      },
+      // photoSet: {
+      //   happy: { src: null },
+      //   angry: { src: null },
+      //   sad: { src: null },
+      //   surprised: { src: null },
+      // },
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
       currentEmotion: { name: null, src: null },
@@ -45,7 +45,7 @@ export default class ReactGame extends Component {
       isP1: this.props.socket.id === this.props.currentRoom.p1.id,
       isP2: this.props.socket.id === this.props.currentRoom.p2.id,
       currentEmotion: this.props.currentEmotion,
-      photoSet: this.props.photoSet,
+      // photoSet: this.props.photoSet,
       setStateCallback: this.props.setStateCallback,
     });
   }
@@ -56,7 +56,7 @@ export default class ReactGame extends Component {
 
     if (this.state.socket) {
       this.state.socket.on("a player entered your game", (data) => {
-        // console.log("OPPONENT FACES", data.enteringPlayerData.playerFaces);
+        // console.log("OPPONENT FACES", data.enteringPlayer.playerFaces);
 
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
@@ -72,7 +72,7 @@ export default class ReactGame extends Component {
 
           this.setState({
             currentRoom,
-            opponentPlayerFaces: data.enteringPlayerData.playerFaces,
+            opponentPlayerFaces: data.enteringPlayer.playerFaces,
           });
 
           //set state of lobby with new currentRoom
@@ -89,11 +89,12 @@ export default class ReactGame extends Component {
     }
 
     if (
-      Object.keys(this.state.photoSet).filter((emotion) => {
-        this.state.photoSet[emotion].src !== this.props.photoSet[emotion].src;
+      Object.keys(this.state.opponentPlayerFaces).filter((emotion) => {
+        this.state.opponentPlayerFaces[emotion] !==
+          this.props.opponentPlayerFaces[emotion];
       }).length
     ) {
-      this.setState({ photoSet: this.props.photoSet });
+      this.setState({ opponentPlayerFaces: this.props.opponentPlayerFaces });
     }
 
     if (

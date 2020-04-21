@@ -219,9 +219,7 @@ export const emotionRecFullFunction = (
             playerFaces.shockedFace = data;
           }
 
-          setStateCallback(`${currentEmotion}Data`, {
-            src: data,
-          });
+          setStateCallback(`${currentEmotion}Data`, data);
           setStateCallback(
             "imageBufferToSend",
             data.replace(/^data:image.+;base64,/, "")

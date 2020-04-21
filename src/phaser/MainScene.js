@@ -37,7 +37,12 @@ let setStateCallback = () => {
 };
 
 let myFaces = playerFaces;
-let oppFaces = null;
+let oppFaces = {
+  happyFace: null,
+  sadFace: null,
+  angryFace: null,
+  shockedFace: null,
+};
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -72,11 +77,15 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.opponentsArr = [" ", " ", " ", " ", " ", " "];
 
     //##################################
-    oppFaces = this.game.react.state.opponentPlayerFaces;
+    if (isP1 === true) {
+      oppFaces = this.game.react.state.currentRoom.p2.playerFaces || "smello";
+    } else if (isP2 === true) {
+      oppFaces = this.game.react.state.currentRoom.p1.playerFaces || "smello";
+    }
     // const myFaces = playerFaces;
 
-    console.log("P:myFaces", myFaces);
-    console.log("P:oppFaces", oppFaces);
+    // console.log("P:myFaces", myFaces);
+    // console.log("P:oppFaces", oppFaces);
 
     if (isP1 === true) {
       //I AM PLAYER ONE.
@@ -122,7 +131,7 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.textures.addBase64("p2HeadShocked", oppFaces.shockedFace);
       }
-    } else {
+    } else if (isP2 === true) {
       //I AM PLAYER TWO ACTUALLY.
       //Load either my photo, or if that's null, load the emoji.
       if (myFaces.happyFace === null) {
@@ -270,57 +279,57 @@ export default class MainScene extends Phaser.Scene {
     // const oppFaces = this.game.react.state.opponentPlayerFaces;
     // const myFaces = playerFaces;
 
-    console.log("C:myFaces", myFaces);
-    console.log("C:oppFaces", oppFaces);
+    // console.log("C:myFaces", myFaces);
+    // console.log("C:oppFaces", oppFaces);
 
     if (isP1 === true) {
-      if (myFaces.happyData) {
+      if (myFaces.happyFace) {
         this.gameState.p1HeadHappy.setDisplaySize(48, 48);
       }
-      if (myFaces.sadData) {
+      if (myFaces.sadFace) {
         this.gameState.p1HeadSad.setDisplaySize(48, 48);
       }
-      if (myFaces.angryData) {
+      if (myFaces.angryFace) {
         this.gameState.p1HeadAngry.setDisplaySize(48, 48);
       }
-      if (myFaces.shockedData) {
+      if (myFaces.shockedFace) {
         this.gameState.p1HeadShocked.setDisplaySize(48, 48);
       }
-      if (oppFaces.happyData) {
+      if (oppFaces.happyFace) {
         this.gameState.p2HeadHappy.setDisplaySize(48, 48);
       }
-      if (oppFaces.sadData) {
+      if (oppFaces.sadFace) {
         this.gameState.p2HeadShocked.setDisplaySize(48, 48);
       }
-      if (oppFaces.angryData) {
+      if (oppFaces.angryFace) {
         this.gameState.p2HeadSad.setDisplaySize(48, 48);
       }
-      if (oppFaces.shockedData) {
+      if (oppFaces.shockedFace) {
         this.gameState.p2HeadAngry.setDisplaySize(48, 48);
       }
     } else if (isP2 === true) {
-      if (oppFaces.happyData) {
+      if (oppFaces.happyFace) {
         this.gameState.p1HeadHappy.setDisplaySize(48, 48);
       }
-      if (oppFaces.sadData) {
+      if (oppFaces.sadFace) {
         this.gameState.p1HeadSad.setDisplaySize(48, 48);
       }
-      if (oppFaces.angryData) {
+      if (oppFaces.angryFace) {
         this.gameState.p1HeadAngry.setDisplaySize(48, 48);
       }
-      if (oppFaces.shockedData) {
+      if (oppFaces.shockedFace) {
         this.gameState.p1HeadShocked.setDisplaySize(48, 48);
       }
-      if (myFaces.happyData) {
+      if (myFaces.happyFace) {
         this.gameState.p2HeadHappy.setDisplaySize(48, 48);
       }
-      if (myFaces.sadData) {
+      if (myFaces.sadFace) {
         this.gameState.p2HeadShocked.setDisplaySize(48, 48);
       }
-      if (myFaces.angryData) {
+      if (myFaces.angryFace) {
         this.gameState.p2HeadSad.setDisplaySize(48, 48);
       }
-      if (myFaces.shockedData) {
+      if (myFaces.shockedFace) {
         this.gameState.p2HeadAngry.setDisplaySize(48, 48);
       }
     }
@@ -1315,7 +1324,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    console.log("UPDATE oppfaces", this.game.react.state.opponentPlayerFaces);
+    // console.log("UPDATE oppfaces", this.game.react.state.opponentPlayerFaces);
     //HAS A PLAYER JUST QUIT/DISCONNECTED IN MIDDLE OF GAME?
     if (
       (p1Name && !this.game.react.state.currentRoom.p1.id) ||
@@ -1333,8 +1342,16 @@ export default class MainScene extends Phaser.Scene {
       }, 3000);
     }
 
-    oppFaces = this.game.react.state.opponentPlayerFaces;
-
+    if (isP1 === true && this.game.react.state.currentRoom.p2.playerFaces) {
+      console.log("will update p2 faces cos they just entered");
+      oppFaces = this.game.react.state.currentRoom.p2.playerFaces;
+    } else if (
+      isP2 === true &&
+      this.game.react.state.currentRoom.p1.playerFaces
+    ) {
+      console.log("will update p1 faces cos they just entered");
+      oppFaces = this.game.react.state.currentRoom.p1.playerFaces;
+    }
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
     opponentName = isP1 === true ? p2Name : p1Name;

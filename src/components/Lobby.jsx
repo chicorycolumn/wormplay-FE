@@ -22,10 +22,10 @@ export default class Lobby extends React.Component {
       ridEventListener: () => {
         console.log("empty fxn instead of ridEventListener");
       },
-      happyData: { src: null },
-      sadData: { src: null },
-      angryData: { src: null },
-      surprisedData: { src: null },
+      happyData: null,
+      sadData: null,
+      angryData: null,
+      surprisedData: null,
       imageBufferToSend: null,
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       socket: null,
@@ -124,6 +124,7 @@ export default class Lobby extends React.Component {
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
+        console.log(data.room);
         console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {
@@ -184,12 +185,12 @@ export default class Lobby extends React.Component {
       currentRoom,
     } = this.state;
 
-    let photoSet = {
-      happy: happyData,
-      sad: sadData,
-      angry: angryData,
-      surprised: surprisedData,
-    };
+    // let photoSet = {
+    //   happy: happyData,
+    //   sad: sadData,
+    //   angry: angryData,
+    //   surprised: surprisedData,
+    // };
     return (
       <div>
         {this.state.iHavePermissionToEnterRoom &&
@@ -200,7 +201,7 @@ export default class Lobby extends React.Component {
                 <ReactGameHolder
                   socket={socket}
                   myUsername={myUsername}
-                  photoSet={photoSet}
+                  // photoSet={photoSet}
                   currentRoom={currentRoom}
                   setStateCallback={this.setStateCallback}
                   opponentPlayerFaces={this.state.opponentPlayerFaces}
@@ -213,7 +214,7 @@ export default class Lobby extends React.Component {
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
-                photoSet={photoSet}
+                // photoSet={photoSet}
                 currentRoom={currentRoom}
                 stopWebcam={this.stopWebcam}
               />

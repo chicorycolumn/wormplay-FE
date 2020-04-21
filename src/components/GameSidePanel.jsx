@@ -7,12 +7,12 @@ export default class GameSidePanel extends React.Component {
     super();
     this.state = {
       chatTimestamp: 0,
-      photoSet: {
-        happy: { src: null },
-        angry: { src: null },
-        sad: { src: null },
-        surprised: { src: null },
-      },
+      // photoSet: {
+      //   happy: { src: null },
+      //   angry: { src: null },
+      //   sad: { src: null },
+      //   surprised: { src: null },
+      // },
 
       socket: null,
       myUsername: "",
@@ -124,7 +124,7 @@ export default class GameSidePanel extends React.Component {
         ) {
           console.log("inside socket.on a player entered your game");
 
-          console.log("OPPONENT FACES", data.enteringPlayerData.playerFaces);
+          console.log("OPPONENT FACES", data.enteringPlayer.playerFaces);
 
           const { currentRoom } = data;
 
@@ -202,7 +202,7 @@ export default class GameSidePanel extends React.Component {
       currentRoom,
       myUsername,
       emoObj,
-      photoSet,
+      // photoSet,
     } = this.state;
 
     return (
