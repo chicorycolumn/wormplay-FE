@@ -7,12 +7,12 @@ export default class GameSidePanel extends React.Component {
     super();
     this.state = {
       chatTimestamp: 0,
-      photoSet: {
-        happy: { src: null },
-        angry: { src: null },
-        sad: { src: null },
-        surprised: { src: null },
-      },
+      // photoSet: {
+      //   happy: { src: null },
+      //   angry: { src: null },
+      //   sad: { src: null },
+      //   surprised: { src: null },
+      // },
 
       socket: null,
       myUsername: "",
@@ -88,7 +88,6 @@ export default class GameSidePanel extends React.Component {
   }
 
   sendChat = (msg) => {
-    console.log("sending", msg, this.state.currentRoom.roomID);
     this.state.socket.emit("clientSentChat", {
       msg,
       roomID: this.state.currentRoom.roomID,
@@ -99,7 +98,6 @@ export default class GameSidePanel extends React.Component {
     if (this.state.socket) {
       this.state.socket.on("serverSentChat", (data) => {
         let infoDisplay = document.getElementById("infoDisplay");
-        console.log("received", data.msg);
         if (this.state.chatTimestamp !== data.chatTimestamp) {
           this.setState({ chatTimestamp: data.chatTimestamp });
           let newLi = document.createElement("li");
@@ -125,6 +123,9 @@ export default class GameSidePanel extends React.Component {
             data.enteringPlayerID !== this.state.currentRoom.p1.id)
         ) {
           console.log("inside socket.on a player entered your game");
+
+          console.log("OPPONENT FACES", data.enteringPlayer.playerFaces);
+
           const { currentRoom } = data;
 
           let infoDisplay = document.getElementById("infoDisplay");
@@ -143,6 +144,8 @@ export default class GameSidePanel extends React.Component {
           this.setState({
             currentRoom,
           });
+
+          this.props.setStateCallback("currentRoom", currentRoom);
         }
       });
 
@@ -169,6 +172,8 @@ export default class GameSidePanel extends React.Component {
             " bodged off!";
           infoDisplay.appendChild(newLi);
           this.removeFirstChildIfOverflowing(infoDisplay);
+
+          this.props.setStateCallback("currentRoom", currentRoom);
 
           this.setState({
             currentRoom,
@@ -197,7 +202,7 @@ export default class GameSidePanel extends React.Component {
       currentRoom,
       myUsername,
       emoObj,
-      photoSet,
+      // photoSet,
     } = this.state;
 
     return (
@@ -206,10 +211,13 @@ export default class GameSidePanel extends React.Component {
           <div className={styles.inGameInstructions}>
             <h2>Worms away!</h2>
             Drop letters onto your opponent's worm, and when you've made a word,
-            click submit!
+            click submit! <strong>Spaces between letters</strong> are okay!
             <br />
             <br />
             Words are spelled from <strong>head to tail</strong>.
+            <br />
+            <br />
+            Remember, no plurals! Worms <strong>can't count</strong>.
             <br />
             <br />
             Good luck, and good worm!

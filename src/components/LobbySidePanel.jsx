@@ -7,12 +7,12 @@ export default class LobbySidePanel extends React.Component {
     super();
     this.state = {
       trivialVariable: "oo",
-      photoSet: {
-        happy: { src: null },
-        angry: { src: null },
-        sad: { src: null },
-        surprised: { src: null },
-      },
+      // photoSet: {
+      //   happy: { src: null },
+      //   angry: { src: null },
+      //   sad: { src: null },
+      //   surprised: { src: null },
+      // },
       socket: null,
       myUsername: "",
       iJustEnteredLobbyOrRoom: true,
@@ -65,7 +65,7 @@ export default class LobbySidePanel extends React.Component {
         for (let i = 0; i < 1; i++) {
           if (info.image) {
             // console.log("cb", cb);
-            console.log(info.buffer);
+            // console.log(info.buffer);
             var img = new Image();
             img.src = "data:image/jpeg;base64," + info.buffer;
             var ctx = document.getElementById("testCanvas").getContext("2d");
@@ -102,7 +102,7 @@ export default class LobbySidePanel extends React.Component {
       currentRoom,
       myUsername,
       emoObj,
-      photoSet,
+      // photoSet,
     } = this.state;
 
     return (
@@ -136,11 +136,11 @@ export default class LobbySidePanel extends React.Component {
           </div>
         </div>
 
-        <div className={styles.midboxLong}>
+        <div className={styles.midboxLobby}>
           <div>
             <p className={styles.instructions}>
               {/* ********************* */}
-              <canvas id="testCanvas"></canvas>
+              {/* <canvas id="testCanvas"></canvas>
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -148,7 +148,7 @@ export default class LobbySidePanel extends React.Component {
                 }}
               >
                 IMAGE
-              </button>
+              </button> */}
               {/* ********************* */}
               Pull a face and we'll capture your emotion! This is optional and{" "}
               <strong>personalises</strong> your worm!
