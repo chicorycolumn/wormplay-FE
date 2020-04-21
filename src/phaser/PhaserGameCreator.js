@@ -13,16 +13,12 @@ export default class PhaserGame extends Phaser.Game {
   constructor(react) {
     const config = {
       type: Phaser.AUTO, //Use WebGL if avail, otherwise Canvas.
-      parent: "phaserContainer", //Could this adding a canvas element conflict with the photo taking canvas?
+      parent: "phaserContainer",
       width: 800,
       height: 600,
       physics: {
         default: "arcade",
-        // arcade: {
-        //   debug: true,
-        // },
       },
-      // scene: [MainScene, OptionsScene, TitleScene],
     };
     super(config);
 

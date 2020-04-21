@@ -1502,15 +1502,12 @@ export default class MainScene extends Phaser.Scene {
       p1HeadShocked.x = head.x;
       p1HeadShocked.y = head.y;
       if (timer.p1 === 0) {
-        if (timer.p1 > 0) {
-          timer.p1 -= 1;
-          if (roundsWon.p1 < roundsWon.p2) {
-            p1HeadSad.setVisible(true);
-          } else {
-            p1HeadHappy.setVisible(true);
-          }
-          p1HeadShocked.setVisible(false);
+        if (roundsWon.p1 < roundsWon.p2) {
+          p1HeadSad.setVisible(true);
+        } else {
+          p1HeadHappy.setVisible(true);
         }
+        p1HeadShocked.setVisible(false);
       }
     }
     if (timer.p2 > 0) {
