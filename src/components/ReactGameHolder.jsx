@@ -14,12 +14,6 @@ export default class ReactGame extends Component {
         angryFace: null,
         shockedFace: null,
       },
-      // photoSet: {
-      //   happy: { src: null },
-      //   angry: { src: null },
-      //   sad: { src: null },
-      //   surprised: { src: null },
-      // },
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
       currentEmotion: { name: null, src: null },
@@ -45,7 +39,6 @@ export default class ReactGame extends Component {
       isP1: this.props.socket.id === this.props.currentRoom.p1.id,
       isP2: this.props.socket.id === this.props.currentRoom.p2.id,
       currentEmotion: this.props.currentEmotion,
-      // photoSet: this.props.photoSet,
       setStateCallback: this.props.setStateCallback,
     });
   }
@@ -56,7 +49,6 @@ export default class ReactGame extends Component {
 
     if (this.state.socket) {
       this.state.socket.on("a player entered your game", (data) => {
-        // console.log("OPPONENT FACES", data.enteringPlayer.playerFaces);
         //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
           (this.state.socket.id === this.state.currentRoom.p1.id &&
@@ -80,14 +72,14 @@ export default class ReactGame extends Component {
           this.game.destroy(true);
           setTimeout(() => {
             this.game = new PhaserGame(this);
-          }, 4000);
+          }, 2000); //Possible screw point.
 
           setTimeout(() => {
             console.log(
               "REACTGAMEHOLDER this.state.currentRoom",
               this.state.currentRoom
             );
-          }, 3000);
+          }, 1000); //Possible screw point.
         }
       });
     }
@@ -107,12 +99,6 @@ export default class ReactGame extends Component {
     ) {
       this.setState({ currentRoom: this.props.currentRoom });
     }
-    // if ( //Chris Mon 20th
-    //   (!this.state.currentRoom.p1.id && this.props.currentRoom.p1.id) ||
-    //   (!this.state.currentRoom.p2.id && this.props.currentRoom.p2.id)
-    // ) {
-    //   this.setState({ currentRoom: this.props.currentRoom });
-    // }
   }
 
   //   shouldComponentUpdate() {return false}
