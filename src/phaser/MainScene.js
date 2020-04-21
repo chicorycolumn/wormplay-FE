@@ -126,7 +126,6 @@ export default class MainScene extends Phaser.Scene {
     } else if (
       isP2 === true &&
       this.game.react.state.currentRoom.p1.playerFaces
-
     ) {
       console.log("will update p1 faces cos they just entered");
       oppFaces = this.game.react.state.currentRoom.p1.playerFaces;
@@ -318,14 +317,21 @@ export default class MainScene extends Phaser.Scene {
       backgroundColor: "#F5ED91",
     };
 
-    // create a text block for each part of the array
+    const wordTileStyle2 = {
+      font: "35px Arial",
+      fill: "white",
+      align: "center",
+      padding: { top: 4 },
+    };
+
+    // create a text block for each part of the array HEREEEEEEEEEEEEEEEEEEEEEE
     opponentsArr.forEach((char, i) => {
       const n = i + 1;
       this.gameState.opponents[`opponent${n}`] = this.add.text(
         -50,
         -50,
-        char
-        // wordTileStyle
+        char,
+        wordTileStyle2
       );
     });
 
@@ -1524,7 +1530,7 @@ export default class MainScene extends Phaser.Scene {
       p2HeadShocked.x = p2Head.x;
       p2HeadShocked.y = p2Head.y;
       if (timer.p2 === 0) {
-        if (roundsWon.p1 < roundsWon.p2) {
+        if (roundsWon.p1 > roundsWon.p2) {
           p2HeadSad.setVisible(true);
         } else {
           p2HeadHappy.setVisible(true);
