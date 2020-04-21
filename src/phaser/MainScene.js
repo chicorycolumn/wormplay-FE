@@ -40,7 +40,7 @@ export default class MainScene extends Phaser.Scene {
     super("MainScene");
     this.gameState = {
       wormWordArr: [" ", " ", " ", " ", " ", " "],
-      opponentsArr: ["", "", "", "", "", ""],
+      opponentsArr: [" ", " ", " ", " ", " ", " "],
       opponents: {},
       text: {},
       scores: {},
@@ -66,7 +66,7 @@ export default class MainScene extends Phaser.Scene {
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
     this.gameState.scores = {}; // Resets scores every <round></round> ***************
-    this.gameState.opponentsArr = ["", "", "", "", "", ""];
+    this.gameState.opponentsArr = [" ", " ", " ", " ", " ", " "];
     console.log(playerFaces);
     if (
       playerFaces.happyFace === null ||
@@ -230,6 +230,14 @@ export default class MainScene extends Phaser.Scene {
       align: "center",
       padding: { top: 4 },
     };
+    const wordTileStyle2 = {
+      font: "35px Arial",
+      fill: "#007300",
+      // border: "solid",
+      align: "center",
+      padding: { top: 4 },
+      // backgroundColor: "#F5ED91",
+    };
 
     // create a text block for each part of the array
     opponentsArr.forEach((char, i) => {
@@ -266,7 +274,7 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
         char,
-        wordTileStyle
+        wordTileStyle2
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -844,7 +852,7 @@ export default class MainScene extends Phaser.Scene {
 
         scene.time.delayedCall(2000, function () {
           opponentsArr.forEach((el, i) => {
-            opponentsArr[i] = "";
+            opponentsArr[i] = " ";
           });
           whoWon.p1 = null;
           whoWon.p2 = null;
