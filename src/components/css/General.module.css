@@ -39,6 +39,8 @@
   background-color: #b3ff99;
   width: 800px;
   height: 600px;
+  border: #b3ff99 solid 5px;
+  border-radius: 5px;
   /* overflow:scroll; */
   /* overflow:auto; */
 }
