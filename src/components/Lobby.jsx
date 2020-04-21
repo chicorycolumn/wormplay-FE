@@ -12,14 +12,20 @@ export default class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
+      opponentPlayerFaces: {
+        happyData: null,
+        sadData: null,
+        angryData: null,
+        shockedData: null,
+      },
       goStraightToRoomOne: false,
       ridEventListener: () => {
         console.log("empty fxn instead of ridEventListener");
       },
-      happyData: { src: null },
-      sadData: { src: null },
-      angryData: { src: null },
-      surprisedData: { src: null },
+      happyData: null,
+      sadData: null,
+      angryData: null,
+      surprisedData: null,
       imageBufferToSend: null,
       shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
       socket: null,
@@ -46,20 +52,18 @@ export default class Lobby extends React.Component {
 
   stopWebcam = () => {
     // const video = document.getElementById("video");
-    console.log(">>KILL WEBCAM<<");
+
     this.state.ridEventListener();
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
-        console.log("***");
         video.srcObject = null; // red underlined but is actually okay.
         const tracks = stream.getTracks();
-        console.log("LOBBY", tracks[0].enabled);
+
         tracks.forEach(function (track) {
           track.stop();
           track.enabled = false;
         });
-        console.log("LOBBY", tracks[0].enabled);
       },
       (err) => console.error(err)
     );
@@ -76,10 +80,17 @@ export default class Lobby extends React.Component {
   }
 
   joinRoom = (roomID) => {
+    ////////////
+    let playerFacesToServer = {};
+    playerFacesToServer.happyFace = this.state.happyData;
+    playerFacesToServer.sadFace = this.state.sadData;
+    playerFacesToServer.angryFace = this.state.angryData;
+    playerFacesToServer.shockedFace = this.state.surprisedData;
+
     this.stopWebcam();
     setTimeout(() => {
       //THIS TIMEOUT IS A BODGE.
-      this.state.socket.emit("joinRoom", { roomID });
+      this.state.socket.emit("joinRoom", { roomID, playerFacesToServer });
     }, 1000);
   };
 
@@ -113,6 +124,7 @@ export default class Lobby extends React.Component {
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
+        console.log(data.room);
         console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {
@@ -149,7 +161,15 @@ export default class Lobby extends React.Component {
     console.log("increateroom");
     console.log(this.state.newRoomName, "new room name");
     const { newRoomName } = this.state;
-    this.state.socket.emit("create room", { roomName: newRoomName });
+    let playerFacesToServer = {};
+    playerFacesToServer.happyFace = this.state.happyData;
+    playerFacesToServer.sadFace = this.state.sadData;
+    playerFacesToServer.angryFace = this.state.angryData;
+    playerFacesToServer.shockedFace = this.state.surprisedData;
+    this.state.socket.emit("create room", {
+      roomName: newRoomName,
+      playerFacesToServer,
+    });
   };
 
   render() {
@@ -165,12 +185,12 @@ export default class Lobby extends React.Component {
       currentRoom,
     } = this.state;
 
-    let photoSet = {
-      happy: happyData,
-      sad: sadData,
-      angry: angryData,
-      surprised: surprisedData,
-    };
+    // let photoSet = {
+    //   happy: happyData,
+    //   sad: sadData,
+    //   angry: angryData,
+    //   surprised: surprisedData,
+    // };
     return (
       <div>
         {this.state.iHavePermissionToEnterRoom &&
@@ -181,9 +201,10 @@ export default class Lobby extends React.Component {
                 <ReactGameHolder
                   socket={socket}
                   myUsername={myUsername}
-                  photoSet={photoSet}
+                  // photoSet={photoSet}
                   currentRoom={currentRoom}
                   setStateCallback={this.setStateCallback}
+                  opponentPlayerFaces={this.state.opponentPlayerFaces}
                 />
               </div>
             </div>
@@ -193,7 +214,7 @@ export default class Lobby extends React.Component {
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
-                photoSet={photoSet}
+                // photoSet={photoSet}
                 currentRoom={currentRoom}
                 stopWebcam={this.stopWebcam}
               />

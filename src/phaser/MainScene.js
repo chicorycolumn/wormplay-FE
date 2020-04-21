@@ -20,9 +20,6 @@ import checkedBox from "../assets/ui/blue_boxCheckmark.png";
 import box from "../assets/ui/grey_box.png";
 import { vowelArray, consonantArray } from "../refObjs.js";
 
-//You can access the state of ReactGameHolder.jsx with `this.game.react.state`.
-//You can access the socket anywhere inside the component below, using `this.game.react.state.socket`.
-
 let opponentName = null;
 let socket; // This looks weird but is correct, because we want to declare the socket variable here, but we can't yet initialise it with a value.
 let isP1 = false;
@@ -34,6 +31,60 @@ let scene;
 let lobbyBtnIsDepressed = false;
 let setStateCallback = () => {
   console.log("Haven't set SSC fxn in MainScene yet.");
+};
+
+const p1Arr = [
+  {
+    facesKey: "happyFace",
+    spriteLabel: "p1HeadHappy",
+    image: p1HeadHappy,
+  },
+  {
+    facesKey: "sadFace",
+    spriteLabel: "p1HeadSad",
+    image: p1HeadSad,
+  },
+  {
+    facesKey: "angryFace",
+    spriteLabel: "p1HeadAngry",
+    image: p1HeadAngry,
+  },
+  {
+    facesKey: "shockedFace",
+    spriteLabel: "p1HeadShocked",
+    image: p1HeadShocked,
+  },
+];
+
+const p2Arr = [
+  {
+    facesKey: "happyFace",
+    spriteLabel: "p2HeadHappy",
+    image: p2HeadHappy,
+  },
+  {
+    facesKey: "sadFace",
+    spriteLabel: "p2HeadSad",
+    image: p2HeadSad,
+  },
+  {
+    facesKey: "angryFace",
+    spriteLabel: "p2HeadAngry",
+    image: p2HeadAngry,
+  },
+  {
+    facesKey: "shockedFace",
+    spriteLabel: "p2HeadShocked",
+    image: p2HeadShocked,
+  },
+];
+
+let myFaces = playerFaces;
+let oppFaces = {
+  happyFace: null,
+  sadFace: null,
+  angryFace: null,
+  shockedFace: null,
 };
 
 export default class MainScene extends Phaser.Scene {
@@ -63,48 +114,61 @@ export default class MainScene extends Phaser.Scene {
     isP2 = this.game.react.state.isP2;
     setStateCallback = this.game.react.state.setStateCallback;
 
-    // console.log(setStateCallback);
-
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
     this.gameState.scores = {}; // Resets scores every <round></round> ***************
     this.gameState.opponentsArr = [" ", " ", " ", " ", " ", " "];
-    console.log(playerFaces);
-    if (
-      playerFaces.happyFace === null ||
-      playerFaces.sadFace === null ||
-      playerFaces.angryFace === null ||
-      playerFaces.shockedFace === null
+
+    if (isP1 === true && this.game.react.state.currentRoom.p2.playerFaces) {
+      console.log("will update p2 faces cos they just entered");
+      oppFaces = this.game.react.state.currentRoom.p2.playerFaces;
+    } else if (
+      isP2 === true &&
+      this.game.react.state.currentRoom.p1.playerFaces
     ) {
-      this.load.image("p1HeadHappy", p1HeadHappy);
-      this.load.image("p1HeadShocked", p1HeadShocked);
-      this.load.image("p1HeadAngry", p1HeadAngry);
-      this.load.image("p1HeadSad", p1HeadSad);
-      this.load.image("p2HeadHappy", p2HeadHappy);
-      this.load.image("p2HeadShocked", p2HeadShocked);
-      this.load.image("p2HeadAngry", p2HeadAngry);
-      this.load.image("p2HeadSad", p2HeadSad);
-    } else {
-      this.gameState.usingMyFace = true;
-      if (isP1 === true) {
-        this.textures.addBase64("p1HeadHappy", playerFaces.happyFace);
-        this.textures.addBase64("p1HeadShocked", playerFaces.shockedFace);
-        this.textures.addBase64("p1HeadAngry", playerFaces.angryFace);
-        this.textures.addBase64("p1HeadSad", playerFaces.sadFace);
-        this.load.image("p2HeadHappy", p2HeadHappy);
-        this.load.image("p2HeadShocked", p2HeadShocked);
-        this.load.image("p2HeadAngry", p2HeadAngry);
-        this.load.image("p2HeadSad", p2HeadSad);
-      } else if (isP2 === true) {
-        this.load.image("p1HeadHappy", p1HeadHappy);
-        this.load.image("p1HeadShocked", p1HeadShocked);
-        this.load.image("p1HeadAngry", p1HeadAngry);
-        this.load.image("p1HeadSad", p1HeadSad);
-        this.textures.addBase64("p2HeadHappy", playerFaces.happyFace);
-        this.textures.addBase64("p2HeadShocked", playerFaces.shockedFace);
-        this.textures.addBase64("p2HeadAngry", playerFaces.angryFace);
-        this.textures.addBase64("p2HeadSad", playerFaces.sadFace);
-      }
+      console.log("will update p1 faces cos they just entered");
+      oppFaces = this.game.react.state.currentRoom.p1.playerFaces;
+    }
+
+    // console.log("P:myFaces", myFaces);
+    // console.log("P:oppFaces", oppFaces);
+
+    if (isP1 === true) {
+      //I AM PLAYER ONE.
+      //Load either my photo, or if that's null, load the emoji.
+      p1Arr.forEach((ref) => {
+        if (myFaces[ref.facesKey] === null) {
+          this.load.image(ref.spriteLabel, ref.image);
+        } else {
+          this.textures.addBase64(ref.spriteLabel, myFaces[ref.facesKey]);
+        }
+      });
+      //For player two, load my opponent's either photos or emojis.
+      p2Arr.forEach((ref) => {
+        if (oppFaces[ref.facesKey] === null) {
+          this.load.image(ref.spriteLabel, ref.image);
+        } else {
+          this.textures.addBase64(ref.spriteLabel, oppFaces[ref.facesKey]);
+        }
+      });
+    } else if (isP2 === true) {
+      //I AM PLAYER TWO ACTUALLY.
+      //Load either my photo, or if that's null, load the emoji.
+      p2Arr.forEach((ref) => {
+        if (myFaces[ref.facesKey] === null) {
+          this.load.image(ref.spriteLabel, ref.image);
+        } else {
+          this.textures.addBase64(ref.spriteLabel, myFaces[ref.facesKey]);
+        }
+      });
+      //My opponent is player one, so load either their photos or emojis.
+      p1Arr.forEach((ref) => {
+        if (oppFaces[ref.facesKey] === null) {
+          this.load.image(ref.spriteLabel, ref.image);
+        } else {
+          this.textures.addBase64(ref.spriteLabel, oppFaces[ref.facesKey]);
+        }
+      });
     }
     this.gameState.wantsNewGame = { p1: false, p2: false };
     this.gameState.roundTimer = 30; // resets timer after every round
@@ -200,20 +264,35 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.p2HeadAngry = this.add.image(600, 300, "p2HeadAngry");
     this.gameState.p2HeadAngry.setVisible(false);
 
-    if (this.gameState.usingMyFace === true) {
-      if (isP1 === true) {
-        this.gameState.head.setVisible(true);
-        this.gameState.p1HeadHappy.setDisplaySize(48, 48);
-        this.gameState.p1HeadShocked.setDisplaySize(48, 48);
-        this.gameState.p1HeadSad.setDisplaySize(48, 48);
-        this.gameState.p1HeadAngry.setDisplaySize(48, 48);
-      } else if (isP2 === true) {
-        this.gameState.p2Head.setVisible(true);
-        this.gameState.p2HeadHappy.setDisplaySize(48, 48);
-        this.gameState.p2HeadShocked.setDisplaySize(48, 48);
-        this.gameState.p2HeadSad.setDisplaySize(48, 48);
-        this.gameState.p2HeadAngry.setDisplaySize(48, 48);
-      }
+    //////Previously these two lines below were only triggered if using photos instead of emojis. Now they always trigger.
+    this.gameState.head.setVisible(true); //
+    this.gameState.p2Head.setVisible(true); //
+
+    // console.log("C:myFaces", myFaces);
+    // console.log("C:oppFaces", oppFaces);
+
+    if (isP1 === true) {
+      p1Arr.forEach((ref) => {
+        if (myFaces[ref.facesKey]) {
+          this.gameState[ref.spriteLabel].setDisplaySize(48, 48);
+        }
+      });
+      p2Arr.forEach((ref) => {
+        if (oppFaces[ref.facesKey]) {
+          this.gameState[ref.spriteLabel].setDisplaySize(48, 48);
+        }
+      });
+    } else if (isP2 === true) {
+      p1Arr.forEach((ref) => {
+        if (oppFaces[ref.facesKey]) {
+          this.gameState[ref.spriteLabel].setDisplaySize(48, 48);
+        }
+      });
+      p2Arr.forEach((ref) => {
+        if (myFaces[ref.facesKey]) {
+          this.gameState[ref.spriteLabel].setDisplaySize(48, 48);
+        }
+      });
     }
 
     //variables for destination
@@ -1100,20 +1179,10 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.quitText.setVisible(false);
 
     if (p1Name !== this.game.react.state.currentRoom.p1.username) {
-      console.log(
-        "UPDATE#############",
-        p1Name,
-        this.game.react.state.currentRoom.p1.username
-      );
       p1Name = this.game.react.state.currentRoom.p1.username;
     }
 
     if (p2Name !== this.game.react.state.currentRoom.p2.username) {
-      console.log(
-        "UPDATE#############",
-        p2Name,
-        this.game.react.state.currentRoom.p2.username
-      );
       p2Name = this.game.react.state.currentRoom.p2.username;
     }
 
@@ -1144,19 +1213,12 @@ export default class MainScene extends Phaser.Scene {
       this.gameState.thisPlayerScore.setText(
         `YOU: ${isP1 ? currentRounds.p1 : currentRounds.p2}`
       );
-
-      /////////////////We don't even enter this fxn after a player quits. Solving now... ~Chris
-      console.log("MS currentRoom", this.game.react.state.currentRoom);
       this.gameState.oppositionScore.setText(
-        /////////////////////////////////////////
         `${
           isP1
             ? this.game.react.state.currentRoom.p2.username
             : this.game.react.state.currentRoom.p1.username
-        }: ${
-          ///////////////////////////////////////////////
-          isP1 ? currentRounds.p2 : currentRounds.p1 /////////////////////////////////
-        }`
+        }: ${isP1 ? currentRounds.p2 : currentRounds.p1}`
       );
     }.bind(this);
 
@@ -1221,7 +1283,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    //HAS A PLAYER JUST QUIT/DISCONNECTED IN MIDDLE OF GAME?
+    //CHECK IF A PLAYER JUST QUIT/DISCONNECTED IN MIDDLE OF GAME.
     if (
       (p1Name && !this.game.react.state.currentRoom.p1.id) ||
       (p2Name && !this.game.react.state.currentRoom.p2.id)

@@ -8,11 +8,11 @@ export default class ReactGame extends Component {
   constructor() {
     super();
     this.state = {
-      photoSet: {
-        happy: { src: null },
-        angry: { src: null },
-        sad: { src: null },
-        surprised: { src: null },
+      opponentPlayerFaces: {
+        happyFace: null,
+        sadFace: null,
+        angryFace: null,
+        shockedFace: null,
       },
       info: "This is the state that phaser's MainScene.js has access to.",
       socket: null,
@@ -39,7 +39,6 @@ export default class ReactGame extends Component {
       isP1: this.props.socket.id === this.props.currentRoom.p1.id,
       isP2: this.props.socket.id === this.props.currentRoom.p2.id,
       currentEmotion: this.props.currentEmotion,
-      photoSet: this.props.photoSet,
       setStateCallback: this.props.setStateCallback,
     });
   }
@@ -64,27 +63,34 @@ export default class ReactGame extends Component {
 
           this.setState({
             currentRoom,
+            opponentPlayerFaces: data.enteringPlayer.playerFaces,
           });
 
           //set state of lobby with new currentRoom
           this.props.setStateCallback("currentRoom", currentRoom);
+
+          this.game.destroy(true);
+          setTimeout(() => {
+            this.game = new PhaserGame(this);
+          }, 2000); //Possible screw point.
 
           setTimeout(() => {
             console.log(
               "REACTGAMEHOLDER this.state.currentRoom",
               this.state.currentRoom
             );
-          }, 3000);
+          }, 1000); //Possible screw point.
         }
       });
     }
 
     if (
-      Object.keys(this.state.photoSet).filter((emotion) => {
-        this.state.photoSet[emotion].src !== this.props.photoSet[emotion].src;
+      Object.keys(this.state.opponentPlayerFaces).filter((emotion) => {
+        this.state.opponentPlayerFaces[emotion] !==
+          this.props.opponentPlayerFaces[emotion];
       }).length
     ) {
-      this.setState({ photoSet: this.props.photoSet });
+      this.setState({ opponentPlayerFaces: this.props.opponentPlayerFaces });
     }
 
     if (
@@ -93,12 +99,6 @@ export default class ReactGame extends Component {
     ) {
       this.setState({ currentRoom: this.props.currentRoom });
     }
-    // if ( //Chris Mon 20th
-    //   (!this.state.currentRoom.p1.id && this.props.currentRoom.p1.id) ||
-    //   (!this.state.currentRoom.p2.id && this.props.currentRoom.p2.id)
-    // ) {
-    //   this.setState({ currentRoom: this.props.currentRoom });
-    // }
   }
 
   //   shouldComponentUpdate() {return false}
