@@ -154,14 +154,15 @@ export const emotionRecFullFunction = (
 
               if (emotionDuration[emotion] < 5) {
                 //This bit is just to make the happy bars take twice as long to fill up, cos happy is easy otherwise.
-                if (emotion === "happy") {
-                  if (happyToggle) {
-                    emotionDuration[emotion]++;
-                  }
-                  happyToggle = !happyToggle;
-                }
-                //All non-happy emotions are allowed to fill up their bars normally.
-                else emotionDuration[emotion]++;
+                // if (emotion === "happy") {
+                //   if (happyToggle) {
+                //     emotionDuration[emotion]++;
+                //   }
+                //   happyToggle = !happyToggle;
+                // }
+                // //All non-happy emotions are allowed to fill up their bars normally.
+                // else
+                emotionDuration[emotion]++;
               }
 
               //Reset status bars of all other emotions to 0 whenever you start filling a certain emotion's bars.
