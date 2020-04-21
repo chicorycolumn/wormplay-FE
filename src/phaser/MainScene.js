@@ -40,7 +40,7 @@ export default class MainScene extends Phaser.Scene {
     super("MainScene");
     this.gameState = {
       wormWordArr: [" ", " ", " ", " ", " ", " "],
-      opponentsArr: [" ", " ", " ", " ", " ", " "],
+      opponentsArr: ["", "", "", "", "", ""],
       opponents: {},
       text: {},
       scores: {},
@@ -66,7 +66,7 @@ export default class MainScene extends Phaser.Scene {
     p1Name = this.game.react.state.currentRoom.p1.username;
     p2Name = this.game.react.state.currentRoom.p2.username;
     this.gameState.scores = {}; // Resets scores every <round></round> ***************
-    this.gameState.opponentsArr = [" ", " ", " ", " ", " ", " "];
+    this.gameState.opponentsArr = ["", "", "", "", "", ""];
     console.log(playerFaces);
     if (
       playerFaces.happyFace === null ||
@@ -844,7 +844,7 @@ export default class MainScene extends Phaser.Scene {
 
         scene.time.delayedCall(2000, function () {
           opponentsArr.forEach((el, i) => {
-            opponentsArr[i] = " ";
+            opponentsArr[i] = "";
           });
           whoWon.p1 = null;
           whoWon.p2 = null;
@@ -1351,6 +1351,7 @@ export default class MainScene extends Phaser.Scene {
       opponent6.x = body6.x - 28;
       opponent6.y = body6.y - 28;
     }
+
     if (timer.p1 > 0) {
       timer.p1 -= 1;
       if (roundsWon.p1 < roundsWon.p2) {
