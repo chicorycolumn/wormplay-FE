@@ -1104,11 +1104,12 @@ export default class MainScene extends Phaser.Scene {
           this.gameState.wantsNewGame.p1 === true &&
           this.gameState.wantsNewGame.p2 === true
         ) {
-          socket.emit("new game");
+          socket.emit("new game", roomID);
         } else {
           socket.emit("make new game request", {
             name: isP1 === true ? p1Name : p2Name,
             player: isP1 === true ? "p1" : "p2",
+            roomID,
           });
           scene.gameState.rematchText = scene.add.text(
             100,
@@ -1135,8 +1136,8 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    this.gameState.newGameBtn.setVisible(false);
-    this.gameState.newGameText.setVisible(false);
+    // this.gameState.newGameBtn.setVisible(false);
+    // this.gameState.newGameText.setVisible(false);
 
     this.gameState.quitBtn = this.add
       .sprite(500, 350, "blueButton1")
@@ -1300,7 +1301,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.gameStarted = false;
     if (p1Name !== null && p2Name !== null) {
       socket.emit("both players ready", {
-        roomID: roomID,
+        roomID,
       });
     }
   }
