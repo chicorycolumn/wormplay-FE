@@ -641,7 +641,10 @@ export default class MainScene extends Phaser.Scene {
         console.log(
           `Just so you know, p1Name is now ${p1Name} and p2Name is ${p2Name}`
         );
-        socket.emit("I submitted", { username: isP1 ? p1Name : p2Name });
+        socket.emit("I submitted", {
+          username: isP1 ? p1Name : p2Name,
+          roomID,
+        });
         this.scene.gameState.sendWord(
           wordArr,
           this.scene.game.react.state.socket,
@@ -653,7 +656,7 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.sendWord = function (wordArr, socket, submitBtnPressed) {
       // if (submitBtnPressed === true) {
       const submittedWord = wordArr.filter((char) => char !== " ").join("");
-      socket.emit("worm word submitted", submittedWord);
+      socket.emit("worm word submitted", { submittedWord, roomID });
       // }
     };
 
@@ -799,7 +802,7 @@ export default class MainScene extends Phaser.Scene {
         );
         const winner = isP1 === true ? "p1" : "p2";
         roundsWon[winner] += 1;
-        socket.emit("update rounds", roundsWon);
+        socket.emit("update rounds", { roundsWon, roomID });
       } else if (scoreObj.currentPlayer.points < scoreObj.opponent.points) {
         scene.gameState.roundWinnerText = scene.add.text(
           100,
@@ -820,7 +823,7 @@ export default class MainScene extends Phaser.Scene {
           ],
           roundScoreStyle
         );
-        socket.emit("update rounds", roundsWon);
+        socket.emit("update rounds", { roundsWon, roomID });
       }
     };
 
