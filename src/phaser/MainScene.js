@@ -1136,8 +1136,8 @@ export default class MainScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    // this.gameState.newGameBtn.setVisible(false);
-    // this.gameState.newGameText.setVisible(false);
+    this.gameState.newGameBtn.setVisible(false);
+    this.gameState.newGameText.setVisible(false);
 
     this.gameState.quitBtn = this.add
       .sprite(500, 350, "blueButton1")
