@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-loop-func */
 import Phaser from "phaser";
 import p1HeadHappy from "../assets/p1-default-head/p1-face-default.png";
 import p1HeadSad from "../assets/p1-default-head/p1-face-sad.png";
