@@ -9,6 +9,7 @@ import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
 import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
 import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
 import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
+import enterTheWorm from "../assets/EnterTheWorm.mp3";
 
 import { playerFaces } from "../../public/emotion-rec";
 // import body from "../assets/body-resized.png";
@@ -190,9 +191,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("blueButton2", blueButton2);
     this.load.image("checkedBox", checkedBox);
     this.load.image("box", box);
-    if (shouldIBotherPlayingMusic) {
-      this.load.audio("bgMusic", ["src/assets/EnterTheWorm.mp3"]);
-    }
+    this.load.audio("bgMusic", enterTheWorm);
   }
 
   create() {
@@ -371,7 +370,7 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
         char,
-        wordTileStyle2
+        wordTileStyle
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -1022,7 +1021,7 @@ export default class MainScene extends Phaser.Scene {
         scene.gameState.submitText.destroy();
       }
       scene.gameState.submitText = scene.add.text(
-        100,
+        150,
         100,
         [`${opponentInfo.username} submitted a word!`, `Hurry!`],
         {

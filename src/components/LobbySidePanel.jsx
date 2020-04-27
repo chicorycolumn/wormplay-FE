@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import styles from "./css/SidePanel.module.css";
 import { emotionRecFullFunction } from "../../public/emotion-rec.js";
+import angry from "../assets/angryEmoji.png";
+import happy from "../assets/happyEmoji.png";
+import sad from "../assets/sadEmoji.png";
+import surprised from "../assets/surprisedEmoji.png";
+// Have to load in emoji pics here for Webpack compatibility
+const emojiPics = { angry, happy, sad, surprised }; // To reference later in map function
 
 export default class LobbySidePanel extends React.Component {
   constructor() {
@@ -121,9 +127,10 @@ export default class LobbySidePanel extends React.Component {
                       □□□□
                     </p>
                     <img
-                      src={`src/assets/${emoObj.name}Emoji.png`}
+                      src={emojiPics[emoObj.name]}
                       className={styles.emoEmoji}
                       id={`${emoObj.name}Image`}
+                      alt={emoObj.name}
                     />
                     <p className={styles.emoLabel} id={`${emoObj.name}Action`}>
                       {emoObj.name.toUpperCase() === "SURPRISED"

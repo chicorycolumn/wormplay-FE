@@ -6,7 +6,12 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
   mode: "development",
   devtool: "eval-source-map",
-  entry: "./src/index.js", //do we need this?
+  context: path.resolve(__dirname, "../"),
+  // entry: [
+  //   "./public/face-api.min.js",
+  //   "./public/emotion-rec.js",
+  //   "./src/index.js",
+  // ],
   output: {
     path: path.resolve("dist"),
     filename: "index_bundle.js",
@@ -45,8 +50,12 @@ module.exports = {
         use: "raw-loader",
       },
       {
-        test: /\.(gif|png|jpe?g|svg|xml)$/i,
-        use: "file-loader",
+        test: /\.(gif|png|jpe?g|svg|xml|mp3)$/i,
+        use: "file-loader?name=[name].[ext]",
+      },
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
       },
     ],
   },
@@ -57,9 +66,10 @@ module.exports = {
       WEBGL_RENDERER: JSON.stringify(true),
     }),
     new HtmlWebpackPlugin({
-      template: "./index.html",
+      template: path.resolve(__dirname, "../index.html"),
       filename: "index.html",
       inject: "body",
+      favicon: "src/assets/worm-favicon.png",
     }),
   ],
 };
