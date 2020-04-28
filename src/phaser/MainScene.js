@@ -7,6 +7,7 @@ import p2HeadHappy from "../assets/p2-default-head/p2-face-happy.png";
 import p2HeadSad from "../assets/p2-default-head/p2-face-sad.png";
 import p2HeadAngry from "../assets/p2-default-head/p2-face-angry.png";
 import p2HeadShocked from "../assets/p2-default-head/p2-face-shocked.png";
+import enterTheWorm from "../assets/EnterTheWorm.mp3";
 
 import { playerFaces } from "../../public/emotion-rec";
 // import body from "../assets/body-resized.png";
@@ -175,10 +176,10 @@ export default class MainScene extends Phaser.Scene {
     }
     this.gameState.wantsNewGame = { p1: false, p2: false };
     this.gameState.roundTimer = 30; // resets timer after every round
-    this.load.image("head", body);
+    this.load.image("head", body2);
     this.load.image("body", body);
 
-    this.load.image("p2Head", body2);
+    this.load.image("p2Head", body);
     this.load.image("body2", body2);
     this.load.image("p2Head", p2HeadHappy);
     this.load.image("p2HeadShocked", p2HeadShocked);
@@ -188,9 +189,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("blueButton2", blueButton2);
     this.load.image("checkedBox", checkedBox);
     this.load.image("box", box);
-    if (shouldIBotherPlayingMusic) {
-      this.load.audio("bgMusic", ["src/assets/EnterTheWorm.mp3"]);
-    }
+    this.load.audio("bgMusic", enterTheWorm);
   }
 
   create() {
@@ -369,7 +368,7 @@ export default class MainScene extends Phaser.Scene {
         letterTileSpecifications[num].x,
         letterTileSpecifications[num].y,
         char,
-        wordTileStyle2
+        wordTileStyle
       );
       this.gameState.text[`letter${num}`].value = char;
     });
@@ -847,7 +846,7 @@ export default class MainScene extends Phaser.Scene {
           whoWon.p2 = true;
         }
         this.finalWinnerText = scene.add.text(
-          100,
+          150,
           100,
           [`Well Done ${thisPlayerName}!`, `You Won!`],
           finalScoreStyle
@@ -859,7 +858,7 @@ export default class MainScene extends Phaser.Scene {
           whoWon.p1 = true;
         }
         this.finalWinnerText = scene.add.text(
-          100,
+          150,
           100,
           [`Oh no ${opponentName} Won!`, `I'm sorry. :(`],
           finalScoreStyle
@@ -989,7 +988,7 @@ export default class MainScene extends Phaser.Scene {
         scene.gameState.submitText.destroy();
       }
       scene.gameState.submitText = scene.add.text(
-        150,
+        175,
         100,
         `Nice! Just checking your word...`,
         {
@@ -1020,7 +1019,7 @@ export default class MainScene extends Phaser.Scene {
         scene.gameState.submitText.destroy();
       }
       scene.gameState.submitText = scene.add.text(
-        100,
+        150,
         100,
         [`${opponentInfo.username} submitted a word!`, `Hurry!`],
         {

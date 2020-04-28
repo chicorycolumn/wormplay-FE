@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import App from "./components/App.jsx";
 import Lobby from "./components/Lobby.jsx";
 import socketIOClient from "socket.io-client";
+import "./assets/worm-favicon.png";
 
 let shouldEndpointBeHeroku = true; //TOGGLE THIS MANUALLY DURING DEVELOPMENT
 
