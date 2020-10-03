@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styles from "./css/RoomTable.module.css";
+import genStyles from "./css/General.module.css";
 import { render } from "@testing-library/react";
 
 class RoomTable extends Component {
@@ -24,7 +25,7 @@ class RoomTable extends Component {
             <td>
               {(room.p1.username === null || room.p2.username === null) && (
                 <button
-                  className={styles.joinRoomButton}
+                  className={`${styles.joinRoomButton} ${genStyles.rounded1}`}
                   value={roomID}
                   onClick={(e) => {
                     e.preventDefault();

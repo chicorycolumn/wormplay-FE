@@ -55,22 +55,11 @@
 }
 
 .rightPanelDisplay {
-  /* border: darkorchid solid 5pt; */
-  height: 600px;
+  /* border: darkorchid solid 2px; */
+  height: 100%;
   display: grid;
   grid-template-rows: 50% 1fr;
   width: 350px;
-}
-
-.topbox {
-  /* border: black solid 2.5pt; */
-  background-color: coral;
-  grid-row: 1;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  /* justify-content: space-between; */
 }
 
 .emojiHolder {
@@ -85,16 +74,27 @@
 }
 
 .midbox {
-  background-color: yellow;
+  background-image: linear-gradient(#ffbf28, yellow);
   grid-row: 2;
 }
 
 .midboxLobby {
-  background-color: yellow;
+  background-image: linear-gradient(#ffbf28, yellow);
   grid-row: 2;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.topbox {
+  /* border: black solid 2.5pt; */
+  background-image: linear-gradient(coral, #ffbf28);
+  grid-row: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* justify-content: space-between; */
 }
 
 .bottombox {
@@ -199,7 +199,7 @@
 .canvasPhoto {
   width: 120px;
   height: 120px;
-  border: forestgreen solid 2.5pt;
+  border: rgba(255, 255, 255, 0.25) dashed 4px;
   align-self: center;
   border-radius: 50%;
   margin-left: 12.5px;

@@ -100,54 +100,60 @@ export default class App extends React.Component {
       }
     }
     return (
-      <div id="largeContainer" className={genStyles.largeContainer}>
-        {this.state.amILoggedIn ? (
-          <div>
-            <Lobby socket={socket} myUsername={myUsername} rooms={rooms} />
-          </div>
-        ) : isRoomFull ? (
-          <p
-            className={styles.lobbyInfoDisplay}
-          >{`Fuck! I'm so sorry ${myUsername} but the room is full!`}</p>
-        ) : (
-          <div id="preGeorgine" className={genStyles.preGeorgine}>
-            <img className={styles.appleGraphic} src={apple} />
-            <form
-              className={styles.loginForm}
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (this.state.loginField.length) {
-                  const myUsername = this.state.loginField;
-                  this.state.socket.emit("login", { username: myUsername });
-                  this.setState({ loginField: "" });
-                }
-              }}
-            >
-              <input
-                className={styles.loginField}
-                id="loginField"
-                maxlength="12"
-                autocomplete="off"
-                value={this.state.loginField}
-                onChange={(e) => {
-                  this.setState({ loginField: e.target.value });
+      <>
+        <div className={genStyles.bodyOverlay}></div>
+        <div id="largeContainer" className={genStyles.largeContainer}>
+          {this.state.amILoggedIn ? (
+            <div>
+              <Lobby socket={socket} myUsername={myUsername} rooms={rooms} />
+            </div>
+          ) : isRoomFull ? (
+            <p
+              className={styles.lobbyInfoDisplay}
+            >{`Fuck! I'm so sorry ${myUsername} but the room is full!`}</p>
+          ) : (
+            <div id="preGeorgine" className={genStyles.preGeorgine}>
+              <img className={styles.appleGraphic} src={apple} />
+              <form
+                className={styles.loginForm}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (this.state.loginField.length) {
+                    const myUsername = this.state.loginField;
+                    this.state.socket.emit("login", { username: myUsername });
+                    this.setState({ loginField: "" });
+                  }
                 }}
-                placeholder="Your name here!"
-              ></input>
-              <button className={styles.loginSubmitButton} type="submit">
-                Let's worm!
-              </button>
-              <label className={styles.container}>
-                {/* <p className={styles.disclaimer}> */}I accept that worms are
-                beautiful misunderstood creatures. (optional)
-                {/* </p> */}
-                <input type="checkbox" className={styles.checkbox} />
-                <span className={styles.checkmark}></span>
-              </label>
-            </form>
-          </div>
-        )}
-      </div>
+              >
+                <input
+                  className={`${styles.loginField} ${genStyles.rounded1}`}
+                  id="loginField"
+                  maxlength="12"
+                  autocomplete="off"
+                  value={this.state.loginField}
+                  onChange={(e) => {
+                    this.setState({ loginField: e.target.value });
+                  }}
+                  placeholder="Your name here!"
+                ></input>
+                <button
+                  className={`${styles.loginSubmitButton} ${genStyles.rounded1}`}
+                  type="submit"
+                >
+                  Let's worm!
+                </button>
+                <label className={styles.container}>
+                  {/* <p className={styles.disclaimer}> */}I accept that worms
+                  are beautiful misunderstood creatures. (optional)
+                  {/* </p> */}
+                  <input type="checkbox" className={styles.checkbox} />
+                  <span className={styles.checkmark}></span>
+                </label>
+              </form>
+            </div>
+          )}
+        </div>
+      </>
     );
   }
 }

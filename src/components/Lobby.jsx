@@ -195,7 +195,10 @@ export default class Lobby extends React.Component {
       <div>
         {this.state.iHavePermissionToEnterRoom &&
         this.state.shallIBotherLoadingTheGame ? (
-          <div id="georgine" className={genStyles.georgine}>
+          <div
+            id="georgine"
+            className={`${genStyles.rounded2} ${genStyles.shadow2} ${genStyles.georgine}`}
+          >
             <div id="leftPanel" className={genStyles.leftPanel}>
               <div id="phaserContainer">
                 <ReactGameHolder
@@ -223,7 +226,10 @@ export default class Lobby extends React.Component {
         ) : (
           <>
             {!this.state.goStraightToRoomOne && (
-              <div id="georgine" className={genStyles.georgine}>
+              <div
+                id="georgine"
+                className={`${genStyles.rounded2} ${genStyles.shadow2} ${genStyles.georgine}`}
+              >
                 <div id="leftPanel" className={genStyles.leftPanel}>
                   <div>
                     <h1 className={styles.heading}>{`${greeting} `}</h1>

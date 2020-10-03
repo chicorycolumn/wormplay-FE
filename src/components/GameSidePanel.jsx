@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styles from "./css/SidePanel.module.css";
+import genStyles from "./css/General.module.css";
 import { emotionRecFullFunction } from "../../public/emotion-rec.js";
 
 export default class GameSidePanel extends React.Component {
