@@ -8,16 +8,12 @@
   position: relative;
   left: 0%;
   top: 20px;
-  /* border: black solid 5px; */
 }
 
 body {
   background-image: url(/src/assets/tile_daisy.jpg);
   background-size: 250px;
   background-repeat: repeat;
-  /* position: fixed;
-  width: 100%;
-  height: 100%; */
 }
 
 .bodyOverlay {
@@ -27,7 +23,6 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgba(217, 255, 204, 0.8);
-  /* z-index: 10; */
 }
 
 .rounded1 {
@@ -47,7 +42,6 @@ body {
 }
 
 .largeContainer {
-  /* border: fuchsia solid 5pt; */
   text-align: center;
   display: flex;
   flex-direction: row;
@@ -55,19 +49,14 @@ body {
   align-self: center;
   width: 100%;
   position: relative;
-  /* left: 12.5%; */
 }
 
 .preGeorgine {
-  /* border: red solid 2pt; */
-  /* display: flex;
-  flex-direction: row; */
   justify-content: center;
   text-align: center;
   width: 1000px;
   height: 600px;
   position: relative;
-  /* left: 15%; */
   top: 20px;
   margin: 0px;
 }
@@ -77,15 +66,9 @@ body {
   background-image: linear-gradient(#b3ff99, #9dec82);
   width: 800px;
   height: 600px;
-  /* border: #b3ff99 solid 5px; */
-  /* overflow:scroll; */
-  /* overflow:auto; */
 }
 
 .rightPanel {
-  /* background-color: aquamarine; */
-  /* border: cyan solid 2px; */
   height: 100%;
   width: fit-content;
-  /* background-color: red; */
 }

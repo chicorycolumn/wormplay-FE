@@ -71,43 +71,9 @@ export default class CreditsScene extends Phaser.Scene {
 
     this.menuButton.on(
       "pointerup",
-      function(pointer) {
+      function (pointer) {
         this.scene.start("MainScene");
       }.bind(this)
     );
-
-    //this is if you want the credits to auto scroll though and then go back to the game
-    // this.creditsTween = this.tweens.add({
-    //   targets: this.creditsText,
-    //   y: -100,
-    //   ease: "Power1",
-    //   duration: 3000,
-    //   delay: 1000,
-    //   onComplete: function () {
-    //     this.destroy;
-    //   },
-    // });
-
-    // this.madeByTween = this.tweens.add({
-    //   targets: this.madeByText,
-    //   y: -300,
-    //   ease: "Power1",
-    //   duration: 8000,
-    //   delay: 1000,
-    //   onComplete: function () {
-    //     this.madeByText.destroy;
-    //     this.scene.start("MainScene");
-    //   }.bind(this),
-    // });
-    // this.imageTween = this.tweens.add({
-    //   targets: this.imageText,
-    //   y: -200,
-    //   ease: "Power1",
-    //   duration: 3000,
-    //   delay: 2000,
-    //   onComplete: function () {
-    //     this.destroy;
-    //   },
-    // });
   }
 }

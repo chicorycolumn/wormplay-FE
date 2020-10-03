@@ -27,7 +27,7 @@ export default class Lobby extends React.Component {
       angryData: null,
       surprisedData: null,
       imageBufferToSend: null,
-      shallIBotherLoadingTheGame: true, //TOGGLE THIS DURING DEVELOPMENT.
+      shallIBotherLoadingTheGame: true,
       socket: null,
       myUsername: "",
       iHavePermissionToEnterRoom: false,
@@ -51,13 +51,11 @@ export default class Lobby extends React.Component {
   };
 
   stopWebcam = () => {
-    // const video = document.getElementById("video");
-
     this.state.ridEventListener();
     navigator.getUserMedia(
       { video: {} },
       (stream) => {
-        video.srcObject = null; // red underlined but is actually okay.
+        video.srcObject = null;
         const tracks = stream.getTracks();
 
         tracks.forEach(function (track) {
@@ -80,7 +78,6 @@ export default class Lobby extends React.Component {
   }
 
   joinRoom = (roomID) => {
-    ////////////
     let playerFacesToServer = {};
     playerFacesToServer.happyFace = this.state.happyData;
     playerFacesToServer.sadFace = this.state.sadData;
@@ -89,43 +86,33 @@ export default class Lobby extends React.Component {
 
     this.stopWebcam();
     setTimeout(() => {
-      //THIS TIMEOUT IS A BODGE.
       this.state.socket.emit("joinRoom", { roomID, playerFacesToServer });
     }, 1000);
   };
 
   quitRoom = () => {
-    console.log("gonna try quitting room");
     this.state.socket.emit("quitRoom");
   };
 
   componentDidUpdate(prevProps, prevState) {
-    // console.log("CDU of Lobby", this.state.currentRoom);
-    // console.log("CDU of Lobby, props", this.props.currentRoom);
     if (this.state.socket && this.state.goStraightToRoomOne) {
       this.state.socket.emit("joinRoom", { roomID: 1, developmentCheat: true });
     }
 
     if (this.state.socket) {
       if (prevState.imageBufferToSend !== this.state.imageBufferToSend) {
-        console.log("gonna send image buffer on", this.state.socket);
         this.state.socket.emit("image from client", {
           buf: this.state.imageBufferToSend,
         });
       }
 
-      this.state.socket.on("connectionRefused", () => {
-        console.log(`Oh no! The room was full or something.`);
-      });
+      this.state.socket.on("connectionRefused", () => {});
 
       this.state.socket.on("lobbyUpdate", (data) => {
-        console.log("gonna update lobby");
         this.setState({ rooms: data.rooms });
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
-        console.log(data.room);
-        console.log(`Seems like we successfully joined ${data.room.roomID}`);
         //A check to avoid MFIR.
         if (data.youCanEnter) {
           if (data.youCanEnter) {
@@ -151,15 +138,11 @@ export default class Lobby extends React.Component {
   }
 
   handleInput = (input) => {
-    console.log("handling input");
     const { newRoomName } = this.state;
     this.setState({ newRoomName: input });
-    // this.state.socket.emit("create room", { roomName: newRoomName });
   };
 
   createNewRoom = () => {
-    console.log("increateroom");
-    console.log(this.state.newRoomName, "new room name");
     const { newRoomName } = this.state;
     let playerFacesToServer = {};
     playerFacesToServer.happyFace = this.state.happyData;
@@ -185,12 +168,6 @@ export default class Lobby extends React.Component {
       currentRoom,
     } = this.state;
 
-    // let photoSet = {
-    //   happy: happyData,
-    //   sad: sadData,
-    //   angry: angryData,
-    //   surprised: surprisedData,
-    // };
     return (
       <div>
         {this.state.iHavePermissionToEnterRoom &&
@@ -204,7 +181,6 @@ export default class Lobby extends React.Component {
                 <ReactGameHolder
                   socket={socket}
                   myUsername={myUsername}
-                  // photoSet={photoSet}
                   currentRoom={currentRoom}
                   setStateCallback={this.setStateCallback}
                   opponentPlayerFaces={this.state.opponentPlayerFaces}
@@ -217,7 +193,6 @@ export default class Lobby extends React.Component {
                 myUsername={myUsername}
                 iHavePermissionToEnterRoom={iHavePermissionToEnterRoom}
                 setStateCallback={this.setStateCallback}
-                // photoSet={photoSet}
                 currentRoom={currentRoom}
                 stopWebcam={this.stopWebcam}
               />
@@ -263,7 +238,6 @@ export default class Lobby extends React.Component {
                           className={`${styles.newRoomButton} ${styles.tooltip}`}
                           type="submit"
                         >
-                          {/* ✔️ */}
                           🦋
                           <span className={styles.tooltiptext}>
                             Create room!

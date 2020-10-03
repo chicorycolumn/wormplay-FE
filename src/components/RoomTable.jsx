@@ -7,7 +7,6 @@ class RoomTable extends Component {
   constructor() {
     super();
     this.state = {};
-    // this.setStateCallback = this.setStateCallback.bind(this);
   }
 
   renderTableData = (props) => {

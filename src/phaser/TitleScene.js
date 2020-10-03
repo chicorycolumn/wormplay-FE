@@ -15,7 +15,6 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   create() {
-    // Game
     this.gameButton = this.add.sprite(100, 200, "blueButton1").setInteractive();
     this.centerButton(this.gameButton, 1);
 
@@ -32,7 +31,6 @@ export default class TitleScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    // Options
     this.optionsButton = this.add
       .sprite(300, 200, "blueButton1")
       .setInteractive();
@@ -51,7 +49,6 @@ export default class TitleScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    // Credits
     this.creditsButton = this.add
       .sprite(300, 200, "blueButton1")
       .setInteractive();

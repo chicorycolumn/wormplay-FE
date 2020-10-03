@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-// import logo from "../assets/logo.png";
 
 export default class PreloaderScene extends Phaser.Scene {
   constructor() {

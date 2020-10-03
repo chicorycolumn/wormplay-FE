@@ -8,12 +8,6 @@ export default class GameSidePanel extends React.Component {
     super();
     this.state = {
       chatTimestamp: 0,
-      // photoSet: {
-      //   happy: { src: null },
-      //   angry: { src: null },
-      //   sad: { src: null },
-      //   surprised: { src: null },
-      // },
 
       socket: null,
       myUsername: "",
@@ -123,10 +117,6 @@ export default class GameSidePanel extends React.Component {
           (this.state.socket.id === this.state.currentRoom.p2.id &&
             data.enteringPlayerID !== this.state.currentRoom.p1.id)
         ) {
-          console.log("inside socket.on a player entered your game");
-
-          console.log("OPPONENT FACES", data.enteringPlayer.playerFaces);
-
           const { currentRoom } = data;
 
           let infoDisplay = document.getElementById("infoDisplay");
@@ -158,7 +148,6 @@ export default class GameSidePanel extends React.Component {
           (this.state.socket.id === this.state.currentRoom.p2.id &&
             data.leavingPlayerID === this.state.currentRoom.p1.id)
         ) {
-          console.log("inside socket.on a player left your game");
           const { currentRoom } = data;
 
           let infoDisplay = document.getElementById("infoDisplay");
@@ -182,16 +171,6 @@ export default class GameSidePanel extends React.Component {
         }
       });
     }
-
-    // if (prevState.currentEmotion.src !== this.props.currentEmotion.src) {
-    //   this.setState({ currentEmotion: this.props.currentEmotion });
-    // }
-    // if (
-    //   this.state.currentRoom.p1.id !== this.props.currentRoom.p1.id ||
-    //   this.state.currentRoom.p2.id !== this.props.currentRoom.p2.id
-    // ) {
-    //   this.setState({ currentRoom: this.props.currentRoom });
-    // }
     if (this.state.myUsername !== this.props.myUsername) {
       this.setState({ myUsername: this.props.myUsername });
     }
@@ -203,7 +182,6 @@ export default class GameSidePanel extends React.Component {
       currentRoom,
       myUsername,
       emoObj,
-      // photoSet,
     } = this.state;
 
     return (
@@ -226,22 +204,6 @@ export default class GameSidePanel extends React.Component {
             <br />
             Good luck, and good worm!
           </div>
-          {/* <div className={styles.emojiHolder}>
-            {Object.keys(photoSet).map((label) => {
-              return (
-                <div className={styles.emoHolder} id={`${emoObj.name}Holder`}>
-                  <img
-                    src={photoSet[label].src}
-                    className={styles.emoEmoji}
-                    id={`${label}Photo`}
-                  />
-                  <p className={styles.emoLabel} id={`${label}Action`}>
-                    {label.toUpperCase()}
-                  </p>
-                </div>
-              );
-            })}
-          </div> */}
         </div>
 
         <div className={styles.midboxLobby}>
@@ -285,15 +247,6 @@ export default class GameSidePanel extends React.Component {
             </form>
           </div>
         </div>
-        {/* {currentRoom.p1.username !== null &&
-          currentRoom.p2.username !== null ? (
-            <div>
-              <p>{currentRoom.p1.username + ": " + currentRoom.p1.score}</p>
-              <p>{currentRoom.p2.username + ": " + currentRoom.p2.score}</p>
-            </div>
-          ) : (
-            "waiting..."
-          )} */}
       </div>
     );
   }

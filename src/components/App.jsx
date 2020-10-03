@@ -2,14 +2,9 @@ import React, { Component } from "react";
 import Lobby from "./Lobby.jsx";
 import styles from "./css/App.module.css";
 import { emotionRecFullFunction } from "../../public/emotion-rec.js";
-// import { Router } from "@reach/router";
 import RoomTable from "./RoomTable.jsx";
 import genStyles from "./css/General.module.css";
 import apple from "../assets/apple.png";
-
-//You can access the socket as `this.state.socket`.
-//I suggest that in this file, we use the socket for pre-game stuff, logging in kinda things,
-//and then in MainScene.js, that's where we use the socket for in-game stuff, movement kinda things. ~Chris
 
 export default class App extends React.Component {
   constructor() {
@@ -24,7 +19,7 @@ export default class App extends React.Component {
       needUpdate: false,
       loginField: "",
       myUsername: "",
-      isRoomFull: false, //This should be setStated when a player exits a room back into the lobby, I think. ~Chris
+      isRoomFull: false,
       welcomeMessage: "",
       emoObj: [
         { name: "happy", action: "rush" },
@@ -33,8 +28,6 @@ export default class App extends React.Component {
         { name: "sad", action: "time" },
       ],
       currentEmotion: { name: null, src: null },
-
-      // currentRoomIAmIn: null,
       rooms: [],
     };
     this.setStateCallback = this.setStateCallback.bind(this);
@@ -56,24 +49,6 @@ export default class App extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    //*************** I MAY MOVE THIS TO LOBBY LATER ~Chris */
-    // if (
-    //   prevState.currentEmotion.name !== this.state.currentEmotion.name &&
-    //   this.state.currentEmotion.name
-    // ) {
-    //   let infoDisplay = document.getElementById("infoDisplay");
-
-    //   let newLi = document.createElement("li");
-    //   newLi.style.margin = "8px";
-    //   newLi.innerHTML =
-    //     "You are so " +
-    //     "<strong>" +
-    //     `${this.state.currentEmotion.name}` +
-    //     "</strong>" +
-    //     ", my friend!";
-    //   infoDisplay.appendChild(newLi);
-    // }
-
     if (this.state.socket) {
       if (!this.state.amILoggedIn) {
         this.state.socket.on("connectionReply", (data) => {
@@ -143,9 +118,8 @@ export default class App extends React.Component {
                   Let's worm!
                 </button>
                 <label className={styles.container}>
-                  {/* <p className={styles.disclaimer}> */}I accept that worms
-                  are beautiful misunderstood creatures. (optional)
-                  {/* </p> */}
+                  I accept that worms are beautiful misunderstood creatures.
+                  (optional)
                   <input type="checkbox" className={styles.checkbox} />
                   <span className={styles.checkmark}></span>
                 </label>

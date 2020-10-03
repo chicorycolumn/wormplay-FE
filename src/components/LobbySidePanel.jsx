@@ -8,12 +8,6 @@ export default class LobbySidePanel extends React.Component {
     super();
     this.state = {
       trivialVariable: "oo",
-      // photoSet: {
-      //   happy: { src: null },
-      //   angry: { src: null },
-      //   sad: { src: null },
-      //   surprised: { src: null },
-      // },
       socket: null,
       myUsername: "",
       iJustEnteredLobbyOrRoom: true,
@@ -58,15 +52,11 @@ export default class LobbySidePanel extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.socket) {
-      //********************** */
       let cb = this.setStateCallbackToSidePanel;
 
       this.state.socket.on("image", function (info) {
-        console.log(">>>image");
         for (let i = 0; i < 1; i++) {
           if (info.image) {
-            // console.log("cb", cb);
-            // console.log(info.buffer);
             var img = new Image();
             img.src = "data:image/jpeg;base64," + info.buffer;
             var ctx = document.getElementById("testCanvas").getContext("2d");
@@ -75,12 +65,9 @@ export default class LobbySidePanel extends React.Component {
               ctx.drawImage(img, 0, 0);
               console.log("bounced image", img);
             }, 3000);
-
-            // cb("trivialVariable", "boo");
           }
         }
       });
-      //********************** */
     }
 
     if (this.state.myUsername !== this.props.myUsername) {
@@ -103,7 +90,6 @@ export default class LobbySidePanel extends React.Component {
       currentRoom,
       myUsername,
       emoObj,
-      // photoSet,
     } = this.state;
 
     return (
@@ -140,17 +126,6 @@ export default class LobbySidePanel extends React.Component {
         <div className={styles.midboxLobby}>
           <div>
             <p className={styles.instructions}>
-              {/* ********************* */}
-              {/* <canvas id="testCanvas"></canvas>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  socket.emit("send me image");
-                }}
-              >
-                IMAGE
-              </button> */}
-              {/* ********************* */}
               Pull a face and we'll capture your emotion! This is optional and{" "}
               <strong>personalises</strong> your worm!
               <br />

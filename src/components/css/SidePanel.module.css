@@ -7,7 +7,6 @@
   font-size: 14px;
   margin: 0px;
   padding: 12px 0px 0px 0px;
-  /* border: white solid 2.5pt; */
   height: 172px;
   overflow: auto;
 }
@@ -35,7 +34,6 @@
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  /* border: firebrick solid 2.5pt; */
 }
 
 .roomsDisplay {
@@ -55,7 +53,6 @@
 }
 
 .rightPanelDisplay {
-  /* border: darkorchid solid 2px; */
   height: 100%;
   display: grid;
   grid-template-rows: 50% 1fr;
@@ -70,7 +67,6 @@
   justify-content: center;
   position: relative;
   top: 2.5%;
-  /* border-top: coral solid 15pt; */
 }
 
 .midbox {
@@ -87,20 +83,17 @@
 }
 
 .topbox {
-  /* border: black solid 2.5pt; */
   background-image: linear-gradient(coral, #ffbf28);
   grid-row: 1;
   height: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  /* justify-content: space-between; */
 }
 
 .bottombox {
   background-color: thistle;
   grid-row: 3;
-
   height: 100%;
 }
 
@@ -109,7 +102,6 @@
   width: 150px;
   display: flex;
   justify-content: center;
-  /* border: white solid 2pt; */
 }
 
 .webcamImage {
@@ -120,7 +112,6 @@
 }
 
 .emoHolder {
-  /* border: black solid 2.5pt; */
   height: 150px;
   width: 100px;
   display: flex;
@@ -144,19 +135,7 @@
   font-size: 12pt;
 }
 
-/* .infoDisplayMessage {
-  font-family: "Lucida Sans";
-} */
-
-/* .container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    border: blueviolet solid 2.5pt;
-  } */
-
 .videoContainer {
-  /* border: bisque solid 5pt; */
   position: relative;
   top: -3%;
   display: flex;
@@ -168,7 +147,6 @@
 }
 
 .videoObscurer {
-  /* border: black solid 1pt; */
   background-color: coral;
   width: 180px;
   height: 140px;
@@ -178,19 +156,9 @@
   z-index: 2;
 }
 
-/* .canvasDetections {
-    border: yellow solid 10pt;
-    width: 120px;
-    height: 120px;
-    position: absolute;
-    z-index: 1;
-  } */
-
 .video {
-  /* border: orange solid 5pt; */
   position: relative;
   z-index: 0;
-  /* border: indigo solid 2.5pt; */
   width: 180px;
   height: 140px;
   margin-left: -25px;
@@ -218,7 +186,6 @@
 
 .chatButton {
   width: 47.5px;
-  /* position: relative; */
   font-size: 14pt;
   height: 48px;
   background-color: white;
@@ -241,18 +208,13 @@
   border: green solid 2pt;
   box-shadow: 2.5px 2.5px 1.25px grey;
   position: relative;
-  /* left: 380px;
-  top: 240px; */
   border: green solid 2pt;
   font-size: 12pt;
   text-align: left;
 }
 
 .chatFormHolder {
-  /* border: slateblue solid 2pt; */
   position: relative;
   bottom: 6px;
-  /* bottom: 16px; */
   left: -1px;
-  /* border: blue solid 0.5pt; */
 }

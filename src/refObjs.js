@@ -1,7 +1,5 @@
 const vowelArray = ["A", "A", "E", "E", "E", "I", "I", "O", "O", "U"];
 
-//I modified the frequencies by adding multiples to the arrays. ~Chris
-
 const consonantArray = [
   "B",
   "B",
