@@ -1,7 +1,7 @@
 {
   "name": "Wormplay",
   "version": "1.0.0",
-  "description": "Wormplay, a worm based word game",
+  "description": "A worm-themed webcam wordgame with facial recognition",
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --config webpack/prod.js ",
@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Brork/wormplay.git"
+    "url": "git+https://github.com/chicorycolumn/wormplay-FE"
   },
-  "author": "Nadia Rashad, Chris Matus, Patrick Mackridge and James Johnson",
+  "author": "Nadia Rashad, Chris Matus, Patrick Mackridge, James Johnson",
   "bugs": {
     "url": ""
   },
-  "homepage": "https://github.com/Brork/wormplay.git",
+  "homepage": "https://github.com/chicorycolumn/wormplay-FE#readme",
   "devDependencies": {
     "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
