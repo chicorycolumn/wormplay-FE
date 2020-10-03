@@ -110,7 +110,6 @@ export default class GameSidePanel extends React.Component {
       });
 
       this.state.socket.on("a player entered your game", (data) => {
-        //A check, so that we only fire this fxn if the entering player is different or new. To avert MFIR.
         if (
           (this.state.socket.id === this.state.currentRoom.p1.id &&
             data.enteringPlayerID !== this.state.currentRoom.p2.id) ||
@@ -141,7 +140,6 @@ export default class GameSidePanel extends React.Component {
       });
 
       this.state.socket.on("a player left your game", (data) => {
-        //A check, so that we only fire this fxn once per exiting player. To avert the MFIR problem.
         if (
           (this.state.socket.id === this.state.currentRoom.p1.id &&
             data.leavingPlayerID === this.state.currentRoom.p2.id) ||

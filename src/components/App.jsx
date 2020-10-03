@@ -11,9 +11,9 @@ export default class App extends React.Component {
     super();
     this.state = {
       amILoggedIn: false,
-      socket: null, //Just FYI, this gets setStated as the socket from props from index.js. ~Chris
+      socket: null,
       message: "",
-      whichPlayerAmI: null, //Remember to switch this back to null when I exit a room back into the lobby. To avoid the MFIR (Multiple Firing In React) problem. ~Chris
+      whichPlayerAmI: null,
       index: undefined,
       character: "",
       needUpdate: false,

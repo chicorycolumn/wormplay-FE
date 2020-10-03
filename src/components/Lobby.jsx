@@ -113,7 +113,6 @@ export default class Lobby extends React.Component {
       });
 
       this.state.socket.on("youJoinedARoom", (data) => {
-        //A check to avoid MFIR.
         if (data.youCanEnter) {
           if (data.youCanEnter) {
             let whichPlayerAmI = data.whichPlayerIsShe;

@@ -1,36 +1,51 @@
-_April 9th_
+# Wormplay frontend
 
-Hey all, Chris here, just to point out that there is now just **one socket** created for this whole repo. It's created in _src/index.js_, and is made available in all the other components.
+## Instructions
 
-### SEPARATION
+This frontend is live on [Netlify](https://wormplay.netlify.app/).
+<br/>
+The backend counterpart repository can be found [here](https://github.com/nadiarashad/wormplay-BE).
+<br/>
+You can also download this repository and run the project locally by following these steps:
 
-I forgot to bring this up in today's standup - it might be nice to have some separation of all the _socket.on_ functions we'll be creating, so we don't have a million in one file.
+1. Fork this repository by clicking the button labelled 'Fork' on the [project page](https://github.com/chicorycolumn/wormplay-FE).
+   <br/>
+   Copy the url of your forked copy of the repository, and run `git clone the_url_of_your_forked_copy` in a Terminal window on your computer, replacing the long underscored word with your url.
+   <br/>
+   If you are unsure, instructions on forking can be found [here](https://guides.github.com/activities/forking/) or [here](https://www.toolsqa.com/git/git-fork/), and cloning [here](https://www.wikihow.com/Clone-a-Repository-on-Github) or [here](https://www.howtogeek.com/451360/how-to-clone-a-github-repository/).
 
-In this repo currently:
+2. Open the project in a code editor, and run `npm install` to install necessary packages. You may also need to install [Node.js](https://nodejs.org/en/) by running `npm install node.js`.
 
-**Pre-Game** socket functions - like _socket.on("login"...), socket.on("player left the game"...)_ are kept in the react component **App.jsx**.
+3. Run `npm start` to open the project in development mode.
+   <br/>
+   Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-**In-Game** socket functions - like _socket.on("movement"...), socket.on("drop letter on worm"...)_ are kept in the phaser component **MainScene.js**.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-I'm not wedded to this formation or anything! Just that it might be nice to keep in mind, so we know where to find which function. Maybe we'll even create more components in the future, to separate them out more.
+## Deploy
 
-### THE CHAIN
+General instructions for taking a **React project** and hosting it on **Netlify** for **automatic deployment** are as follows:
 
-**index.js** (javascript) invokes **App.jsx** (react) which invokes **ReactGameHolder.jsx** (react) which invokes **PhaserGameCreator.js** (phaser) which finally invokes **MainScene.js** (phaser).
+0. Ensure the project is initialised in a Git repository. If you are unsure what this means, instructions can be found [here](https://medium.com/@JinnaBalu/initialize-local-git-repository-push-to-the-remote-repository-787f83ff999) and [here](https://www.theserverside.com/video/How-to-create-a-local-repository-with-the-git-init-command).
 
-And that's how the socket is created just once, in _index.js_, and then passed all down the chain, so all componenents have access to the very same one socket object.
+1. Login to Netlify and click _New Site from Git_, then select _Github_ and then the project in question. Set the command as `npm run build`.
 
-### IF YOU WANT TO PASS DATA FROM REACT TO PHASER
+Now when you commit and push to Github, Netlify will deploy the latest version of the project automatically.
 
-If you get some data in **App.jsx**, first you must pass it on props to **ReactGameHolder.jsx** - you'll find the invocation near the beginning of the render statement inside _App.jsx_.
+## Description
 
-Then inside **ReactGameHolder.jsx** you need to set that data from props to state.
+An online two-player word game that uses webcam for facial recognition. Upon entering the lobby, players can pull faces to represent four different emotions at their webcam, and the emotion recognition API detects which emotion is being expressed, and takes a photo at the correct moment. These photos of the player's own face are transferred onto the 'word worm' - a 2D physics object that crawls around the screen - onto which the player drops Scrabble tiles to spell out words and get points against their opponent, who is doing the same.
 
-And so now, inside the phaser component **MainScene.js**, you can access that data no problem! That's because I've given the phaser component _MainScene.js_ access to the react component _ReactGameHolder.jsx_'s state, as _this.game.react.state_.
+This was the final project at Northcoders, and was thought of, designed, developed, and tested all within two weeks. The project started just at the beginning of the Covid-19 lockdown in the UK, and so the team of four collaborated entirely remotely, using Trello as a kanban board, daily standups, and Agile method throughout.
 
-### MFIR SOLUTION
+## The Team
 
-_April 10th_
-I found and solved a new problem called MFIR (Multiple Firing In React). This is different to the Socket-Doubling problem, which was solved as written above.
+[James Johnson](https://github.com/Brork)
+<br/>
+[Patrick Mackridge](https://github.com/PatrickMackridge)
+<br/>
+[Chris Matus](https://github.com/chicorycolumn)
+<br/>
+[Nadia Rashad](https://github.com/nadiarashad)
 
-The MFIR problem is that in React components, even though there's only one socket _object_, it's the case that upon receiving a socket _event_, eg socket.on("a player entered"...), the re-rendering of react component means that this event is triggered 4-8 times instead of 1. So eg the message saying "Sally entered the game" appears many times. I have now fixed this by assiduously ensuring that all socket.on fxns in the React component (App.jsx) are only triggered after a check comparing data and state, to ensure this is new information.
+The team's presentation can be found [here](https://www.youtube.com/watch?v=NdILlpRjQAg).
