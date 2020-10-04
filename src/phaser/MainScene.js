@@ -300,7 +300,12 @@ export default class MainScene extends Phaser.Scene {
     // create a text block for each part of the array
     opponentsArr.forEach((char, i) => {
       const n = i + 1;
-      this.gameState.opponents[`opponent${n}`] = this.add.text(-50, -50, char);
+      this.gameState.opponents[`opponent${n}`] = this.add.text(
+        -50,
+        -50,
+        char,
+        wordTileStyle2
+      );
     });
 
     // Create a text object and put 6 random letters within it (with styling)
